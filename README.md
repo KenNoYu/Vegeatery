@@ -46,16 +46,14 @@ Vegeatery is an eatery that promotes different kinds of vegetarian diet using in
 _This is an example of how you can set up your project locally.
 To get a local copy up and running, follow these simple steps._
 
-## Prerequisites
-
-- Language 1
-
 ## Installation
 
-_Below is an example of how you can install and use {{ .Name }}_
-
-1. Step 1
-2. Step 2
+Clone the repository
+```sh
+git clone https://github.com/KenNoYu/Vegeatery
+cd Vegeatery
+code .
+```
 
 <div align="right">
   <br>
