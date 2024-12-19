@@ -41,21 +41,57 @@ Vegeatery is an eatery that promotes different kinds of vegetarian diet using in
 
 </div>
 
-# Quick Start
+# Project Guide
 
 _This is an example of how you can set up your project locally.
 To get a local copy up and running, follow these simple steps._
 
-## Prerequisites
-
-- Language 1
-
 ## Installation
 
-_Below is an example of how you can install and use {{ .Name }}_
+Clone the repository
+```sh
+git clone https://github.com/KenNoYu/Vegeatery
+cd Vegeatery
+code .
+```
 
-1. Step 1
-2. Step 2
+## Installing dependcies
+Inside Visual Studio Code in Terminal
+```
+npm i
+```
+
+## running the application
+In order to run the web application, both server and client has to be running
+### Running the Server
+- Open the vegeatery.sln in server folder using Visual Studio 2022 and run the application
+### Running the Client
+- Open the whole project in Visual Studio Code
+Inside Terminal
+```
+npm i
+npm start
+```
+
+## Configuring Database
+In order to setup the database for your own use inside VS 2022
+- Open up Nuget Manager Console under Tools at the top bar
+```
+Add-Migration <Migration-Name>
+Update-Database
+```
+> **WARNING**: You **MUST** have versions 8.0.0 and above installed for the SQL packages in your Nuget Package Manager and **NOT** version 9.0.0 otherwise you will be unable to create the Migration.
+
+## Where to contibute to your part
+_This shows where you can contribute to your part in the project file._
+### Server
+- In the folder _Models_, this is where you can add your classes for your database tables
+- In the file _DBContext_, you can create your new database table inside here
+- In the folder _Controller_, this is where you can add your various request such as post, get and delete for your API endpoints
+### Client
+- In the folder _Public_, this is where your images will be at, if possible use only SVG or WEBP file formats
+- In the folder _src\pages_, this is where you can create your html pages using React, and sending request to your API endpoints
+- In the folder _src\context_, this is where you can add your context state, such as creating new users or new item
 
 <div align="right">
   <br>
