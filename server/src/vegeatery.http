@@ -1,0 +1,16 @@
+@vegeatery_HostAddress = https://localhost:7273
+
+GET {{vegeatery_HostAddress}}/product?search=
+
+###
+
+POST {{vegeatery_HostAddress}}/product
+Content-Type: application/json
+
+{
+  "productName":"Rice",
+  "productDescription":"Rice",
+  "productCategory":"Carbo"
+}
+
+###
