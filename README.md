@@ -61,7 +61,7 @@ Inside Visual Studio Code in Terminal
 npm i
 ```
 
-## running the application
+## Running the application
 In order to run the web application, both server and client has to be running
 ### Running the Server
 - Open the vegeatery.sln in server folder using Visual Studio 2022 and run the application
@@ -92,6 +92,10 @@ _This shows where you can contribute to your part in the project file._
 - In the folder _Public_, this is where your images will be at, if possible use only SVG or WEBP file formats
 - In the folder _src\pages_, this is where you can create your html pages using React, and sending request to your API endpoints
 - In the folder _src\context_, this is where you can add your context state, such as creating new users or new item
+
+## Testing your endpoints
+- To test your own endpoints inside VS 2022 in _vegeatery.http_, generate your request from endpoints explorer and test it yourself. I have 2 examples inside for reference.
+- **Do Not Commit the Vegeatery.http file, its for your own testing purpose**
 
 <div align="right">
   <br>
