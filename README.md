@@ -61,7 +61,7 @@ Inside Visual Studio Code in Terminal
 npm i
 ```
 
-## running the application
+## Running the application
 In order to run the web application, both server and client has to be running
 ### Running the Server
 - Open the vegeatery.sln in server folder using Visual Studio 2022 and run the application
