@@ -93,6 +93,10 @@ _This shows where you can contribute to your part in the project file._
 - In the folder _src\pages_, this is where you can create your html pages using React, and sending request to your API endpoints
 - In the folder _src\context_, this is where you can add your context state, such as creating new users or new item
 
+## Testing your endpoints
+- To test your own endpoints inside VS 2022 in _vegeatery.http_, generate your request from endpoints explorer and test it yourself. I have 2 examples inside for reference.
+- **Do Not Commit the Vegeatery.http file, its for your own testing purpose**
+
 <div align="right">
   <br>
   <a href="#-made-with-3"><kbd> <br> 🡅 <br> </kbd></a>
