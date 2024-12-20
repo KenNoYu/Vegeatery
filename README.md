@@ -54,6 +54,7 @@ git clone https://github.com/KenNoYu/Vegeatery
 cd Vegeatery
 code .
 ```
+You only need to clone the repository **once**. When you clone it, a copy of vegeatery will be inside your computer already.
 
 ## Installing dependcies
 Inside Visual Studio Code in Terminal
@@ -84,11 +85,11 @@ Update-Database
 
 ## Where to contibute to your part
 _This shows where you can contribute to your part in the project file._
-### Server
+### Server(Open in VS 2022)
 - In the folder _Models_, this is where you can add your classes for your database tables
 - In the file _DBContext_, you can create your new database table inside here
 - In the folder _Controller_, this is where you can add your various request such as post, get and delete for your API endpoints
-### Client
+### Client(Open in VS Code)
 - In the folder _Public_, this is where your images will be at, if possible use only SVG or WEBP file formats
 - In the folder _src\pages_, this is where you can create your html pages using React, and sending request to your API endpoints
 - In the folder _src\context_, this is where you can add your context state, such as creating new users or new item
