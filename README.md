@@ -113,6 +113,18 @@ In file _client\.env.development_, you only need to change the port number.
 _This is an example of where you can write your code.
 To start on your part, follow these simple steps._
 
+## Branch
+When doing your part always create a new branch. In terminal
+```
+git checkout -b <branchname>
+```
+
+## Contributing
+When you want to push changes to main remember to first commit to your remote branch. Then create a pull request to merge with main branch
+
+<br>
+<br>
+
 ## Where to contibute to your part
 _This shows where you can contribute to your part in the project file._
 ### Server (Open in VS 2022)
