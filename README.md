@@ -56,6 +56,9 @@ code .
 ```
 You only need to clone the repository **once**. When you clone it, a copy of vegeatery will be inside your computer already.
 
+<br>
+<br>
+
 ## Installing dependcies
 Inside Visual Studio Code in Terminal
 ```
@@ -66,6 +69,9 @@ If the terminal prompts errors after npm i, run.
 npm audit fix
 ```
 Im not sure how these node modules work so the only fix I know is npm audit fix
+
+<br>
+<br>
 
 ## Running the application
 In order to run the web application, both server and client has to be running
@@ -81,6 +87,9 @@ npm i
 npm start
 ```
 
+<br>
+<br>
+
 ## Configuring Database
 In order to setup the database for your own use inside VS 2022
 - Open up Nuget Manager Console under Tools at the top bar
@@ -90,9 +99,15 @@ Update-Database
 ```
 > **WARNING**: You **MUST** have versions 8.0.0 and above installed for the SQL packages in your Nuget Package Manager and **NOT** version 9.0.0 otherwise you will be unable to create the Migration.
 
+<br>
+<br>
+
 ## Connecting Server to Client
 Server and Client are connected by default through the http port number. Port for server can be found in the _vegeatery.http_ file and to connect the port from client to server.
 In file _client\.env.development_, you only need to change the port number.
+
+<br>
+<br>
 
 # Project Contribution
 _This is an example of where you can write your code.
@@ -110,9 +125,15 @@ _This shows where you can contribute to your part in the project file._
 - In the folder _src\pages_, this is where you can create your html pages using React, and sending request to your API endpoints
 - In the folder _src\context_, this is where you can add your context state, such as creating new users or new item
 
+<br>
+<br>
+
 ## Testing your endpoints
 - To test your own endpoints inside VS 2022 in _vegeatery.http_, generate your request from endpoints explorer and test it yourself. I have 2 examples inside for reference.
 - **Do Not Commit the Vegeatery.http file, its for your own testing purpose**
+
+<br>
+<br>
 
 ## Sending Request from the client
 In order to send a request from client, you must first have a API endpoints created. These endpoints can be made inside _Controller_ folder in server.
