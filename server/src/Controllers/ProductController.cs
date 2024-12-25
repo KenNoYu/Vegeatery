@@ -16,8 +16,8 @@ namespace vegeatery.Controllers
             IQueryable<Product> result = _context.Product;
             if (search != null)
             {
-                result = result.Where(x => x.productName.Contains(search)
-                    || x.productDescription.Contains(search));
+                result = result.Where(x => x.ProductName.Contains(search)
+                    || x.ProductDescription.Contains(search));
             }
             var list = result.OrderByDescending(x => x.CreatedAt).ToList();
             return Ok(list);
@@ -30,9 +30,9 @@ namespace vegeatery.Controllers
             var now = DateTime.Now;
             var newProduct = new Product()
             {
-                productName = product.productName.Trim(),
-                productDescription = product.productDescription.Trim(),
-                productCategory = product.productCategory.Trim(),
+                ProductName = product.ProductName.Trim(),
+                ProductDescription = product.ProductDescription.Trim(),
+                ProductCategory = product.ProductCategory.Trim(),
                 CreatedAt = now,
                 UpdatedAt = now
 
