@@ -62,6 +62,7 @@ You only need to clone the repository **once**. When you clone it, a copy of veg
 ## Installing dependcies
 Inside Visual Studio Code in Terminal
 ```
+cd client
 npm i
 ```
 If the terminal prompts errors after npm i, run. 
@@ -83,6 +84,7 @@ In order to run the web application, both server and client has to be running
 - Open the whole project in Visual Studio Code
 Inside Terminal
 ```
+cd client
 npm i
 npm start
 ```
