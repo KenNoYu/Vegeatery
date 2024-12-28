@@ -15,6 +15,10 @@ namespace vegeatery.Models
         [Required, Range(1, 10)]
         public int Quantity { get; set; }
 
+        [Required, Range(1, 10)]
+        public int Points { get; set; }
+
+
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; }
 
