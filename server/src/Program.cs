@@ -1,8 +1,12 @@
 using vegeatery;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<MyDbContext>();
 
@@ -37,6 +41,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseCors();
 
 app.UseAuthorization();
