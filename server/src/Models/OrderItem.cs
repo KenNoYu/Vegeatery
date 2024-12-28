@@ -10,6 +10,7 @@ namespace vegeatery.Models
 
         [Required]
         [Range(0, double.MaxValue, ErrorMessage = "Price must be a positive value.")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
         [Required, Range(1, 10)]
