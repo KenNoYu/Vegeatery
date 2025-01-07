@@ -1,3 +1,5 @@
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using vegeatery;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +7,30 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddDbContext<MyDbContext>();
+builder.Services.AddAuthorization(options =>
+{
+	options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+});
+builder.Services.AddLogging(config =>
+{
+	config.AddConsole();
+	config.AddDebug();
+	// Add other logging providers as needed
+});
+builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+	{
+	options.TokenValidationParameters = new TokenValidationParameters
+	{
+		ValidateIssuer = true,
+		ValidateAudience = true,
+		ValidateLifetime = true,
+		ValidateIssuerSigningKey = true,
+		ValidIssuer = "your-issuer",
+		ValidAudience = "your-audience",
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secure-key"))
+	};
+	});
 
 // Add CORS policy
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
@@ -39,6 +65,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
