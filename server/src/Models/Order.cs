@@ -24,7 +24,6 @@ namespace vegeatery.Models
         public DateTime OrderDate { get; set; } = DateTime.Now;
 
         [Required]
-        [Range(0, double.MaxValue, ErrorMessage = "Total price must be a positive value.")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalPrice { get; set; }
 
@@ -33,7 +32,7 @@ namespace vegeatery.Models
         public int TotalPoints { get; set; } // Points used for this order
 
         [Required]
-        public string Status { get; set; } = "Pending"; // Pending, In Progress, Completed
+        public string Status { get; set; } = "Pending"; // Pending, In Progress, Completed, Cancelled
 
         [Required, Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

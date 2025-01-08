@@ -10,14 +10,14 @@ namespace vegeatery.Controllers
         private readonly MyDbContext _context = context;
         // Create new order (for customer)
         [HttpPost("newOrder")]
-        public IActionResult CreateOrder(int cartId, [FromBody] Order request)
+        public IActionResult CreateOrder([FromBody] CreateOrderRequest request)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
                     // Retrieve the cart and its items
-                    var cart = _context.Cart.FirstOrDefault(c => c.CartId == cartId);
+                    var cart = _context.Cart.FirstOrDefault(c => c.CartId == request.CartId);
                     if (cart == null || cart.CartItems == null)
                     {
                         return NotFound(new { Message = "Cart cannot be empty or it dosen't exist" });
@@ -33,9 +33,9 @@ namespace vegeatery.Controllers
                         TotalPoints = request.TotalPoints,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
-                        VoucherId = request.VoucherId,
-                        CustomerId = request.CustomerId,
-                        SessionId = request.SessionId
+                        VoucherId = request?.VoucherId,
+                        CustomerId = request?.CustomerId,
+                        SessionId = request?.SessionId
                     };
                     // save order
                     _context.Order.Add(order);
