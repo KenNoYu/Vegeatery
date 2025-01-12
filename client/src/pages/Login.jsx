@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Box, Typography, TextField, Button, Grid2 } from "@mui/material";
+import { Box, Typography, TextField, Button, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -7,7 +7,7 @@ import http from "../http";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserContext from "../contexts/UserContext";
-// import loginbanner from "../assets/loginbanner.jpg";
+import loginbanner from "../assets/loginbanner.jpg";
 
 function Login() {
   const navigate = useNavigate();
@@ -15,16 +15,15 @@ function Login() {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
+      username: "",
       password: "",
     },
     validationSchema: yup.object({
-      email: yup
+      username: yup
         .string()
         .trim()
-        .email("Enter a valid email")
         .max(50, "Email must be at most 50 characters")
-        .required("Email is required"),
+        .required("Username is required"),
       password: yup
         .string()
         .trim()
@@ -33,17 +32,25 @@ function Login() {
         .required("Password is required"),
     }),
     onSubmit: (data) => {
-      data.email = data.email.trim().toLowerCase();
+      data.username = data.username.trim().toLowerCase();
       data.password = data.password.trim();
       http
         .post("/auth/login", data)
         .then((res) => {
           localStorage.setItem("accessToken", res.data.accessToken);
           setUser(res.data.user);
-          navigate("/");
+          navigate("/overview");
         })
         .catch(function (err) {
-          toast.error(`${err.response.data.message}`);
+          if (err.response && err.response.data) {
+            toast.error(
+              `${
+                err.response.data.message || "Login failed. Please try again."
+              }`
+            );
+          } else {
+            toast.error("An unexpected error occurred. Please try again later.");
+          }
         });
     },
   });
@@ -51,96 +58,102 @@ function Login() {
   return (
     <Box
       sx={{
-        marginTop: 8,
         display: "flex",
-        justifyContent: "center", // Center both boxes horizontally
+        justifyContent: "center",
         alignItems: "center",
-        height: "100vh", // Make it take up the full viewport height
-        backgroundColor: "#f5f5f5", // Soft background color
-        padding: "0", // Padding around the container
+        height: "100vh",
+        backgroundColor: "#f5f5f5",
       }}
     >
-      {/* Grid Container for Side by Side Layout */}
-      <Grid2 container spacing={4} sx={{ height: "100%", maxWidth: "1200px" }}>
+      <Grid container sx={{ maxWidth: "1200px" }}>
         {/* Banner Section */}
-        <Grid2 item xs={12} md={6}>
+        <Grid item xs={12} md={6}>
           <Box
             sx={{
               backgroundImage: `url(${loginbanner})`,
-              backgroundRepeat: "no-repeat",
               backgroundSize: "cover",
+              backgroundPosition: "center",
               height: "100%",
-              borderRadius: "10px", // Slight border radius for smooth edges
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center", // Center content vertically
-              color: "#fff", // Text color for readability
+              justifyContent: "center",
               padding: "40px",
-              boxSizing: "border-box", // Include padding in the height calculation
-              borderTopLeftRadius: "10px", // Rounded corners for top left
-              borderBottomLeftRadius: "10px",
+              color: "#fff",
             }}
           >
-            <Typography variant="h1" sx={{ mb: 2, fontSize: "2.5rem" }}>
+            <Typography
+              variant="h1"
+              sx={{ fontSize: "3rem", fontWeight: "bold", mb: 1 }}
+            >
               Vegeatery
             </Typography>
-            <Typography variant="h2" sx={{ mb: 2, fontSize: "1.5rem" }}>
-              "Meals catered to your lifestyle"
+            <Typography
+              variant="h2"
+              sx={{ fontSize: "1.5rem", fontStyle: "italic", mb: 3 }}
+            >
+              "Meals catered to your needs"
             </Typography>
 
-            <Typography variant="h3" sx={{ mb: 2, fontSize: "1.25rem" }}>
+            <Typography
+              variant="h3"
+              sx={{ fontSize: "1.2rem", fontWeight: "bold", mb: 2 }}
+            >
               Who are we?
             </Typography>
-            <Typography variant="h5" sx={{ mb: 2, fontSize: "1rem" }}>
+            <Typography variant="h5" sx={{ fontSize: "1rem" }}>
               Our plant-based business offers nutritious, customizable meals to
               meet diverse dietary needs, from vegan to gluten-free. With a
               focus on sustainability and fresh ingredients, we make healthy
               eating easy and enjoyable for everyone.
             </Typography>
           </Box>
-        </Grid2>
+        </Grid>
 
         {/* Login Form Section */}
-        <Grid2 item xs={12} md={6}>
+        <Grid item xs={12} md={6}>
           <Box
             sx={{
               backgroundColor: "#ffffff",
-              height: "100%",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center", // Center content vertically
-              borderRadius: "10px",
-              boxSizing: "border-box", // Include padding in the height calculation
-              borderTopRightRadius: "10px", // Rounded corners for top right
-              borderBottomRightRadius: "10px",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Light shadow for depth
+              justifyContent: "center",
               padding: "40px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+              borderRadius: "8px",
             }}
           >
-            <Typography variant="h1" sx={{ my: 2, fontSize: "2rem" }}>
+            <Typography
+              variant="h1"
+              sx={{ fontSize: "2rem", fontWeight: "bold", mb: 3 }}
+            >
               Login
             </Typography>
             <Box
               component="form"
-              sx={{ maxWidth: "500px", margin: "0 auto" }}
+              sx={{ maxWidth: "400px", margin: "0 auto" }}
               onSubmit={formik.handleSubmit}
             >
               <TextField
                 fullWidth
-                margin="dense"
-                autoComplete="off"
-                label="Email"
-                name="email"
-                value={formik.values.email}
+                label="Username / Email Address"
+                name="username"
+                value={formik.values.username}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
+                error={
+                  formik.touched.username && Boolean(formik.errors.username)
+                }
+                helperText={formik.touched.username && formik.errors.username}
+                margin="dense"
+                InputProps={{
+                  sx: {
+                    borderRadius: "8px",
+                    "&:hover fieldset": { borderColor: "#FF69B4" }, // Hover effect
+                  },
+                }}
               />
               <TextField
                 fullWidth
-                margin="dense"
-                autoComplete="off"
                 label="Password"
                 name="password"
                 type="password"
@@ -151,20 +164,53 @@ function Login() {
                   formik.touched.password && Boolean(formik.errors.password)
                 }
                 helperText={formik.touched.password && formik.errors.password}
+                margin="dense"
+                InputProps={{
+                  sx: {
+                    borderRadius: "8px",
+                    "&:hover fieldset": { borderColor: "#FF69B4" },
+                  },
+                }}
               />
               <Button
                 fullWidth
                 variant="contained"
-                color="primary"
-                sx={{ mt: 2, padding: "10px 0", fontSize: "1rem" }}
+                sx={{
+                  mt: 3,
+                  backgroundColor: "#FF69B4",
+                  padding: "10px",
+                  fontSize: "1rem",
+                  color: "#fff",
+                  borderRadius: "8px",
+                  "&:hover": { backgroundColor: "#FF1493" },
+                }}
                 type="submit"
               >
                 Login
               </Button>
+
+              <Typography
+                variant="body2"
+                align="center"
+                sx={{ mt: 2, color: "#6e6e6e" }}
+              >
+                Forgot Password?
+              </Typography>
+
+              <Typography
+                variant="body2"
+                align="center"
+                sx={{ mt: 2, color: "#6e6e6e" }}
+              >
+                Don’t have an account?{" "}
+                <span style={{ color: "#FF69B4", cursor: "pointer" }}>
+                  Register here!
+                </span>
+              </Typography>
             </Box>
           </Box>
-        </Grid2>
-      </Grid2>
+        </Grid>
+      </Grid>
 
       <ToastContainer />
     </Box>
