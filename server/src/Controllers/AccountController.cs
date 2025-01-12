@@ -1,9 +1,12 @@
 ﻿// Controllers/AccountController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using vegeatery;
+using vegeatery.Dtos;
 
 [Route("[controller]")]
 [ApiController]
@@ -17,30 +20,74 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpGet("{id}")]
-	[Authorize(Roles = "Admin")]
+	//[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> GetUserById(int id)
 	{
-		var user = await _context.Users.FindAsync(id);
+		var user = await _context.Users.Include(u => u.Role).SingleOrDefaultAsync(u => u.Id == id);
 
 		if (user == null)
 		{
 			return NotFound(new { message = "User not found" });
 		}
 
-		return Ok(user);
+		var userDto = new UserDto
+		{
+			Id = user.Id,
+			Username = user.Username,
+			Email = user.Email,
+			DateofBirth = user.DateofBirth,
+			ContactNumber = user.ContactNumber,
+			Gender = user.Gender,
+			DietPreference = user.DietPreference,
+			AllergyInfo = user.AllergyInfo,
+			MealTypes = user.MealTypes,
+			Address = user.Address,
+			Promotions = user.Promotions,
+			Agreement = user.Agreement,
+			TotalPoints = user.TotalPoints,
+			JwtToken = user.JwtToken,
+			CreatedAt = user.CreatedAt,
+			RoleId = user.RoleId,
+			RoleName = user.Role.Name
+		};
+
+		return Ok(userDto);
 	}
 
 	[HttpGet]
-	[Authorize(Roles = "Admin")]
-	public IActionResult GetAllUsers()
+	//[Authorize(Roles = "Admin")]
+	public async Task<IActionResult> GetAllUsers()
 	{
-		var users = _context.Users.ToList();
+		// Directly access the database to get users
+		var users = await _context.Users.Include(u => u.Role).ToListAsync();
 
-		return Ok(users);
+		// Map users to UserDto
+		var userDtos = users.Select(user => new UserDto
+		{
+			Id = user.Id,
+			Username = user.Username ?? string.Empty,
+			Email = user.Email ?? string.Empty,
+			DateofBirth = user.DateofBirth ?? string.Empty,
+			ContactNumber = user.ContactNumber ?? string.Empty,
+			Gender = user.Gender ?? string.Empty,
+			DietPreference = user.DietPreference ?? string.Empty,
+			AllergyInfo = user.AllergyInfo ?? string.Empty,
+			MealTypes = user.MealTypes ?? string.Empty,
+			Address = user.Address ?? string.Empty,
+			Promotions = user.Promotions,
+			Agreement = user.Agreement,
+			TotalPoints = user.TotalPoints,
+			JwtToken = user.JwtToken ?? string.Empty,
+			CreatedAt = user.CreatedAt,
+			RoleId = user.RoleId,
+			RoleName = user.Role?.Name ?? string.Empty
+		}).ToList();
+
+		return Ok(userDtos);
 	}
 
 	[HttpPut("{id}")]
-	[Authorize(Roles = "Admin")]
+	//[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto updateUserDto)
 	{
 		var user = _context.Users.SingleOrDefault(u => u.Id == id);
@@ -60,7 +107,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpDelete("{id}")]
-	[Authorize(Roles = "Admin")]
+	//[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> DeleteUser(int id)
 	{
 		var user = _context.Users.SingleOrDefault(u => u.Id == id);
@@ -77,7 +124,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpPut("{id}/role")]
-	[Authorize(Roles = "Admin")]
+	//[Authorize(Roles = "Admin")]
 	public async Task<IActionResult> UpdateUserRole(int id, [FromBody] UpdateUserRoleDto updateUserRoleDto)
 	{
 		var user = _context.Users.SingleOrDefault(u => u.Id == id);

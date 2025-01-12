@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -25,6 +27,27 @@ public class AuthController : ControllerBase
 	[HttpPost("register")]
 	public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
 	{
+		var existingUser = await _context.Users
+			.Where(u => u.Username == registerDto.Username || u.Email == registerDto.Email)
+			.ToListAsync();
+
+		if (existingUser.Count > 1)
+		{
+			return BadRequest(new { message = "Multiple users found with the same Username or Email" });
+		}
+
+		if (existingUser.Count == 1)
+		{
+			return BadRequest(new { message = "Username or Email already exists" });
+		}
+
+		var role = await _context.Role.SingleOrDefaultAsync(r => r.Id == 1); // Default role is User
+
+		if (role == null)
+		{
+			return BadRequest(new { message = "Role not found" });
+		}
+
 		var user = new User
 		{
 			Username = registerDto.Username,
@@ -40,17 +63,21 @@ public class AuthController : ControllerBase
 			Promotions = registerDto.Promotions,
 			Agreement = registerDto.Agreement,
 			TotalPoints = 0,
-			RoleId = 1 // Default role is User
-			
+			RoleId = role.Id,
+			Role = role // Assign the role to the user
 		};
 
-		user.JwtToken = GenerateJwtToken(user);
+		if (user == null || user.Role == null)
+		{
+			throw new System.Exception("User or user role is not properly initialized.");
+		}
+
+		user.JwtToken = CreateToken(user);
 
 		_context.Users.Add(user);
 		await _context.SaveChangesAsync();
 
 		return Ok(new { message = "Registration successful", token = user.JwtToken });
-
 	}
 
 	[HttpPost("login")]
@@ -65,26 +92,68 @@ public class AuthController : ControllerBase
 
 		// Normally, you would generate a JWT token here, but we'll skip that for now
 
-		return Ok(new { message = "Login successful" });
+		return Ok(new { message = "Login successful", token = user.JwtToken });
 	}
 
-	private string GenerateJwtToken(User user)
+	[HttpGet("auth")]
+	[Authorize]
+	public IActionResult Auth()
 	{
+		// Extract user claims
+		var idClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+		var nameClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+		var emailClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+
+		// Validate claims
+		if (idClaim != null && nameClaim != null && emailClaim != null)
+		{
+			var userId = Convert.ToInt32(idClaim.Value);
+			var userName = nameClaim.Value;
+			var userEmail = emailClaim.Value;
+
+			var user = new
+			{
+				Id = userId,
+				Username = userName,
+				Email = userEmail
+			};
+
+			return Ok(new { User = user });
+		}
+		else
+		{
+			return Unauthorized();
+		}
+	}
+
+	private string CreateToken(User user)
+	{
+		string? secret = _configuration.GetValue<string>(
+		"Authentication:Secret");
+		if (string.IsNullOrEmpty(secret))
+		{
+			throw new Exception("Secret is required for JWT authentication.");
+		}
+		int tokenExpiresDays = _configuration.GetValue<int>(
+		"Authentication:TokenExpiresDays");
 		var tokenHandler = new JwtSecurityTokenHandler();
-		var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+		var key = Encoding.ASCII.GetBytes(secret);
 		var tokenDescriptor = new SecurityTokenDescriptor
 		{
-			Subject = new ClaimsIdentity(new[]
-			{
-				new Claim(ClaimTypes.Name, user.Username),
-				new Claim(ClaimTypes.Email, user.Email),
-				new Claim(ClaimTypes.Role, user.RoleId.ToString(), user.Role.Name)
-			}),
-			Expires = DateTime.UtcNow.AddDays(7),
-			SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+			Subject = new ClaimsIdentity(
+		[
+		new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+		new Claim(ClaimTypes.Name, user.Username),
+		new Claim(ClaimTypes.Email, user.Email),
+		new Claim(ClaimTypes.Role, user.Role.Name)
+		]),
+			Expires = DateTime.UtcNow.AddDays(tokenExpiresDays),
+			SigningCredentials = new SigningCredentials(
+		new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 		};
-		var token = tokenHandler.CreateToken(tokenDescriptor);
-		return tokenHandler.WriteToken(token);
+		var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+		string token = tokenHandler.WriteToken(securityToken);
+		return token;
 	}
 }
 
