@@ -1,6 +1,11 @@
 ﻿using vegeatery.Models;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Data;
+using vegeatery.Controllers;
 namespace vegeatery
 {
 	public class MyDbContext : DbContext
@@ -40,8 +45,8 @@ namespace vegeatery
 				new Role { Id = 3, Name = "Admin" }
 			);
 
-			modelBuilder.Entity<User>().HasData(
-			new User
+			// Seed a master admin account
+			var masterAdmin = new User
 			{
 				Id = 1,
 				Username = "masteradmin",
@@ -56,9 +61,26 @@ namespace vegeatery
 				Promotions = true,
 				Agreement = true,
 				TotalPoints = 0,
-				RoleId = 3
-			}
-		);
+				RoleId = 3 // Admin role
+			};
+
+			// Generate JWT token for master admin
+			var tokenHandler = new JwtSecurityTokenHandler();
+			var key = Encoding.ASCII.GetBytes(_configuration["Authentication:Secret"]);
+			var tokenDescriptor = new SecurityTokenDescriptor
+			{
+				Subject = new ClaimsIdentity(new Claim[]
+				{
+					new Claim(ClaimTypes.Name, masterAdmin.Username),
+					new Claim(ClaimTypes.Role, "Admin")
+				}),
+				Expires = DateTime.UtcNow.AddDays(int.Parse(_configuration["Authentication:TokenExpiresDays"])),
+				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+			};
+			var token = tokenHandler.CreateToken(tokenDescriptor);
+			masterAdmin.JwtToken = tokenHandler.WriteToken(token);
+
+			modelBuilder.Entity<User>().HasData(masterAdmin);
 		}
 	}
 }
