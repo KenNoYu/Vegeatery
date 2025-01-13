@@ -1,7 +1,12 @@
 import React from 'react'
 
-export default function UserOverview() {
+function UserOverview() {
+  
+
+
   return (
     <div>UserOverview</div>
   )
 }
+
+export default UserOverview;
