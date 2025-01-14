@@ -83,14 +83,17 @@ public class AuthController : ControllerBase
 	[HttpPost("login")]
 	public IActionResult Login([FromBody] LoginDto loginDto)
 	{
-		var user = _context.Users.SingleOrDefault(u => u.Username == loginDto.Username);
+		var user = _context.Users
+			.Include(u => u.Role)
+			.SingleOrDefault(u => u.Username == loginDto.Username || u.Email == loginDto.Username);
 
 		if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
 		{
 			return Unauthorized(new { message = "Invalid credentials" });
 		}
 
-		// Normally, you would generate a JWT token here, but we'll skip that for now
+		// Generate a JWT token
+		user.JwtToken = CreateToken(user);
 
 		return Ok(new { message = "Login successful", token = user.JwtToken });
 	}
@@ -128,35 +131,33 @@ public class AuthController : ControllerBase
 
 	private string CreateToken(User user)
 	{
-		string? secret = _configuration.GetValue<string>(
-		"Authentication:Secret");
+		string? secret = _configuration.GetValue<string>("Authentication:Secret");
 		if (string.IsNullOrEmpty(secret))
 		{
 			throw new Exception("Secret is required for JWT authentication.");
 		}
-		int tokenExpiresDays = _configuration.GetValue<int>(
-		"Authentication:TokenExpiresDays");
+
+		int tokenExpiresDays = _configuration.GetValue<int>("Authentication:TokenExpiresDays");
+
 		var tokenHandler = new JwtSecurityTokenHandler();
 		var key = Encoding.ASCII.GetBytes(secret);
 		var tokenDescriptor = new SecurityTokenDescriptor
 		{
-			Subject = new ClaimsIdentity(
-		[
-		new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-		new Claim(ClaimTypes.Name, user.Username),
-		new Claim(ClaimTypes.Email, user.Email),
-		new Claim(ClaimTypes.Role, user.Role.Name)
-		]),
+			Subject = new ClaimsIdentity(new[]
+			{
+				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+				new Claim(ClaimTypes.Name, user.Username),
+				new Claim(ClaimTypes.Email, user.Email),
+				new Claim(ClaimTypes.Role, user.Role.Name)
+			}),
 			Expires = DateTime.UtcNow.AddDays(tokenExpiresDays),
-			SigningCredentials = new SigningCredentials(
-		new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+			SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 		};
 		var securityToken = tokenHandler.CreateToken(tokenDescriptor);
 		string token = tokenHandler.WriteToken(securityToken);
 		return token;
 	}
 }
-
 public class RegisterDto
 {
 	public string Username { get; set; }

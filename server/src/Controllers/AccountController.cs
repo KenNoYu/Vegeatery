@@ -20,7 +20,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpGet("{id}")]
-	//[Authorize(Roles = "Admin")]
+	[Authorize(Policy = "Admin")]
 	public async Task<IActionResult> GetUserById(int id)
 	{
 		var user = await _context.Users.Include(u => u.Role).SingleOrDefaultAsync(u => u.Id == id);
@@ -55,7 +55,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpGet]
-	//[Authorize(Roles = "Admin")]
+	[Authorize(Policy = "Admin")]
 	public async Task<IActionResult> GetAllUsers()
 	{
 		// Directly access the database to get users
@@ -87,7 +87,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpPut("{id}")]
-	//[Authorize(Roles = "Admin")]
+	[Authorize(Policy = "Admin")]
 	public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto updateUserDto)
 	{
 		var user = _context.Users.SingleOrDefault(u => u.Id == id);
@@ -107,7 +107,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpDelete("{id}")]
-	//[Authorize(Roles = "Admin")]
+	[Authorize(Policy = "Admin")]
 	public async Task<IActionResult> DeleteUser(int id)
 	{
 		var user = _context.Users.SingleOrDefault(u => u.Id == id);
@@ -124,7 +124,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpPut("{id}/role")]
-	//[Authorize(Roles = "Admin")]
+	[Authorize(Policy = "Admin")]
 	public async Task<IActionResult> UpdateUserRole(int id, [FromBody] UpdateUserRoleDto updateUserRoleDto)
 	{
 		var user = _context.Users.SingleOrDefault(u => u.Id == id);
