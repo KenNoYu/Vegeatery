@@ -16,6 +16,10 @@ if (allowedOrigins == null || allowedOrigins.Length == 0)
 {
     throw new Exception("AllowedOrigins is required for CORS policy.");
 }
+else
+{
+    Console.WriteLine($"Allowed origins: {string.Join(", ", allowedOrigins)}");
+}
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
@@ -23,7 +27,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(allowedOrigins)
             .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .AllowCredentials();
         });
 });
 

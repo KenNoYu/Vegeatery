@@ -6,12 +6,15 @@ using vegeatery.Models;
 using Microsoft.EntityFrameworkCore;
 using Stripe.Checkout;
 using Stripe;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Cors;
 
 namespace vegeatery.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     [ApiExplorerSettings(IgnoreApi = true)]
+    [EnableCors]
     public class CheckoutController : ControllerBase
     {
         private readonly MyDbContext _context;
@@ -23,7 +26,7 @@ namespace vegeatery.Controllers
             _configuration = configuration;
         }
 
-        //TODO: Stripe payment integration
+        // Stripe payment integration
         [HttpPost("checkout")]
         public IActionResult CreateCheckoutSession(int orderId)
         {
@@ -52,7 +55,7 @@ namespace vegeatery.Controllers
                     Quantity = item.Quantity,
                 }).ToList(),
                 Mode = "payment",
-                SuccessUrl = $"{domain}/success?session_id={{CHECKOUT_SESSION_ID}}",
+                SuccessUrl = $"{domain}/order-confirmation?orderId={orderId}&session_id={{CHECKOUT_SESSION_ID}}",
                 CancelUrl = $"{domain}/cancel",
             };
 
@@ -77,11 +80,15 @@ namespace vegeatery.Controllers
             {
                 case "checkout.session.completed":
                     var session = stripeEvent.Data.Object as Session;
-                    var order = _context.Order.FirstOrDefault(o => o.SessionId == session.Id);
+                    var order = _context.Order.AsTracking().FirstOrDefault(o => o.SessionId == session.Id);
                     if (order != null)
                     {
-                        order.Status = "Paid";
+                        order.Status = "In-Progress";
                         _context.SaveChanges();
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Order not found for session ID: {session.Id}");
                     }
                     break;
             }
