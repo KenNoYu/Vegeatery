@@ -99,6 +99,7 @@ namespace vegeatery.Controllers
                 .Where(cartItem => cartItem.CartId == CartId)
                 .Select(cartItem => new
                 {
+                    cartItem.Product.ProductId,
                     cartItem.Product.ProductName,
                     cartItem.Product.ProductPrice,
                     cartItem.Quantity,
