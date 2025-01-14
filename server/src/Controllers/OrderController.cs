@@ -17,8 +17,8 @@ namespace vegeatery.Controllers
                 try
                 {
                     // Retrieve the cart and its items
-                    var cart = _context.Cart.FirstOrDefault(c => c.CartId == request.CartId);
-                    if (cart == null || cart.CartItems == null)
+                    var cart = _context.Cart.Include(c => c.CartItems).FirstOrDefault(c => c.CartId == request.CartId);
+                    if (cart == null || !cart.CartItems.Any())
                     {
                         return NotFound(new { Message = "Cart cannot be empty or it dosen't exist" });
                     }
@@ -31,6 +31,7 @@ namespace vegeatery.Controllers
                         OrderDate = DateTime.Now,
                         TotalPrice = cart.CartItems.Sum(item => item.Price * item.Quantity),
                         TotalPoints = request.TotalPoints,
+                        Status = request.Status,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         VoucherId = request?.VoucherId,
@@ -67,6 +68,7 @@ namespace vegeatery.Controllers
                 }
             }
         }
+
         // Get all orders (for admin)
         [HttpGet("all")]
         public IActionResult GetAll()
@@ -85,6 +87,7 @@ namespace vegeatery.Controllers
                         Order.OrderDate,
                         Order.TotalPrice,
                         Order.TotalPoints,
+                        Order.Status,
                         Order.CreatedAt,
                         Items = Order.OrderItems.Select(item => new
                         {
@@ -107,6 +110,7 @@ namespace vegeatery.Controllers
                 return StatusCode(500, new { Message = "An error occurred while getting orders.", Details = ex.Message });
             }
         }
+
         // TODO: Get orders by dates and status (for staff)
         [HttpGet("dateAndStatus")]
         public IActionResult GetOrdersByDate(DateTime startDate, DateTime endDate, string status)
@@ -143,6 +147,7 @@ namespace vegeatery.Controllers
                 return StatusCode(500, new { Message = "An error occurred while getting orders.", Details = ex.Message });
             }
         }
+
         // Update order status (for staff)
         [HttpPut("updateStatus")]
         public IActionResult UpdateOrderStatus(int orderId, string status)
@@ -168,5 +173,28 @@ namespace vegeatery.Controllers
             }
         }
         // TODO: Get order by customer id (for customer)
+        // Delete Order (Debug purpose)
+        [HttpDelete("deleteOrder")]
+        public IActionResult DeleteOrder(int orderId)
+        {
+            try
+            {
+                // Get order by order id
+                var order = _context.Order.FirstOrDefault(order => order.OrderId == orderId);
+                if (order == null)
+                {
+                    return NotFound(new { Message = "Order not found." });
+                }
+                // Delete order
+                _context.Order.Remove(order);
+                // Save changes
+                _context.SaveChanges();
+                return Ok(new { Message = "Order deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while deleting order.", Details = ex.Message });
+            }
+        }
     }
 }
