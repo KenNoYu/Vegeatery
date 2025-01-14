@@ -10,6 +10,11 @@ import EditTutorial from './pages/EditTutorial';
 import MyForm from './pages/MyForm';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import Products from './pages/Product';
+import Cart from './pages/orders/Cart';
+import Orders from './pages/orders/Order';
+import Checkout from './pages/orders/Checkout';
+import OrderConfirmation from './pages/orders/OrderConfirmation';
 import http from './http';
 import UserContext from './contexts/UserContext';
 
@@ -43,6 +48,8 @@ function App() {
                 </Link>
                 <Link to="/tutorials" ><Typography>Tutorials</Typography></Link>
                 <Link to="/form" ><Typography>Form</Typography></Link>
+                <Link to="/products" ><Typography>Products</Typography></Link>
+                <Link to="/cart" ><Typography>Cart</Typography></Link>
                 <Box sx={{ flexGrow: 1 }}></Box>
                 {user && (
                   <>
@@ -64,6 +71,11 @@ function App() {
           <Container>
             <Routes>
               <Route path={"/"} element={<Tutorials />} />
+              <Route path={"/products"} element={<Products />} />
+              <Route path={"/cart"} element={<Cart />} />
+              <Route path={"/orders"} element={<Orders />} />
+              <Route path={"/checkout"} element={<Checkout />} />
+              <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
               <Route path={"/tutorials"} element={<Tutorials />} />
               <Route path={"/addtutorial"} element={<AddTutorial />} />
               <Route path={"/edittutorial/:id"} element={<EditTutorial />} />
