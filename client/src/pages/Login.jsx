@@ -37,11 +37,15 @@ function Login() {
       http
         .post("/auth/login", data)
         .then((res) => {
-          localStorage.setItem("accessToken", res.data.accessToken);
-          setUser(res.data.user);
-          navigate("/overview");
+          console.log(res.data);
+          const { token, user } = res.data;
+          localStorage.setItem("accessToken", token); // Store token
+          console.log(token);  
+          setUser(user);
+          console.log(user)
+          window.location = "/overview";   // Set the user in the context and redirect to the overview page
         })
-        .catch(function (err) {
+        .catch((err) => {
           if (err.response && err.response.data) {
             toast.error(
               `${
@@ -52,8 +56,10 @@ function Login() {
             toast.error("An unexpected error occurred. Please try again later.");
           }
         });
+        
     },
   });
+
 
   return (
     <Box
