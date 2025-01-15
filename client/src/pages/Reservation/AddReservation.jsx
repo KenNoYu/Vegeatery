@@ -1,0 +1,390 @@
+import React, { useState } from "react";
+import { Button, Grid, TextField, Box, Typography } from "@mui/material";
+import DateSelector from "./Components/DateSelector";
+import { useTheme } from '@mui/material/styles';
+import { styled } from "@mui/system";
+import axios from "axios";
+import http from '../../http';
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import { parse, isBefore, isDate } from 'date-fns';
+
+const DetailsTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiInputLabel-root.Mui-focused": {
+    color: "black", // Label color when focused and at the top
+  },
+  "& .MuiOutlinedInput-root": {
+    "&:hover fieldset": {
+      borderColor: "black", // Outline on hover
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "black", // Outline when focused
+    },
+  },
+  "& .MuiInputLabel-root": {
+    color: "black", // Label color
+  },
+  "& .Mui-focused": {
+    color: "black", // Label when focused
+  },
+}));
+
+const ReservationPage = () => {
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const [view, setView] = useState("details"); // 'details' or 'seats'
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    mobileNumber: "",
+  });
+  const [selectedTables, setSelectedTables] = useState(null);
+  const [tables, setTables] = useState([
+    { id: 1, status: "available", pax: 2 },
+    { id: 2, status: "unavailable", pax: 2 },
+    { id: 3, status: "available", pax: 2 },
+    { id: 4, status: "available", pax: 4 },
+    { id: 5, status: "available", pax: 4 },
+    { id: 6, status: "unavailable", pax: 5 },
+  ]);
+
+  // Mock data for times
+  const times = [
+    "11:00am", "11:30am", "12:00pm", "12:30pm",
+    "1:00pm", "1:30pm", "2:00pm", "2:30pm",
+    "3:00pm", "3:30pm", "4:00pm", "4:30pm",
+    "5:00pm", "5:30pm", "6:00pm", "6:30pm",
+    "7:00pm", "7:30pm", "8:00pm", "8:30pm",
+  ];
+
+  const isDateTimeBeforeNow = (date, time) => {
+    const formattedDate = parse(time, 'h:mma', new Date(date)); // Parse the time into a date object
+    return isBefore(formattedDate, new Date()); // Compare it with the current date and time
+  };
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    if (selectedTime) {
+      if (isDateTimeBeforeNow(date, selectedTime)) {
+        setSelectedTime(null)
+      }
+    }
+  };
+
+  const handleTimeSelect = (time) => {
+    setSelectedTime(time);
+  };
+
+  const handleViewChange = () => {
+    setView(view === "details" ? "seats" : "details");
+  };
+
+  const handleTableClick = (id) => {
+    setTables((prevTables) => {
+      const updatedTables = prevTables.map((table) => {
+        if (table.id === id) {
+          const newStatus = table.status === "available" ? "selected" : "available";
+          return { ...table, status: newStatus };
+        }
+        return table;
+      });
+
+      // Collect all selected table IDs using the updated tables
+      const selected = updatedTables.filter((table) => table.status === "selected").map((table) => table.id);
+      console.log(selected);
+
+      // Update selectedTables state with a comma-separated string
+      setSelectedTables(selected.join(", "));
+
+      return updatedTables; // Update the state with the new table statuses
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedDate) {
+      toast.error("Please select a date.");
+      return;
+    } else if (!selectedTime) {
+      toast.error("Please select a time.");
+      return
+    } else if (!formData.firstName || formData.firstName.trim() === "") {
+      toast.error("First Name is required.");
+      return;
+    } else if (!formData.lastName || formData.lastName.trim() === "") {
+      toast.error("Last Name is required.");
+      return;
+    } else if (!formData.email || formData.email.trim() === "") {
+      toast.error("Email is required.");
+      return;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    } else if (!formData.mobileNumber || formData.mobileNumber.trim() === "") {
+      toast.error("Mobile Number is required.");
+      return;
+    } else if (!/^\+?[\d\s-]+$/.test(formData.mobileNumber)) {
+      toast.error("Mobile Number must be valid.");
+      return;
+    } else if (!selectedTables || selectedTables.trim() === "") {
+      toast.error("Please select at least one table.");
+      return;
+    }
+
+    toast.info("Processing...")
+
+    const reservationData = {
+      "reservationDate": selectedDate,
+      "customerName": `${formData.firstName} ${formData.lastName}`,
+      "customerEmail": formData.email,
+      "customerPhone": formData.mobileNumber,
+      "timeSlot": selectedTime,
+      "status": "Pending",
+      "tables": selectedTables
+    };
+
+    console.log(reservationData)
+
+    try {
+      const response = await http.post("/Reservation/CreateReservation", reservationData);
+      console.log(response.data);
+      toast.success("Reservation created successfully!");
+
+      const logData = {
+        "reservationId": response.data.reservation.id,
+        "action": "created",
+        "reservationDate": selectedDate,
+        "timeSlot": selectedTime,
+        "tables": selectedTables
+      }
+
+      const logResponse = await http.post("/Reservation/CreateReservationLog", logData);
+      console.log("Reservation log created:", logResponse.data);
+
+      navigate("/reserve/confirmed"); // Redirect after success
+    } catch (error) {
+      toast.error("Failed to create reservation.");
+      console.error("Error:", error.response?.data || error.message);
+    }
+  };
+
+
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "85vh",
+        p: 2,
+      }}
+    >
+      {/* White Background Container */}
+      <Box
+        sx={{
+          width: "80%",
+          maxWidth: 1200,
+          minHeight: 500,
+          backgroundColor: "white",
+          boxShadow: 3,
+          borderRadius: 2,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "row",
+        }}
+      >
+        {/* Left Half: Date Selector & Time Selector */}
+        <Box
+          sx={{
+            flex: 1,
+            p: 4,
+          }}
+        >
+
+          {/* Date Selector */}
+          <DateSelector
+            selectedDate={selectedDate}
+            onDateChange={handleDateSelect}
+          />
+
+          {/* Time Selector */}
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 1,
+              justifyContent: "center",
+              mt: 3,
+              mb: 3,
+            }}
+          >
+            {times.map((time) => {
+              const isPast = isDateTimeBeforeNow(selectedDate, time);
+              return (
+                <Button
+                  key={time}
+                  variant="outlined"
+                  color={selectedTime === time ? "primary" : "default"}
+                  onClick={() => !isPast && handleTimeSelect(time)} // Only handle click if time is not in the past
+                  sx={{
+                    backgroundColor: selectedTime === time ? theme.palette.Accent.main : "primary",
+                    width: "90px",
+                    opacity: isPast ? 0.5 : 1, // Grey out past times
+                    cursor: isPast ? "not-allowed" : "pointer",
+                    pointerEvents: isPast ? "none" : "auto", // Disable click for past times
+                    "&:hover": {
+                      backgroundColor: selectedTime === time ? "none" : "#E7ABC5",
+                    },
+                  }}
+                >
+                  {time}
+                </Button>
+              );
+            })}
+          </Box>
+        </Box>
+
+        {/* Right Half: Details or Seats View */}
+        <Box
+          sx={{
+            flex: 1,
+            p: 4,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+
+          <Typography variant="h6" gutterBottom>
+            Reserve a Table
+          </Typography>
+          {view === "details" ? (
+            <Box
+              component="form"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <DetailsTextField
+                label="First Name"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                variant="outlined"
+                fullWidth
+              />
+              <DetailsTextField
+                label="Last Name"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                variant="outlined"
+                fullWidth
+              />
+              <DetailsTextField
+                label="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                variant="outlined"
+                fullWidth
+              />
+              <DetailsTextField
+                label="Mobile Number"
+                name="mobileNumber"
+                value={formData.mobileNumber}
+                onChange={handleInputChange}
+                variant="outlined"
+                fullWidth
+              />
+
+              <Button variant="contained" onClick={handleViewChange} sx={{
+                backgroundColor: theme.palette.Accent.main,
+                color: theme.palette.primary.main,
+                "&:hover": {
+                  backgroundColor: "#E7ABC5"
+                }
+              }}>
+                Select Seats
+              </Button>
+            </Box>
+          ) : (
+            <Box sx={{ textAlign: "center" }}>
+              <Grid container spacing={2} justifyContent="center">
+                {tables.map((table) => (
+                  <Grid item sm={8} md={6} lg={4} key={table.id}>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        padding: "20px",
+                        backgroundColor:
+                          table.status === "available"
+                            ? theme.palette.primary.main
+                            : table.status === "unavailable"
+                              ? theme.palette.secondaryText.main
+                              : theme.palette.Accent.main,
+                        color: table.status === "unavailable" || table.status === "selected" ? "#fff" : "#000",
+                        cursor: table.status !== "unavailable" ? "pointer" : "not-allowed",
+                      }}
+                      onClick={() =>
+                        table.status !== "unavailable" && handleTableClick(table.id)
+                      }
+                    >
+                      Table {table.id}<br />
+                      {table.pax} Pax
+                    </Button>
+                  </Grid>
+                ))}
+              </Grid>
+              <Box sx={{ mt: 3 }}>
+                <Button
+                  variant="outlined"
+                  onClick={handleViewChange}
+                  sx={{
+                    mr: 2,
+                    border: "1px solid black",
+                    color: "black",
+                    "&:hover": {
+                      backgroundColor: "#E7ABC5"
+                    }
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: theme.palette.Accent.main,
+                    color: theme.palette.primary.main,
+                    "&:hover": {
+                      backgroundColor: "#E7ABC5"
+                    }
+                  }}
+                  onClick={handleSubmit}
+
+                >Confirm</Button>
+              </Box>
+            </Box>
+          )}
+        </Box>
+      </Box>
+      <ToastContainer />
+    </Box>
+  );
+};
+
+export default ReservationPage;
