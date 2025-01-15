@@ -17,5 +17,6 @@ namespace vegeatery
         }
 
         public required DbSet<Product> Product { get; set; }
+        public required DbSet<Category> Category { get; set; }
     }
 }
