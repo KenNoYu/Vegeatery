@@ -23,6 +23,15 @@ import GeneralFeedback from './pages/feedback/User/GeneralFeedback';
 import GeneralFeedbackEdit from './pages/feedback/User/GeneralFeedbackEdit';
 import AdminGeneralFeedback from './pages/feedback/Admin/GeneralFeedback';
 
+// RESERVATIONS
+import ReservationPage from "./pages/Reservation/AddReservation";
+import ConfirmationPage from "./pages/Reservation/ConfirmedReservation";
+import StaffReservations from "./pages/Reservation/StaffReservations";
+import StaffReserveLogs from "./pages/Reservation/StaffLogs";
+import StaffFocusedReservation from "./pages/Reservation/StaffFocusedReservation";
+
+import Register from "./pages/Register";
+import Login from "./pages/Login";
 
 
 function App() {
@@ -93,7 +102,16 @@ function App() {
               <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback/>} />
               <Route path="/general-feedback/edit/:id" element={<GeneralFeedbackEdit/>} />
               <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback/>} />
+          {/* RESERVATION */}
+          <Route path="/reserve" element={<ReservationPage/>} />
+          <Route path="/reserve/confirmed" element={<ConfirmationPage/>} />
+          <Route path="/staff/viewreservations" element={<StaffReservations/>} />
+          <Route path="/staff/reservationlogs" element={<StaffReserveLogs/>} />
+          <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation/>}/>
 
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+ 
 
             </Routes>
           </Container>
