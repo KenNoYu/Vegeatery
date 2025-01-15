@@ -15,6 +15,14 @@ import http from "./http";
 import UserContext from "./contexts/UserContext";
 import logo from './assets/logo/vegeateryMain.png';
 
+// PRODUCTS
+import CategoryList from './pages/ProductCategory/ViewCategories';
+import AddCategory from './pages/ProductCategory/AddCategory';
+import AddProduct from './pages/ProductCategory/AddProduct';
+import ProductDetails from './pages/ProductCategory/ProductDetails';
+import EditProduct from './pages/ProductCategory/EditProduct';
+
+// REWARDS
 import PointsSystem from './pages/rewards/User/PointsSystem';
 import PointsHistory from './pages/rewards/User/PointsHistory';
 import AdminVouchersSystem from './pages/rewards/Admin/VouchersSystem';
@@ -106,6 +114,27 @@ function App() {
 
           <Container>
             <Routes>
+              <Route path="/" element={<Tutorials />} />
+              <Route path="/tutorials" element={<Tutorials />} />
+              <Route path="/addtutorial" element={<AddTutorial />} />
+              <Route path="/edittutorial/:id" element={<EditTutorial />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/form" element={<MyForm />} />
+              {/* PRODUCTS */}
+              <Route path={"/addcategory"} element={<AddCategory />} />
+              <Route path={"/viewcategories"} element={<CategoryList />} />
+              <Route path={"/addproduct"} element={<AddProduct />} />
+              <Route path={"/viewcategories/:id"} element={<CategoryList />} />
+              <Route path="/product/:productId" element={<ProductDetails />} />
+              <Route path="/editproduct/:productId" element={<EditProduct />} />
+              {/* RESERVATION */}
+              <Route path="/reserve" element={<ReservationPage/>} />
+              <Route path="/reserve/confirmed" element={<ConfirmationPage/>} />
+              <Route path="/staff/viewreservations" element={<StaffReservations/>} />
+              <Route path="/staff/reservationlogs" element={<StaffReserveLogs/>} />
+              <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation/>}/>
+              {/* REWARDS */}
               <Route path="/rewards/user/pointssystem" element={<PointsSystem />} />
               <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
               <Route path="/rewards/admin/voucherssystem" element={<AdminVouchersSystem />} />
@@ -113,21 +142,6 @@ function App() {
               <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback />} />
               <Route path="/general-feedback/edit/:id" element={<GeneralFeedbackEdit />} />
               <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />} />
-              {/* RESERVATION */}
-              <Route path="/reserve" element={<ReservationPage />} />
-              <Route path="/reserve/confirmed" element={<ConfirmationPage />} />
-              <Route path="/staff/viewreservations" element={<StaffReservations />} />
-              <Route path="/staff/reservationlogs" element={<StaffReserveLogs />} />
-              <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation />} />
-
-              <Route path="/" element={<Tutorials />} />
-              <Route path="/tutorials" element={<Tutorials />} />
-              <Route path="/addtutorial" element={<AddTutorial />} />
-              <Route path="/edittutorial/:id" element={<EditTutorial />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-
-
             </Routes>
           </Container>
         </ThemeProvider>
