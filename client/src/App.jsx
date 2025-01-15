@@ -9,8 +9,17 @@ import {
   Button,
 } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from "@mui/material/styles";
 import MyTheme from "./themes/MyTheme";
+import Tutorials from "./pages/Tutorials";
+import AddTutorial from "./pages/AddTutorial";
+import EditTutorial from "./pages/EditTutorial";
+import MyForm from "./pages/MyForm";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import http from "./http";
+import UserContext from "./contexts/UserContext";
+import logo from './assets/logo/vegeateryMain.png';
 
 // import Tutorials from "./pages/Tutorials";
 // import AddTutorial from "./pages/AddTutorial";
@@ -26,10 +35,6 @@ import PointsRange from './pages/rewards/Admin/PointsRange';
 import GeneralFeedback from './pages/feedback/User/GeneralFeedback';
 import GeneralFeedbackEdit from './pages/feedback/User/GeneralFeedbackEdit';
 import AdminGeneralFeedback from './pages/feedback/Admin/GeneralFeedback';
-
-import http from "./http";
-import UserContext from "./contexts/UserContext";
-import logo from './assets/logo/vegeateryMain.png';
 
 
 
