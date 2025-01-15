@@ -15,13 +15,6 @@ import http from "./http";
 import UserContext from "./contexts/UserContext";
 import logo from './assets/logo/vegeateryMain.png';
 
-// import Tutorials from "./pages/Tutorials";
-// import AddTutorial from "./pages/AddTutorial";
-// import EditTutorial from "./pages/EditTutorial";
-// import MyForm from "./pages/MyForm";
-// import Register from "./pages/Register";
-// import Login from "./pages/Login";
-
 import PointsSystem from './pages/rewards/User/PointsSystem';
 import PointsHistory from './pages/rewards/User/PointsHistory';
 import AdminVouchersSystem from './pages/rewards/Admin/VouchersSystem';
