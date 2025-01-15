@@ -21,6 +21,12 @@ import http from "./http";
 import UserContext from "./contexts/UserContext";
 import logo from './assets/logo/vegeateryMain.png';
 
+// RESERVATIONS
+import ReservationPage from "./pages/Reservation/AddReservation";
+import ConfirmationPage from "./pages/Reservation/ConfirmedReservation";
+import StaffReservations from "./pages/Reservation/StaffReservations";
+import StaffReserveLogs from "./pages/Reservation/StaffLogs";
+import StaffFocusedReservation from "./pages/Reservation/StaffFocusedReservation";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -95,7 +101,13 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/form" element={<MyForm />} />
-        </Routes>
+          {/* RESERVATION */}
+          <Route path="/reserve" element={<ReservationPage/>} />
+          <Route path="/reserve/confirmed" element={<ConfirmationPage/>} />
+          <Route path="/staff/viewreservations" element={<StaffReservations/>} />
+          <Route path="/staff/reservationlogs" element={<StaffReserveLogs/>} />
+          <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation/>}/>
+         </Routes>
       </Container>
     </ThemeProvider>
   </Router>
