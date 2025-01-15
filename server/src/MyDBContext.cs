@@ -21,5 +21,18 @@ namespace vegeatery
         public required DbSet<Order> Order { get; set; }
         public required DbSet<OrderItem> OrderItems  { get; set; }
         public required DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<ReservationLog> ReservationLogs { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ReservationLog>()
+                .HasOne(r => r.Reservation)
+                .WithMany() // Assuming a Reservation has many logs
+                .HasForeignKey(r => r.ReservationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+        }
+
     }
 }
