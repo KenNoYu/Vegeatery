@@ -34,5 +34,12 @@ namespace vegeatery
 
         }
 
+
+        public required DbSet<Tier> Tiers { get; set; }
+        public required DbSet<Voucher> Vouchers { get; set; }
+        public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
+
+
+
     }
 }
