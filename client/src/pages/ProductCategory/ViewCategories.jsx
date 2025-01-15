@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Typography, Box, CircularProgress, Tabs, Tab, Grid, Card, CardContent, CardMedia, Button } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
-import http from '../http';
+import http from '../../http';
 import { toast } from 'react-toastify';
 
 const CategoryList = () => {

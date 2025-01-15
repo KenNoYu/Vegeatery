@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import http from '../http';
+import http from '../../http';
 
 function AddCategory() {
     const navigate = useNavigate();

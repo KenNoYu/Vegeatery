@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, CircularProgress, Card, CardMedia, CardContent, Button } from '@mui/material';
-import http from '../http';
+import http from '../../http';
 import { toast } from 'react-toastify';
 
 function ProductDetails() {
