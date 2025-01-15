@@ -21,6 +21,13 @@ import http from "./http";
 import UserContext from "./contexts/UserContext";
 import logo from './assets/logo/vegeateryMain.png';
 
+// PRODUCTS
+import CategoryList from './pages/ProductCategory/ViewCategories';
+import AddCategory from './pages/ProductCategory/AddCategory';
+import AddProduct from './pages/ProductCategory/AddProduct';
+import ProductDetails from './pages/ProductCategory/ProductDetails';
+import EditProduct from './pages/ProductCategory/EditProduct';
+
 // RESERVATIONS
 import ReservationPage from "./pages/Reservation/AddReservation";
 import ConfirmationPage from "./pages/Reservation/ConfirmedReservation";
@@ -101,6 +108,13 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/form" element={<MyForm />} />
+          {/* PRODUCTS */}
+          <Route path={"/addcategory"} element={<AddCategory />} />
+          <Route path={"/viewcategories"} element={<CategoryList />} />
+          <Route path={"/addproduct"} element={<AddProduct />} />
+          <Route path={"/viewcategories/:id"} element={<CategoryList />} />
+          <Route path="/product/:productId" element={<ProductDetails />} />
+          <Route path="/editproduct/:productId" element={<EditProduct />} />
           {/* RESERVATION */}
           <Route path="/reserve" element={<ReservationPage/>} />
           <Route path="/reserve/confirmed" element={<ConfirmationPage/>} />
