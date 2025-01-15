@@ -11,12 +11,6 @@ import {
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import MyTheme from "./themes/MyTheme";
-import Tutorials from "./pages/Tutorials";
-import AddTutorial from "./pages/AddTutorial";
-import EditTutorial from "./pages/EditTutorial";
-import MyForm from "./pages/MyForm";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
 import http from "./http";
 import UserContext from "./contexts/UserContext";
 import logo from './assets/logo/vegeateryMain.png';
@@ -37,12 +31,6 @@ import GeneralFeedbackEdit from './pages/feedback/User/GeneralFeedbackEdit';
 import AdminGeneralFeedback from './pages/feedback/Admin/GeneralFeedback';
 
 
-
-const theme = createTheme({
-  typography: {
-    fontFamily: "'Poppins', sans-serif",
-  },
-});
 
 function App() {
   const [user, setUser] = useState(null);
