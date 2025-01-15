@@ -4,12 +4,11 @@ import { Container, AppBar, Toolbar, Typography, Box, Button } from '@mui/materi
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
-import Tutorials from './pages/Tutorials';
-import AddTutorial from './pages/AddTutorial';
-import EditTutorial from './pages/EditTutorial';
-import MyForm from './pages/MyForm';
-import Register from './pages/Register';
-import Login from './pages/Login';
+import CategoryList from './pages/ViewCategories';
+import AddCategory from './pages/AddCategory';
+import AddProduct from './pages/AddProduct';
+import ProductDetails from './pages/ProductDetails';
+import EditProduct from './pages/EditProduct';
 import http from './http';
 import UserContext from './contexts/UserContext';
 
@@ -33,43 +32,16 @@ function App() {
     <UserContext.Provider value={{ user, setUser }}>
       <Router>
         <ThemeProvider theme={MyTheme}>
-          <AppBar position="static" className="AppBar">
-            <Container>
-              <Toolbar disableGutters={true}>
-                <Link to="/">
-                  <Typography variant="h6" component="div">
-                    Learning
-                  </Typography>
-                </Link>
-                <Link to="/tutorials" ><Typography>Tutorials</Typography></Link>
-                <Link to="/form" ><Typography>Form</Typography></Link>
-                <Box sx={{ flexGrow: 1 }}></Box>
-                {user && (
-                  <>
-                    <Typography>{user.name}</Typography>
-                    <Button onClick={logout}>Logout</Button>
-                  </>
-                )
-                }
-                {!user && (
-                  <>
-                    <Link to="/register" ><Typography>Register</Typography></Link>
-                    <Link to="/login" ><Typography>Login</Typography></Link>
-                  </>
-                )}
-              </Toolbar>
-            </Container>
-          </AppBar>
+        
 
           <Container>
             <Routes>
-              <Route path={"/"} element={<Tutorials />} />
-              <Route path={"/tutorials"} element={<Tutorials />} />
-              <Route path={"/addtutorial"} element={<AddTutorial />} />
-              <Route path={"/edittutorial/:id"} element={<EditTutorial />} />
-              <Route path={"/register"} element={<Register />} />
-              <Route path={"/login"} element={<Login />} />
-              <Route path={"/form"} element={<MyForm />} />
+              <Route path={"/addcategory"} element={<AddCategory />} />
+              <Route path={"/viewcategories"} element={<CategoryList />} />
+              <Route path={"/addproduct"} element={<AddProduct />} />
+              <Route path={"/viewcategories/:id"} element={<CategoryList />} />
+              <Route path="/product/:productId" element={<ProductDetails />} />
+              <Route path="/editproduct/:productId" element={<EditProduct />} />
             </Routes>
           </Container>
         </ThemeProvider>
