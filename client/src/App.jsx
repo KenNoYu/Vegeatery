@@ -30,6 +30,10 @@ import StaffReservations from "./pages/Reservation/StaffReservations";
 import StaffReserveLogs from "./pages/Reservation/StaffLogs";
 import StaffFocusedReservation from "./pages/Reservation/StaffFocusedReservation";
 
+import Tutorials from "./pages/Tutorials";
+import AddTutorial from "./pages/AddTutorial";
+import EditTutorial from "./pages/EditTutorial";
+import MyForm from "./pages/MyForm";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 
@@ -109,6 +113,10 @@ function App() {
           <Route path="/staff/reservationlogs" element={<StaffReserveLogs/>} />
           <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation/>}/>
 
+          <Route path="/" element={<Tutorials />} />
+          <Route path="/tutorials" element={<Tutorials />} />
+          <Route path="/addtutorial" element={<AddTutorial />} />
+          <Route path="/edittutorial/:id" element={<EditTutorial />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
  
