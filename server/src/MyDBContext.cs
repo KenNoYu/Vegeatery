@@ -21,5 +21,12 @@ namespace vegeatery
         public required DbSet<Order> Order { get; set; }
         public required DbSet<OrderItem> OrderItems  { get; set; }
         public required DbSet<CartItem> CartItems { get; set; }
+
+        public required DbSet<Tier> Tiers { get; set; }
+        public required DbSet<Voucher> Vouchers { get; set; }
+        public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
+
+
+
     }
 }
