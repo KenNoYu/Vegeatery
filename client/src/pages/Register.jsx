@@ -41,64 +41,64 @@ function Register() {
   const formik = useFormik({
     initialValues: {
       username: '',
-  password: '',
-  email: '',
-  dob: '',
-  contact: '',
-  gender: '',
-  diet: '',
-  allergy: '',
-  meal: '',
-  promotions: false,
-  agreement: false,
+      password: '',
+      email: '',
+      dateOfBirth: '',
+      contactNumber: '',
+      gender: '',
+      dietPreference: '',
+      allergyInfo: '',
+      mealTypes: '',
+      promotions: false,
+      agreement: false,
     },
     validationSchema: yup.object({
       username: yup
-        .string()
-        .trim()
-        .min(3, "Name must be at least 3 characters")
-        .max(50, "Name must be at most 50 characters")
-        .required("Name is required")
-        .matches(
-          /^[a-zA-Z '-,.]+$/,
-          "Name can only contain letters, spaces, and characters: ' - , ."
-        ),
-      email: yup
-        .string()
-        .trim()
-        .email("Enter a valid email")
-        .max(50, "Email must be at most 50 characters")
-        .required("Email is required"),
-      password: yup
-        .string()
-        .trim()
-        .min(8, "Password must be at least 8 characters")
-        .max(50, "Password must be at most 50 characters")
-        .required("Password is required")
-        .matches(
-          /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-          "Password must contain at least 1 letter and 1 number"
-        ),
-      confirmPassword: yup
-        .string()
-        .trim()
-        .required("Confirm password is required")
-        .oneOf([yup.ref("password")], "Passwords must match"),
-      gender: yup.string().required("Gender is required"),
-      dateOfBirth: yup.date().required("Date of birth is required"),
-      contactNumber: yup
-        .string()
-        .trim()
-        .matches(/^\d+$/, "Contact number must only contain numbers")
-        .required("Contact number is required"),
-      dietPreference: yup.string().required("Diet preference is required"),
-      allergyInfo: yup
-        .string()
-        .max(100, "Allergy info should not exceed 100 characters"),
-      mealType: yup.string().required("Meal type is required"),
-      receivePromotions: yup.boolean(),
-      agreement: yup
-        .boolean()
+    .string()
+    .trim()
+    .min(8, 'Username must be at least 8 characters')
+    .max(20, 'Username must be at most 20 characters')
+    .required('Username is required')
+    .matches(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens'),
+  email: yup
+    .string()
+    .trim()
+    .email('Enter a valid email')
+    .max(50, 'Email must be at most 50 characters')
+    .required('Email is required'),
+  password: yup
+    .string()
+    .trim()
+    .min(12, 'Password must be at least 12 characters')
+    .max(50, 'Password must be at most 50 characters')
+    .required('Password is required')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      'Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 special character'
+    ),
+  confirmPassword: yup
+    .string()
+    .trim()
+    .required('Confirm password is required')
+    .oneOf([yup.ref('password')], 'Passwords must match'),
+  gender: yup.string().required('Gender is required'),
+  dateOfBirth: yup
+    .date()
+    .required('Date of birth is required')
+    .max(new Date(), 'Date of birth must be in the past'),
+  contactNumber: yup
+    .string()
+    .trim()
+    .matches(/^\d{10}$/, 'Contact number must be 10 digits long') // Example: 10 digits for illustration
+    .required('Contact number is required'),
+  dietPreference: yup.string().required('Diet preference is required'),
+  allergyInfo: yup
+    .string()
+    .max(100, 'Allergy info should not exceed 100 characters')
+    .matches(/^[a-zA-Z0-9.,\s-]*$/, 'Allergy info can only contain letters, numbers, periods, commas, spaces, and hyphens'),
+  mealTypes: yup.string().required('Meal type is required'),
+  receivePromotions: yup.boolean(),
+  agreement: yup.boolean().required('Agreement is required')
     }),
     onSubmit: (data) => {
       data.username = data.username.trim();
@@ -109,7 +109,7 @@ function Register() {
       data.dateOfBirth = new Date(data.dateOfBirth).toISOString();
       data.dietPreference = data.dietPreference.trim();
       data.allergyInfo = data.allergyInfo.trim();
-      data.mealType = data.mealType.trim();
+      data.mealTypes = data.mealTypes.trim();
       data.receivePromotions = data.receivePromotions;
       data.agreement = data.agreement;
       data.gender = data.gender;
@@ -117,7 +117,7 @@ function Register() {
         .post("/Auth/register", data)
         .then((res) => {
           console.log(res.data);
-          navigate("/overview");
+          navigate("/login");
         })
         .catch((err) => {
           toast.error(`${err.response.data.message}`);
@@ -303,12 +303,12 @@ function Register() {
           fullWidth
           margin="dense"
           label="Meal Type"
-          name="mealType"
-          value={formik.values.mealType}
+          name="mealTypes"
+          value={formik.values.mealTypes}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          error={formik.touched.mealType && Boolean(formik.errors.mealType)}
-          helperText={formik.touched.mealType && formik.errors.mealType}
+          error={formik.touched.mealTypes && Boolean(formik.errors.mealTypes)}
+          helperText={formik.touched.mealTypes && formik.errors.mealTypes}
         >
           {mealTypes.map((meal, index) => (
             <MenuItem key={index} value={meal}>
