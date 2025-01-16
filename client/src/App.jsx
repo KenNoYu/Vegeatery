@@ -14,6 +14,33 @@ import {
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import MyTheme from "./themes/MyTheme";
+import http from "./http";
+import UserContext from "./contexts/UserContext";
+import logo from './assets/logo/vegeateryMain.png';
+
+// PRODUCTS
+import CategoryList from './pages/ProductCategory/ViewCategories';
+import AddCategory from './pages/ProductCategory/AddCategory';
+import AddProduct from './pages/ProductCategory/AddProduct';
+import ProductDetails from './pages/ProductCategory/ProductDetails';
+import EditProduct from './pages/ProductCategory/EditProduct';
+
+// REWARDS
+import PointsSystem from './pages/rewards/User/PointsSystem';
+import PointsHistory from './pages/rewards/User/PointsHistory';
+import AdminVouchersSystem from './pages/rewards/Admin/VouchersSystem';
+import PointsRange from './pages/rewards/Admin/PointsRange';
+import GeneralFeedback from './pages/feedback/User/GeneralFeedback';
+import GeneralFeedbackEdit from './pages/feedback/User/GeneralFeedbackEdit';
+import AdminGeneralFeedback from './pages/feedback/Admin/GeneralFeedback';
+
+// RESERVATIONS
+import ReservationPage from "./pages/Reservation/AddReservation";
+import ConfirmationPage from "./pages/Reservation/ConfirmedReservation";
+import StaffReservations from "./pages/Reservation/StaffReservations";
+import StaffReserveLogs from "./pages/Reservation/StaffLogs";
+import StaffFocusedReservation from "./pages/Reservation/StaffFocusedReservation";
+
 import Tutorials from "./pages/Tutorials";
 import AddTutorial from "./pages/AddTutorial";
 import EditTutorial from "./pages/EditTutorial";
@@ -21,15 +48,18 @@ import MyForm from "./pages/MyForm";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import http from "./http";
-import UserContext from "./contexts/UserContext";
 import logo from "./assets/logo/vegeateryMain.png";
+
+// Accounts
 import UserOverview from "./pages/UserOverview";
 import Profile from "./pages/Profile";
-import { CircularProgress } from "@mui/material"; // import CircularProgress
-import { AccountCircle } from '@mui/icons-material';
 import Unauthorized from "./pages/Unauthorized";
 import Accounts from "./pages/Accounts";
+
+// Navbar
+import { CircularProgress } from "@mui/material"; // import CircularProgress
+import { AccountCircle } from '@mui/icons-material';
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -44,6 +74,8 @@ function App() {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
@@ -141,24 +173,46 @@ function App() {
       </Container>
     </AppBar>
 
-          <Container>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/tutorials" element={<Tutorials />} />
-              <Route path="/addtutorial" element={<AddTutorial />} />
-              <Route path="/edittutorial/:id" element={<EditTutorial />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/form" element={<MyForm />} />
-              <Route path="/overview" element={<UserOverview />} />
-              <Route path="/overview/profile" element={<Profile />} />
-              <Route path="/unauthorized" element={<Unauthorized />} />
-              <Route path="/Admin/Accounts" element={<Accounts />} />
-            </Routes>
-          </Container>
-        </ThemeProvider>
-      </Router>
-    </UserContext.Provider>
+              <Container>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/tutorials" element={<Tutorials />} />
+                  <Route path="/addtutorial" element={<AddTutorial />} />
+                  <Route path="/edittutorial/:id" element={<EditTutorial />} />
+                  {/* ACCOUNTS */}
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/form" element={<MyForm />} />
+                  <Route path="/overview" element={<UserOverview />} />
+                  <Route path="/overview/profile" element={<Profile />} />
+                  <Route path="/unauthorized" element={<Unauthorized />} />
+                  <Route path="/Admin/Accounts" element={<Accounts />} />
+                  {/* PRODUCTS */}
+                  <Route path={"/addcategory"} element={<AddCategory />} />
+                  <Route path={"/viewcategories"} element={<CategoryList />} />
+                  <Route path={"/addproduct"} element={<AddProduct />} />
+                  <Route path={"/viewcategories/:id"} element={<CategoryList />} />
+                  <Route path="/product/:productId" element={<ProductDetails />} />
+                  <Route path="/editproduct/:productId" element={<EditProduct />} />
+                  {/* RESERVATION */}
+                  <Route path="/reserve" element={<ReservationPage/>} />
+                  <Route path="/reserve/confirmed" element={<ConfirmationPage/>} />
+                  <Route path="/staff/viewreservations" element={<StaffReservations/>} />
+                  <Route path="/staff/reservationlogs" element={<StaffReserveLogs/>} />
+                  <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation/>}/>
+                  {/* REWARDS */}
+                  <Route path="/rewards/user/pointssystem" element={<PointsSystem />} />
+                  <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
+                  <Route path="/rewards/admin/voucherssystem" element={<AdminVouchersSystem />} />
+                  <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />
+                  <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback />} />
+                  <Route path="/general-feedback/edit/:id" element={<GeneralFeedbackEdit />} />
+                  <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />} />
+                </Routes>
+              </Container>
+            </ThemeProvider>
+          </Router>
+        </UserContext.Provider>
   );
 }
 
