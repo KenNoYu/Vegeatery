@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using vegeatery;
+using vegeatery.Dtos;
 
 
 [Route("[controller]")]
@@ -28,7 +29,7 @@ public class AuthController : ControllerBase
 	public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
 	{
 		var existingUser = await _context.Users
-			.Where(u => u.Username == registerDto.Username || u.Email == registerDto.Email)
+			.Where(u => u.Username == registerDto.username || u.Email == registerDto.email)
 			.ToListAsync();
 
 		if (existingUser.Count > 1)
@@ -50,18 +51,18 @@ public class AuthController : ControllerBase
 
 		var user = new User
 		{
-			Username = registerDto.Username,
-			PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
-			Email = registerDto.Email,
-			DateofBirth = registerDto.Dob,
-			ContactNumber = registerDto.Contact,
-			Gender = registerDto.Gender,
-			DietPreference = registerDto.Diet,
-			AllergyInfo = registerDto.Allergy,
-			MealTypes = registerDto.Meal,
+			Username = registerDto.username,
+			PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.password),
+			Email = registerDto.email,
+			DateofBirth = registerDto.dateOfBirth,
+			ContactNumber = registerDto.contactNumber,
+			Gender = registerDto.gender,
+			DietPreference = registerDto.dietPreference,
+			AllergyInfo = registerDto.allergyInfo,
+			MealTypes = registerDto.mealTypes,
 			Address = "",
-			Promotions = registerDto.Promotions,
-			Agreement = registerDto.Agreement,
+			Promotions = registerDto.promotions,
+			Agreement = registerDto.agreement,
 			TotalPoints = 0,
 			RoleId = role.Id,
 			Role = role // Assign the role to the user
@@ -129,6 +130,52 @@ public class AuthController : ControllerBase
 		}
 	}
 
+	[HttpGet("current-user")]
+	[Authorize]  // Ensures the user is authenticated
+	public async Task<IActionResult> GetCurrentUser()
+	{
+		// Get the currently logged-in user's Id from the authenticated principal
+		var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+		if (userIdString == null || !int.TryParse(userIdString, out var userId))
+		{
+			return Unauthorized();  // If no user is logged in
+		}
+
+		var user = await _context.Users
+			.Include(u => u.Role)
+			.Where(u => u.Id == userId)
+			.Select(u => new UserDto
+			{
+				Id = u.Id,
+				Username = u.Username,	
+				Email = u.Email,
+				DateofBirth = u.DateofBirth,
+				ContactNumber = u.ContactNumber,
+				Gender = u.Gender,
+				DietPreference = u.DietPreference,
+				AllergyInfo = u.AllergyInfo,
+				MealTypes = u.MealTypes,
+				Address = u.Address,
+				Promotions = u.Promotions,
+				Agreement = u.Agreement,
+				TotalPoints = u.TotalPoints,
+				JwtToken = u.JwtToken,
+				CreatedAt = u.CreatedAt,
+				RoleId = u.RoleId,
+				RoleName = u.Role.Name
+			})
+			.FirstOrDefaultAsync();
+
+		if (user == null)
+		{
+			return NotFound();  // If the user is not found
+		}
+
+		return Ok(user);  // Return the user data
+	}
+
+
 	private string CreateToken(User user)
 	{
 		string? secret = _configuration.GetValue<string>("Authentication:Secret");
@@ -160,17 +207,17 @@ public class AuthController : ControllerBase
 }
 public class RegisterDto
 {
-	public string Username { get; set; }
-	public string Password { get; set; }
-	public string Email { get; set; }
-	public string Dob { get; set; }
-	public string Contact { get; set; }
-	public string Gender { get; set; }
-	public string Diet { get; set; }
-	public string Allergy { get; set; }
-	public string Meal { get; set; }
-	public bool Promotions { get; set; }
-	public bool Agreement { get; set; }
+	public string username { get; set; }
+	public string password { get; set; }
+	public string email { get; set; }
+	public string  dateOfBirth { get; set; }
+	public string contactNumber { get; set; }
+	public string gender { get; set; }
+	public string dietPreference { get; set; }
+	public string allergyInfo { get; set; }
+	public string mealTypes { get; set; }
+	public bool promotions { get; set; }
+	public bool agreement { get; set; }
 }
 
 public class LoginDto
