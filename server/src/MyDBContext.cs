@@ -34,29 +34,21 @@ namespace vegeatery
 		public required DbSet<CartItem> CartItems { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<ReservationLog> ReservationLogs { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<ReservationLog>()
-                .HasOne(r => r.Reservation)
-                .WithMany() // Assuming a Reservation has many logs
-                .HasForeignKey(r => r.ReservationId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-
-        }
-
-
         public required DbSet<Tier> Tiers { get; set; }
         public required DbSet<Voucher> Vouchers { get; set; }
         public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
-
-
-
 		public required DbSet<User> Users { get; set; }
 		public required DbSet<Role> Role { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			//Reservation
+			modelBuilder.Entity<ReservationLog>()
+				.HasOne(r => r.Reservation)
+				.WithMany() // Assuming a Reservation has many logs
+				.HasForeignKey(r => r.ReservationId)
+				.OnDelete(DeleteBehavior.Cascade);
+
 			base.OnModelCreating(modelBuilder);
 
 			// Seed Roles
