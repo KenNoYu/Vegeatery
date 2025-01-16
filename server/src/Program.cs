@@ -95,12 +95,8 @@ app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseCors();
 
-app.UseStaticFiles();
-
-app.UseStaticFiles();
-
-app.UseAuthentication();
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 
