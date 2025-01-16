@@ -87,7 +87,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpPut("{id}")]
-	[Authorize(Policy = "Admin")]
+	[Authorize]
 	public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto updateUserDto)
 	{
 		var user = _context.Users.SingleOrDefault(u => u.Id == id);
@@ -99,6 +99,12 @@ public class AccountController : ControllerBase
 
 		user.Username = updateUserDto.Username;
 		user.Email = updateUserDto.Email;
+		user.DateofBirth = updateUserDto.Dob;
+		user.ContactNumber = updateUserDto.Contact;
+		user.Gender = updateUserDto.Gender;
+		user.DietPreference = updateUserDto.Diet;
+		user.AllergyInfo = updateUserDto.Allergy;
+		user.MealTypes = updateUserDto.Meal;
 
 		_context.Users.Update(user);
 		await _context.SaveChangesAsync();
@@ -107,7 +113,7 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpDelete("{id}")]
-	[Authorize(Policy = "Admin")]
+	[Authorize]
 	public async Task<IActionResult> DeleteUser(int id)
 	{
 		var user = _context.Users.SingleOrDefault(u => u.Id == id);
@@ -146,7 +152,7 @@ public class AccountController : ControllerBase
 public class UpdateUserDto
 {
 	public string Username { get; set; }
-	public string Password { get; set; }
+	//public string Password { get; set; }
 	public string Email { get; set; }
 	public string Dob { get; set; }
 	public string Contact { get; set; }
@@ -154,10 +160,10 @@ public class UpdateUserDto
 	public string Diet { get; set; }
 	public string Allergy { get; set; }
 	public string Meal { get; set; }
-	public bool Promotions { get; set; }
-	public bool Agreement { get; set; }
-	public string Address { get; set; }
-	public string points { get; set; }
+	//public bool Promotions { get; set; }
+	//public bool Agreement { get; set; }
+	//public string Address { get; set; }
+	//public string points { get; set; }
 }
 
 public class UpdateUserRoleDto
