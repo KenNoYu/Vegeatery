@@ -1,0 +1,5 @@
+dist/
+node_modules/
+obj/
+bin/
+.vs/
