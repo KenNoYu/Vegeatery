@@ -51,10 +51,10 @@ import Home from "./pages/Home";
 import logo from "./assets/logo/vegeateryMain.png";
 
 // Accounts
-import UserOverview from "./pages/UserOverview";
-import Profile from "./pages/Profile";
-import Unauthorized from "./pages/Unauthorized";
-import Accounts from "./pages/Accounts";
+import UserOverview from "./pages/Accounts/User/UserOverview";
+import Profile from "./pages/Accounts/User/Profile";
+import Unauthorized from "./pages/Accounts/User/Unauthorized";
+import Accounts from "./pages/Accounts/Admin/Accounts";
 
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
