@@ -222,7 +222,6 @@ function App() {
                   <Route path={"/checkout"} element={<Checkout />} />
                   <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
                   <Route path={"/stafforders"} element={<StaffOrders />} />
-                  <Route path="/tutorials" element={<Tutorials />} />
                 </Routes>
               </Container>
             </ThemeProvider>
