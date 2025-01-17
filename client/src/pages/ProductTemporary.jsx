@@ -5,7 +5,7 @@ import { AccountCircle, AccessTime, Search, Clear, Edit } from '@mui/icons-mater
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 
-function Products() {
+function ProductsTemp() {
     const [productList, setProductList] = useState([]);
     const [search, setSearch] = useState('');
     const { user } = useContext(UserContext);
@@ -47,40 +47,6 @@ function Products() {
             alert("Failed to add product to cart.");
         });
     };
-
-    // Another way to add to cart
-    /*
-    const formik = useFormik({
-        initialValues: {
-            cartId: ,
-            productId:,
-            quantity: 1,
-        },
-        validationSchema: yup.object({
-            cartId: yup.string().trim()
-                .required('Cart ID is required'),
-            productId: yup.string().trim()
-                .required('Product ID is required'),
-            quantity: yup.number()
-                .integer('Quantity must be an integer')
-                .positive('Quantity must be greater than 0')
-                .required('Quantity is required'),
-        }),
-        onSubmit: (data) => {
-            data.cartId = data.cartId.trim();
-            data.productId = data.productId.trim();
-            data.quantity = data.quantity.trim();
-            http.post("/ordercart", data)
-                .then((res) => {
-                    console.log(res.data);
-                    navigate("/Products");
-                })
-                .catch((error) => {
-                    console.error("Error adding item to cart:", error);
-                });
-        }
-    });
-    */
 
     // product page ops
 
@@ -190,4 +156,4 @@ function Products() {
     );
 }
 
-export default Products;
+export default ProductsTemp;

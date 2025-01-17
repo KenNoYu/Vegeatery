@@ -56,6 +56,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import logo from "./assets/logo/vegeateryMain.png";
+import ProductsTemp from "./pages/ProductTemporary";
 
 // Accounts
 import UserOverview from "./pages/Accounts/User/UserOverview";
@@ -183,7 +184,7 @@ function App() {
               <Container>
                 <Routes>
                   <Route path="/" element={<Home />} />
-                  <Route path={"/products"} element={<Products />} />
+                  <Route path={"/productsTemporary"} element={<ProductsTemp />} />
                   <Route path="/tutorials" element={<Tutorials />} />
                   <Route path="/addtutorial" element={<AddTutorial />} />
                   <Route path="/edittutorial/:id" element={<EditTutorial />} />
