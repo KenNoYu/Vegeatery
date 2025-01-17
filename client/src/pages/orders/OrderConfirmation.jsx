@@ -9,22 +9,40 @@ const OrderConfirmation = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const orderId = searchParams.get('orderId');
+    console.log("ID", orderId)
 
     useEffect(() => {
         if (orderId) {
-            fetchOrderDetails(orderId);
+            getOrderByID(orderId);
         }
     }, [orderId]);
 
-    const fetchOrderDetails = async (orderId) => {
-        try {
-            const response = await http.get(`/order/${orderId}`);
-            setOrder(response.data);
-        } catch (error) {
-            console.error('Error fetching order details:', error);
-        } finally {
-            setLoading(false);
+    // Update order status
+    const UpdateOrderAsNew = (orderId) => {
+        const updateData = {
+            orderId: orderId,
+            status: "New"
         }
+        http.put("/order/UpdateStatus")
+            .then((res) => {
+                console.log("Update API Response:", res.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching orders:", error);
+            })
+    }
+
+    const getOrderByID = async (orderId) => {
+        http.get(`/order/orderId?orderId=${orderId}`)
+            .then((res) => {
+                UpdateOrderAsNew(orderId)
+                console.log("Get API Response:", res.data);
+                setOrder(res.data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching orders:", error);
+            })
     };
 
     if (loading) {
@@ -62,7 +80,7 @@ const OrderConfirmation = () => {
                 Items:
             </Typography>
             {order.orderItems.map((item, index) => (
-                <Box key={index} sx={{ mb: 2 }}>
+                <Box key={item.productId || index} sx={{ mb: 2 }}>
                     <Typography variant="subtitle1">
                         {item.productName} x {item.quantity} : ${item.price.toFixed(2)}
                     </Typography>
