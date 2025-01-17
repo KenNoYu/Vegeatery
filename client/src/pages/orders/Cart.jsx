@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid2 as Grid, Card, CardContent, Button, TextField } from '@mui/material';
+import { Box, Typography, Grid2 as Grid, Card, CardContent, Button, TextField, CircularProgress } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import http from '../../http';
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
 
     // Fetch the cart items
@@ -15,9 +16,11 @@ const Cart = () => {
             console.log("API Response:", res.data);
             setCartItems(res.data);
             calculateTotal(res.data);
+            setLoading(false);
         })
             .catch((error) => {
                 console.error("Error fetching cart items:", error);
+                setLoading(false);
             })
     };
 
@@ -88,6 +91,17 @@ const Cart = () => {
         // Redirect to the /orders page
         navigate("/orders");
     };
+
+    if (loading) {
+        return (
+            <Box>
+                <Typography variant="h5" sx={{ my: 2 }}>
+                    Your Cart
+                </Typography>
+                <Grid container spacing={2}><CircularProgress />;</Grid>
+            </Box>
+        )
+    }
 
     return (
         <Box>

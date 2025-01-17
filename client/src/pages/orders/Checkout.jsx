@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, CircularProgress } from '@mui/material';
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from 'react-toastify';
 import http from '../../http';
@@ -46,7 +46,7 @@ const Checkout = () => {
         <Box>
             <Box sx={{ padding: 4 }}>
                 <Typography>
-                    Redirecting to Payment
+                    Redirecting to Payment <CircularProgress />
                 </Typography>
             </Box>
         </Box>
