@@ -69,6 +69,49 @@ namespace vegeatery.Controllers
             }
         }
 
+        // Get Order By ID
+        [HttpGet("orderId")]
+        public IActionResult GetOrderById(int orderId)
+        {
+            try
+            {
+				// Retrieve the order and its items
+				var order = _context.Order
+					.Include(o => o.OrderItems)
+					.ThenInclude(oi => oi.Product) // Assuming OrderItem has a navigation property to Product
+					.FirstOrDefault(o => o.OrderId == orderId);
+
+				if (order == null)
+				{
+					return NotFound(new { Message = "Order not found" });
+				}
+
+				// Map the order and its items to a response DTO
+				var orderResponse = new OrderResponse
+				{
+					OrderId = order.OrderId,
+					FullName = order.FullName,
+					Email = order.Email,
+					Address = order.Address,
+					OrderDate = order.OrderDate,
+					TotalPrice = order.TotalPrice,
+					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
+					{
+						ProductName = oi.Product.ProductName, // Assuming ProductName is a property of Product
+						Quantity = oi.Quantity,
+						Price = oi.Price
+					}).ToList()
+				};
+
+				return Ok(orderResponse);
+
+			}
+            catch (Exception ex) 
+            {
+				return StatusCode(500, new { Message = "An error occurred while getting orders.", Details = ex.Message });
+			}
+        }
+
         // Get all orders (for admin)
         [HttpGet("all")]
         public IActionResult GetAll()
@@ -126,6 +169,7 @@ namespace vegeatery.Controllers
                         Order.OrderId,
                         Order.FullName,
                         Order.OrderDate,
+                        Order.Status,
                         Items = Order.OrderItems.Select(item => new
                         {
                             ProductName = item.Product != null ? item.Product.ProductName : "Unknown",
@@ -150,18 +194,18 @@ namespace vegeatery.Controllers
 
         // Update order status (for staff)
         [HttpPut("updateStatus")]
-        public IActionResult UpdateOrderStatus(int orderId, string status)
+        public IActionResult UpdateOrderStatus(OrderStatusUpdateRequest request)
         {
             try
             {
                 // Get order by order id
-                var order = _context.Order.FirstOrDefault(order => order.OrderId == orderId);
+                var order = _context.Order.FirstOrDefault(order => order.OrderId == request.OrderId);
                 if (order == null)
                 {
                     return NotFound(new { Message = "Order not found." });
                 }
                 // Update order status
-                order.Status = status;
+                order.Status = request.Status;
                 order.UpdatedAt = DateTime.UtcNow;
                 // Save changes
                 _context.SaveChanges();

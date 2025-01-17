@@ -55,7 +55,7 @@ namespace vegeatery.Controllers
                     Quantity = item.Quantity,
                 }).ToList(),
                 Mode = "payment",
-                SuccessUrl = $"{domain}/order-confirmation?orderId={orderId}&session_id={{CHECKOUT_SESSION_ID}}",
+                SuccessUrl = $"{domain}/orderconfirmation?orderId={orderId}&session_id={{CHECKOUT_SESSION_ID}}",
                 CancelUrl = $"{domain}/cancel",
             };
 
@@ -69,31 +69,39 @@ namespace vegeatery.Controllers
             return Ok(new { SessionId = session.Id });
         }
 
-        // webhook for stripe
-        [HttpPost("webhook")]
-        public async Task<IActionResult> StripeWebhook()
-        {
-            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-            var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _configuration["Stripe:WebhookSecret"]);
+		// webhook for stripe
+		[HttpPost("webhook")]
+		public async Task<IActionResult> StripeWebhook()
+		{
+			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+			var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _configuration["Stripe:WebhookSecret"]);
 
-            switch (stripeEvent.Type)
-            {
-                case "checkout.session.completed":
-                    var session = stripeEvent.Data.Object as Session;
-                    var order = _context.Order.AsTracking().FirstOrDefault(o => o.SessionId == session.Id);
-                    if (order != null)
-                    {
-                        order.Status = "In-Progress";
-                        _context.SaveChanges();
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"Order not found for session ID: {session.Id}");
-                    }
-                    break;
-            }
+			switch (stripeEvent.Type)
+			{
+				case "checkout.session.completed":
+					var completedSession = stripeEvent.Data.Object as Session;
+					var completedOrder = _context.Order.AsTracking().FirstOrDefault(o => o.SessionId == completedSession.Id);
+					if (completedOrder == null)
+					{
+						completedOrder.Status = "New";
+						_context.SaveChanges();
+					}
+					break;
 
-            return Ok();
-        }
-    }
+				case "checkout.session.async_payment_failed":
+				case "checkout.session.expired":
+				case "checkout.session.failed":
+					var failedSession = stripeEvent.Data.Object as Session;
+					var failedOrder = _context.Order.AsTracking().FirstOrDefault(o => o.SessionId == failedSession.Id);
+					if (failedOrder != null)
+					{
+						failedOrder.Status = "Cancelled";
+						_context.SaveChanges();
+					}
+					break;
+			}
+
+			return Ok();
+		}
+	}
 }
