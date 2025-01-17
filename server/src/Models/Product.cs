@@ -29,12 +29,19 @@ namespace vegeatery.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal ProductPrice { get; set; }
 
-        [Required]
-        [Range(0, int.MaxValue, ErrorMessage = "Product points must be a non-negative value.")]
-        public int ProductPoints { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? DiscountPercentage { get; set; }
 
-        [Required, MinLength(3), MaxLength(500)]
-        public string ProductDescription { get; set; }
+        [NotMapped]
+        public decimal DiscountedPrice
+        {
+            get
+            {
+                return DiscountPercentage.HasValue
+                    ? ProductPrice - (ProductPrice * DiscountPercentage.Value / 100)
+                    : ProductPrice;
+            }
+        }
 
         [Required]
         public int CategoryId { get; set; }
