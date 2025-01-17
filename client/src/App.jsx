@@ -55,7 +55,6 @@ import MyForm from "./pages/MyForm";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import logo from "./assets/logo/vegeateryMain.png";
 import ProductsTemp from "./pages/ProductTemporary";
 
 // Accounts
