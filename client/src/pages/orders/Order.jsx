@@ -3,6 +3,8 @@ import { Box, Typography, Grid2 as Grid, Button, TextField, Paper } from '@mui/m
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import http from '../../http';
+import * as yup from "yup";
+import { useFormik } from "formik";
 
 const Orders = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -12,6 +14,41 @@ const Orders = () => {
     const [address, setAddress] = useState('');
     const [pnumber, setPnumber] = useState('');
     const navigate = useNavigate();
+
+    const formik = useFormik({
+        initialValues: {
+            fullname: "",
+            email: "",
+            address: "",
+            pnumber: "",
+        },
+        validationSchema: yup.object({
+            fullname: yup
+                .string()
+                .trim()
+                .max(50, "Full name must be at most 50 characters")
+                .required("Full name is required"),
+            email: yup
+                .string()
+                .trim()
+                .email("Invalid email address")
+                .max(50, "Email must be at most 50 characters")
+                .required("Email is required"),
+            address: yup
+                .string()
+                .trim()
+                .min(8, "Address must be at least 8 characters")
+                .max(100, "Address must be at most 100 characters")
+                .required("Address is required"),
+            pnumber: yup
+                .string()
+                .trim()
+                .matches(/^\d+$/, "Phone number must contain only digits")
+                .min(8, "Phone number must be at least 8 digits")
+                .max(8, "Phone number must be at most 15 digits")
+                .required("Phone number is required"),
+        })
+    });
 
     // get cart item
     const GetCartItems = () => {
@@ -80,34 +117,98 @@ const Orders = () => {
                             <TextField
                                 fullWidth
                                 label="Full Name"
-                                variant="outlined"
-                                margin="normal"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
+                                name="fullname"
+                                value={formik.values.fullname}
+                                onChange={(e) => {
+                                    formik.handleChange(e);
+                                    setFullName(e.target.value); 
+                                }}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.fullname && Boolean(formik.errors.fullname)}
+                                helperText={formik.touched.fullname && formik.errors.fullname}
+                                margin="dense"
+                                color="c4c4c4"
+                                slotProps={{
+                                    input: {
+                                        sx: {
+                                            borderRadius: "2px",
+                                            "&:hover fieldset": { borderColor: "#FF69B4" }, // Hover effect
+                                            "&.Mui-focused fieldset": { borderColor: "#B0B0B0" }, // Focus effect
+                                        },
+                                    },
+                                }}
                             />
                             <TextField
                                 fullWidth
                                 label="Email"
-                                variant="outlined"
-                                margin="normal"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                name="email"
+                                value={formik.values.email}
+                                onChange={(e) => {
+                                    formik.handleChange(e);
+                                    setEmail(e.target.value); 
+                                }}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.email && Boolean(formik.errors.email)}
+                                helperText={formik.touched.email && formik.errors.email}
+                                margin="dense"
+                                color="c4c4c4"
+                                slotProps={{
+                                    input: {
+                                        sx: {
+                                            borderRadius: "8px",
+                                            "&:hover fieldset": { borderColor: "#FF69B4" }, // Hover effect
+                                            "&.Mui-focused fieldset": { borderColor: "#B0B0B0" }, // Focus effect
+                                        },
+                                    },
+                                }}
                             />
                             <TextField
                                 fullWidth
                                 label="Phone Number"
-                                variant="outlined"
-                                margin="normal"
-                                value={pnumber}
-                                onChange={(e) => setPnumber(e.target.value)}
+                                name="pnumber"
+                                value={formik.values.pnumber}
+                                onChange={(e) => {
+                                    formik.handleChange(e); 
+                                    setPnumber(e.target.value); 
+                                }}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.pnumber && Boolean(formik.errors.pnumber)}
+                                helperText={formik.touched.pnumber && formik.errors.pnumber}
+                                margin="dense"
+                                color="c4c4c4"
+                                slotProps={{
+                                    input: {
+                                        sx: {
+                                            borderRadius: "8px",
+                                            "&:hover fieldset": { borderColor: "#FF69B4" }, // Hover effect
+                                            "&.Mui-focused fieldset": { borderColor: "#B0B0B0" }, // Focus effect
+                                        },
+                                    },
+                                }}
                             />
                             <TextField
                                 fullWidth
                                 label="Address"
-                                variant="outlined"
-                                margin="normal"
-                                value={address}
-                                onChange={(e) => setAddress(e.target.value)}
+                                name="address"
+                                value={formik.values.address}
+                                onChange={(e) => {
+                                    formik.handleChange(e); 
+                                    setAddress(e.target.value); 
+                                }}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.address && Boolean(formik.errors.address)}
+                                helperText={formik.touched.address && formik.errors.address}
+                                margin="dense"
+                                color="c4c4c4"
+                                slotProps={{
+                                    input: {
+                                        sx: {
+                                            borderRadius: "8px",
+                                            "&:hover fieldset": { borderColor: "#FF69B4" }, // Hover effect
+                                            "&.Mui-focused fieldset": { borderColor: "#B0B0B0" }, // Focus effect
+                                        },
+                                    },
+                                }}
                             />
                             <Typography variant="h6" gutterBottom>
                                 Pick-Up Timing
