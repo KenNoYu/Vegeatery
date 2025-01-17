@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import http from '../../http';
 import * as yup from "yup";
 import { useFormik } from "formik";
+import theme from '../../themes/MyTheme';
 
 const Orders = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -239,9 +240,9 @@ const Orders = () => {
                             </Typography>
                             <Button
                                 variant="contained"
-                                color="primary"
+                                color="Accent"
                                 fullWidth
-                                sx={{ marginTop: 2 }}
+                                sx={{marginTop: 2 }}
                                 onClick={addOrder}
                             >
                                 Pay Online
