@@ -8,12 +8,15 @@ namespace vegeatery.Models
         [Key]
         public int CartItemId { get; set; }
 
-        [Required, Range(1, 10000)]
+        [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
         [Required, Range(1, 10)]
         public int Quantity { get; set; }
+
+        [Required]
+        public int Points { get; set; }
 
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; }

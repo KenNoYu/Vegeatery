@@ -4,10 +4,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 using vegeatery;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
 builder.Services.AddControllers()
 	.AddJsonOptions(opts => { });
 builder.Services.AddDbContext<MyDbContext>();
@@ -51,15 +55,20 @@ if (allowedOrigins == null || allowedOrigins.Length == 0)
 {
 	throw new Exception("AllowedOrigins is required for CORS policy.");
 }
+else
+{
+    Console.WriteLine($"Allowed origins: {string.Join(", ", allowedOrigins)}");
+}
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
-    });
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins(allowedOrigins)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+        });
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -93,6 +102,7 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseHttpsRedirection();
+
 app.UseCors();
 
 app.UseAuthorization();

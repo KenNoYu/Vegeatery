@@ -41,6 +41,13 @@ import StaffReservations from "./pages/Reservation/StaffReservations";
 import StaffReserveLogs from "./pages/Reservation/StaffLogs";
 import StaffFocusedReservation from "./pages/Reservation/StaffFocusedReservation";
 
+// ORDERS
+import Cart from './pages/orders/Cart';
+import Orders from './pages/orders/Order';
+import Checkout from './pages/orders/Checkout';
+import OrderConfirmation from './pages/orders/OrderConfirmation';
+import StaffOrders from './pages/orders/StaffOrders';
+
 import Tutorials from "./pages/Tutorials";
 import AddTutorial from "./pages/AddTutorial";
 import EditTutorial from "./pages/EditTutorial";
@@ -48,7 +55,7 @@ import MyForm from "./pages/MyForm";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import logo from "./assets/logo/vegeateryMain.png";
+import ProductsTemp from "./pages/ProductTemporary";
 
 // Accounts
 import UserOverview from "./pages/Accounts/User/UserOverview";
@@ -176,6 +183,7 @@ function App() {
               <Container>
                 <Routes>
                   <Route path="/" element={<Home />} />
+                  <Route path={"/productsTemporary"} element={<ProductsTemp />} />
                   <Route path="/tutorials" element={<Tutorials />} />
                   <Route path="/addtutorial" element={<AddTutorial />} />
                   <Route path="/edittutorial/:id" element={<EditTutorial />} />
@@ -208,6 +216,12 @@ function App() {
                   <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback />} />
                   <Route path="/general-feedback/edit/:id" element={<GeneralFeedbackEdit />} />
                   <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />} />
+                  {/* ORDERS */}
+                  <Route path={"/cart"} element={<Cart />} />
+                  <Route path={"/orders"} element={<Orders />} />
+                  <Route path={"/checkout"} element={<Checkout />} />
+                  <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
+                  <Route path={"/stafforders"} element={<StaffOrders />} />
                 </Routes>
               </Container>
             </ThemeProvider>

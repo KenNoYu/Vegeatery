@@ -20,6 +20,9 @@ namespace vegeatery.Models
         [Required, MinLength(3), MaxLength(1000)]
         public string Ingredients { get; set; }
 
+        [Required]
+        public int ProductPoints { get; set; }
+
         public int Calories { get; set; }
         public float Fats { get; set; }
         public float Carbs { get; set; }
