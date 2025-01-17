@@ -15,6 +15,7 @@ import Cart from './pages/orders/Cart';
 import Orders from './pages/orders/Order';
 import Checkout from './pages/orders/Checkout';
 import OrderConfirmation from './pages/orders/OrderConfirmation';
+import StaffOrders from './pages/orders/StaffOrders';
 import http from './http';
 import UserContext from './contexts/UserContext';
 
@@ -76,6 +77,7 @@ function App() {
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
               <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
+              <Route path={"/stafforders"} element={<StaffOrders />} />
               <Route path={"/tutorials"} element={<Tutorials />} />
               <Route path={"/addtutorial"} element={<AddTutorial />} />
               <Route path={"/edittutorial/:id"} element={<EditTutorial />} />
