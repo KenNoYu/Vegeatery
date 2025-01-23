@@ -10,6 +10,7 @@ import theme from '../../themes/MyTheme';
 const Orders = () => {
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
+    const [points, setPoints] = useState(0);
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
@@ -75,6 +76,14 @@ const Orders = () => {
             return sum + quantity * item.productPrice;
         }, 0);
         setTotal(totalAmount);
+    };
+
+    const calculateTotalPoints = (cartItems) => {
+        const totalPoints = cartItems.reduce((sum, item) => {
+            const quantity = item.quantity || 1;
+            return sum + quantity * item.productPoints;
+        }, 0);
+        setPoints(totalPoints);
     };
 
     // create new order & set status as Pending
@@ -214,9 +223,20 @@ const Orders = () => {
                             <Typography variant="h6" gutterBottom>
                                 Pick-Up Timing
                             </Typography>
+                            {/* TODO: Pick up Timing for the day */}
                             <Typography variant="h6" gutterBottom>
                                 Carbon Tracker
                             </Typography>
+                            <Grid size={6}>
+                            <Typography variant="subtitle1">
+                                Total Eco Points Earned
+                            </Typography>
+                            </Grid>
+                            <Grid size={6}>
+                            <Typography variant="subtitle1">
+                                {points} Points
+                            </Typography>
+                            </Grid>        
                         </Paper>
                     </Grid>
 
