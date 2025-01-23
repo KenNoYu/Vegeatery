@@ -76,7 +76,7 @@ const StaffOrders = () => {
     const getButtonText = () => {
         switch (currentTab) {
             case 0:
-                return 'Mark as In Progress';
+                return 'Send To Kitchen';
             case 1:
                 return 'Mark as Ready';
             case 2:
