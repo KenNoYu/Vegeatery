@@ -132,7 +132,7 @@ const Orders = () => {
                                 slotProps={{
                                     input: {
                                         sx: {
-                                            borderRadius: "2px",
+                                            borderRadius: "8px",
                                             "&:hover fieldset": { borderColor: "#FF69B4" }, // Hover effect
                                             "&.Mui-focused fieldset": { borderColor: "#B0B0B0" }, // Focus effect
                                         },
