@@ -216,9 +216,52 @@ namespace vegeatery.Controllers
                 return StatusCode(500, new { Message = "An error occurred while updating order status.", Details = ex.Message });
             }
         }
-        // TODO: Get order by customer id (for customer)
-        // Delete Order (Debug purpose)
-        [HttpDelete("deleteOrder")]
+
+        // Get all orders by customer id (for customer)
+        [HttpGet("customerId")]
+        public IActionResult GetOrderByCustId(int custId)
+        {
+            try
+            {
+				// retireve customer and all their orders
+                var order = _context.Order.FirstOrDefault(order => order.CustomerId == custId);
+				if (order == null)
+				{
+					return NotFound(new { Message = "No order made yet" });
+				}
+
+                var result = _context.Order
+					.Include(order => order.OrderItems)
+					.Where(order => order.CustomerId == custId)
+					.Select(Order => new
+					{
+						Order.OrderId,
+						Order.OrderDate,
+						Order.TotalPrice,
+						Items = Order.OrderItems.Select(item => new
+						{
+							ProductName = item.Product != null ? item.Product.ProductName : "Unknown",
+							item.Quantity,
+							item.PointsEarned
+						}).ToList()
+					})
+					.ToList()
+					.OrderBy(order => order.OrderDate);
+
+				if (!result.Any())
+                {
+					return Ok(new { Message = "You don't have any orders", Orders = result });
+				}
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { Message = "An error occurred while getting orders.", Details = ex.Message });
+			} 
+		}
+
+		// Delete Order (Debug purpose)
+		[HttpDelete("deleteOrder")]
         public IActionResult DeleteOrder(int orderId)
         {
             try
