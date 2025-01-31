@@ -17,16 +17,21 @@ namespace vegeatery.Controllers
 
         // POST: /vouchers
         [HttpPost]
-        public IActionResult CreateVoucher([FromBody] Voucher voucher)
+        public async Task<IActionResult> CreateVoucher([FromBody] Voucher voucher)
         {
             if (voucher == null)
             {
                 return BadRequest("Voucher data is required.");
             }
 
-            if (string.IsNullOrEmpty(voucher.VoucherName) || string.IsNullOrEmpty(voucher.VoucherDescription))
+            if (string.IsNullOrEmpty(voucher.VoucherName) || voucher.DiscountPercentage <= 0)
             {
-                return BadRequest("Voucher name and description are required.");
+                return BadRequest("Voucher name and discounts are required.");
+            }
+
+            if (voucher.DiscountPercentage < 1 || voucher.DiscountPercentage > 100)
+            {
+                return BadRequest("Discounts must be between 1 and 100.");
             }
 
             if (voucher.ExpiryDate <= DateTime.UtcNow)
@@ -35,7 +40,7 @@ namespace vegeatery.Controllers
             }
 
             // Check if the tier exists
-            var tier = _context.Tiers.FirstOrDefault(t => t.TierId == voucher.TierId);
+            var tier = await _context.Tiers.FirstOrDefaultAsync(t => t.TierId == voucher.TierId);
             if (tier == null)
             {
                 return BadRequest($"Tier with ID {voucher.TierId} does not exist.");
@@ -45,8 +50,8 @@ namespace vegeatery.Controllers
             voucher.Tier = tier;
 
             // Add voucher to the database
-            _context.Vouchers.Add(voucher);
-            _context.SaveChanges();
+            await _context.Vouchers.AddAsync(voucher);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetVoucherById), new { voucherId = voucher.VoucherId }, voucher);
         }
@@ -55,23 +60,23 @@ namespace vegeatery.Controllers
 
         // GET: /vouchers
         [HttpGet]
-        public IActionResult GetVouchers()
+        public async Task<IActionResult> GetVouchers()
         {
-            var vouchers = _context.Vouchers
+            var vouchers = await _context.Vouchers
                 .Include(v => v.Tier)
                 .OrderBy(v => v.TierId)
-                .ToList();
+                .ToListAsync();
 
             return Ok(vouchers);
         }
 
         // GET: /vouchers/{id}
         [HttpGet("{voucherId}")]
-        public IActionResult GetVoucherById(int voucherId)
+        public async Task<IActionResult> GetVoucherById(int voucherId)
         {
-            var voucher = _context.Vouchers
+            var voucher = await _context.Vouchers
                 .Include(v => v.Tier)
-                .FirstOrDefault(v => v.VoucherId == voucherId);
+                .FirstOrDefaultAsync(v => v.VoucherId == voucherId);
 
             if (voucher == null)
             {
@@ -83,9 +88,9 @@ namespace vegeatery.Controllers
 
         // DELETE: /vouchers/{id}
         [HttpDelete("{voucherId}")]
-        public IActionResult DeleteVoucher(int voucherId)
+        public async Task<IActionResult> DeleteVoucher(int voucherId)
         {
-            var voucher = _context.Vouchers.Find(voucherId);
+            var voucher = await _context.Vouchers.FindAsync(voucherId);
 
             if (voucher == null)
             {
@@ -93,9 +98,59 @@ namespace vegeatery.Controllers
             }
 
             _context.Vouchers.Remove(voucher);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+
+        // PUT: /vouchers/{id}
+        [HttpPut("{voucherId}")]
+        public async Task<IActionResult> UpdateVoucher(int voucherId, [FromBody] Voucher voucher)
+        {
+            if (voucher == null)
+            {
+                return BadRequest("Voucher data is required.");
+            }
+
+            if (string.IsNullOrEmpty(voucher.VoucherName) || voucher.DiscountPercentage <= 0)
+            {
+                return BadRequest("Voucher name and discounts are required.");
+            }
+
+            if (voucher.ExpiryDate <= DateTime.UtcNow)
+            {
+                return BadRequest("Expiry date must be in the future.");
+            }
+
+            // Check if the voucher exists
+            var existingVoucher = await _context.Vouchers
+                .Include(v => v.Tier)
+                .FirstOrDefaultAsync(v => v.VoucherId == voucherId);
+
+            if (existingVoucher == null)
+            {
+                return NotFound($"Voucher with id {voucherId} not found.");
+            }
+
+            // Check if the tier exists
+            var tier = await _context.Tiers.FirstOrDefaultAsync(t => t.TierId == voucher.TierId);
+            if (tier == null)
+            {
+                return BadRequest($"Tier with ID {voucher.TierId} does not exist.");
+            }
+
+            // Update voucher properties
+            existingVoucher.VoucherName = voucher.VoucherName;
+            existingVoucher.DiscountPercentage = voucher.DiscountPercentage;
+            existingVoucher.ExpiryDate = voucher.ExpiryDate;
+            existingVoucher.TierId = voucher.TierId;
+            existingVoucher.Tier = tier;
+
+            // Save changes
+            await _context.SaveChangesAsync();
+
+            return Ok(existingVoucher);
         }
     }
 }
