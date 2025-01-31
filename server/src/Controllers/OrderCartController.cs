@@ -11,10 +11,10 @@ namespace vegeatery.Controllers
 
         // Add product to cart
         [HttpPost]
-        public IActionResult AddtoCart(int cartId, int productId, int quantity)
+        public IActionResult AddtoCart(CartItem Item)
         {
             // Validate input parameters
-            if (cartId <= 0 || productId <= 0 || quantity <= 0)
+            if (Item.CartId <= 0 || Item.ProductId <= 0 || Item.Quantity <= 0)
             {
                 return BadRequest(new { Message = "Invalid input parameters." });
             }
@@ -23,14 +23,14 @@ namespace vegeatery.Controllers
                 try
                 {
                     // Validate the product exists
-                    var product = _context.Product.FirstOrDefault(p => p.ProductId == productId);
+                    var product = _context.Product.FirstOrDefault(p => p.ProductId == Item.ProductId);
                     if (product == null)
                     {
                         return NotFound(new { Message = "Product does not exist." });
                     }
 
                     // Check if the cart exists, create if it doesn't
-                    var cart = _context.Cart.FirstOrDefault(c => c.CartId == cartId);
+                    var cart = _context.Cart.FirstOrDefault(c => c.CartId == Item.CartId);
                     if (cart == null)
                     {
                         cart = new Cart
@@ -40,17 +40,17 @@ namespace vegeatery.Controllers
                         };
                         _context.Cart.Add(cart);
                         _context.SaveChanges();
-                        cartId = cart.CartId;
+                        Item.CartId = cart.CartId;
                     }
 
                     // Check if the product is already in the cart
-                    var existingCartItem = _context.CartItems.FirstOrDefault(c => c.CartId == cartId && c.ProductId == productId);
+                    var existingCartItem = _context.CartItems.FirstOrDefault(c => c.CartId == Item.CartId && c.ProductId == Item.ProductId);
 
                     if (existingCartItem != null)
                     {
                         // Update the quantity if the item already exists
-                        existingCartItem.Quantity += quantity;
-                        existingCartItem.UpdatedAt = DateTime.Now; // Update timestamp
+                        existingCartItem.Quantity += Item.Quantity;
+                        existingCartItem.UpdatedAt = DateTime.Now; 
                         _context.CartItems.Update(existingCartItem);
                     }
                     else
@@ -58,11 +58,12 @@ namespace vegeatery.Controllers
                         // Create new cart item
                         var cartItem = new CartItem
                         {
-                            CartId = cartId,
-                            ProductId = productId,
-                            Quantity = quantity,
+                            CartId = Item.CartId,
+                            ProductId = Item.ProductId,
+                            Quantity = Item.Quantity,
                             Price = product.ProductPrice,
-                            CreatedAt = DateTime.Now, // Set CreatedAt timestamp
+                            Points = product.ProductPoints,
+                            CreatedAt = DateTime.Now,
                             UpdatedAt = DateTime.Now
                         };
 
@@ -85,19 +86,20 @@ namespace vegeatery.Controllers
 
         // Read products from cart
         [HttpGet]
-        public IActionResult GetAll(int cartId)
+        public IActionResult GetAll(int CartId)
         {
             // Validate the cartId
-            if (cartId <= 0)
+            if (CartId <= 0)
             {
                 return BadRequest(new { Message = "Invalid cart ID." });
             }
 
             // Join CartItem table with Product table
             var result = _context.CartItems
-                .Where(cartItem => cartItem.CartId == cartId)
+                .Where(cartItem => cartItem.CartId == CartId)
                 .Select(cartItem => new
                 {
+                    cartItem.Product.ProductId,
                     cartItem.Product.ProductName,
                     cartItem.Product.ProductPrice,
                     cartItem.Quantity,
@@ -118,34 +120,33 @@ namespace vegeatery.Controllers
 
         // Update item in cart
         [HttpPut]
-        public IActionResult UpdateCartItem(int cartId, int productId, int quantity)
+        public IActionResult UpdateCartItem(CartItem Item)
         {
             // Validate input parameters
-            if (cartId <= 0 || productId <= 0 || quantity <= 0)
+            if (Item.CartId <= 0 || Item.ProductId <= 0 || Item.Quantity <= 0)
             {
                 return BadRequest(new { Message = "Invalid input parameters." });
             }
-
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
                     // Check if the cart exists
-                    var cart = _context.Cart.FirstOrDefault(c => c.CartId == cartId);
+                    var cart = _context.Cart.FirstOrDefault(c => c.CartId == Item.CartId);
                     if (cart == null)
                     {
                         return NotFound(new { Message = "Cart does not exist." });
                     }
 
                     // Find the cart item
-                    var cartItem = _context.CartItems.FirstOrDefault(c => c.CartId == cartId && c.ProductId == productId);
+                    var cartItem = _context.CartItems.FirstOrDefault(c => c.CartId == Item.CartId && c.ProductId == Item.ProductId);
                     if (cartItem == null)
                     {
                         return NotFound(new { Message = "Product not found in the cart." });
                     }
 
                     // Update the quantity
-                    cartItem.Quantity = quantity;
+                    cartItem.Quantity = Item.Quantity;
                     cartItem.UpdatedAt = DateTime.Now; // Update timestamp
 
                     // Save changes to the database

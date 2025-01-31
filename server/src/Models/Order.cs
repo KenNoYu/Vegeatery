@@ -9,6 +9,10 @@ namespace vegeatery.Models
         public int OrderId { get; set; }
 
         [Required]
+        [MaxLength(100)]
+        public string FullName { get; set; }
+
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 
@@ -20,13 +24,15 @@ namespace vegeatery.Models
         public DateTime OrderDate { get; set; } = DateTime.Now;
 
         [Required]
-        [Range(0, double.MaxValue, ErrorMessage = "Total price must be a positive value.")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalPrice { get; set; }
 
         [Required]
         [Range(0, int.MaxValue, ErrorMessage = "Total points must be a non-negative value.")]
         public int TotalPoints { get; set; } // Points used for this order
+
+        [Required]
+        public string Status { get; set; } = "Pending"; // Pending, In Progress, Completed, Cancelled
 
         [Required, Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -42,6 +48,6 @@ namespace vegeatery.Models
         // Navigation properties
         //public Customer? Customer { get; set; } // Assuming you have a Customer entity
         //public Voucher? Voucher { get; set; } // Assuming you have a Voucher entity
-        public ICollection<OrderItem>? OrderItems { get; set; } // Collection of items in the order
+        public ICollection<OrderItem> OrderItems { get; set; } // Collection of items in the order
     }
 }
