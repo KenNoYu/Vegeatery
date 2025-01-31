@@ -35,8 +35,8 @@ const PointsSystem = () => {
       boxShadow: 3, 
       borderRadius: 2,
       overflow: "hidden",
-      overflowY: "auto",  // Allow vertical scrolling
-      overflowX: "hidden",  // Prevent horizontal overflow
+      overflowY: "auto",  
+      overflowX: "hidden",  
       paddingBottom: '2rem',
     marginTop: '2rem'}}
           >
