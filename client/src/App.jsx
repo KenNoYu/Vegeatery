@@ -52,8 +52,8 @@ import Tutorials from "./pages/Tutorials";
 import AddTutorial from "./pages/AddTutorial";
 import EditTutorial from "./pages/EditTutorial";
 import MyForm from "./pages/MyForm";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
+import Register from "./pages/Accounts/User/Register";
+import Login from "./pages/Accounts/User/Login";
 import Home from "./pages/Home";
 import ProductsTemp from "./pages/ProductTemporary";
 
@@ -65,8 +65,7 @@ import Accounts from "./pages/Accounts/Admin/Accounts";
 
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
-import { AccountCircle } from '@mui/icons-material';
-
+import { AccountCircle } from '@mui/icons-material'; // Import AccountCircle icon
 
 function App() {
   const [user, setUser] = useState(null);
@@ -82,12 +81,9 @@ function App() {
     setAnchorEl(null);
   };
 
-
-
   useEffect(() => {
-    if (localStorage.getItem("accessToken")) {
       http
-        .get("/Auth/auth")
+        .get("/Auth/auth", { withCredentials: true })
         .then((res) => {
           console.log(res.data.user.id);
           setUser(res.data.user);
@@ -97,14 +93,20 @@ function App() {
           console.error("Error fetching user data", err);
           setLoading(false); // Stop loading even if there's an error
         });
-    } else {
-      setLoading(false); // If no token, stop loading
-    }
   }, []);
 
   const logout = () => {
-    localStorage.clear();
-    window.location = "/";
+    // Send POST request to logout and clear cookie
+    http
+      .post("/auth/logout", {}, { withCredentials: true })
+      .then((res) => {
+        console.log(res.data.message);  // Log the logout success message
+        localStorage.clear();  // Optionally clear localStorage as well
+        window.location = "/";  // Redirect to the login or home page
+      })
+      .catch((err) => {
+        console.error("Error during logout", err);
+      });
   };
 
   return (
@@ -179,7 +181,6 @@ function App() {
         </Toolbar>
       </Container>
     </AppBar>
-
               <Container>
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -209,8 +210,6 @@ function App() {
                   <Route path="/staff/reservationlogs" element={<StaffReserveLogs/>} />
                   <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation/>}/>
                   {/* REWARDS */}
-                  <Route path="/rewards/user/pointssystem" element={<PointsSystem />} />
-                  <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
                   <Route path="/rewards/admin/voucherssystem" element={<AdminVouchersSystem />} />
                   <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />
                   <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback />} />
