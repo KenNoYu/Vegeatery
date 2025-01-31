@@ -15,7 +15,7 @@ const RoleGuard = (requiredRole) => {
         navigate('/unauthorized'); // Redirect to an unauthorized page
       }
     } else {
-      navigate('/login'); // Redirect to login if no token is found
+        navigate('/login'); // Redirect to login if no token is found
     }
   }, []); 
 

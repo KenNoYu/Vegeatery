@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using vegeatery;
 using Stripe;
+using vegeatery.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,10 +36,26 @@ builder.Services.AddAuthentication(options =>
 {
 	options.TokenValidationParameters = new TokenValidationParameters
 	{
+		ValidateIssuer = false, // Assuming you're not validating issuer/audience, if needed set to true and provide values.
+		ValidateAudience = false,
+		ValidateLifetime = true,
 		ValidateIssuerSigningKey = true,
-		IssuerSigningKey = new SymmetricSecurityKey(key),
-		ValidateIssuer = false,
-		ValidateAudience = false
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Authentication:Secret")), // Use your "Secret" key
+		ClockSkew = TimeSpan.Zero // Optional: to prevent time discrepancies between server and token expiration
+	};
+
+	options.Events = new JwtBearerEvents
+	{
+		OnMessageReceived = context =>
+		{
+			// Get the token from the cookie
+			var token = context.HttpContext.Request.Cookies["jwtToken"];
+			if (!string.IsNullOrEmpty(token))
+			{
+				context.Token = token; // Set the token from the cookie
+			}
+			return Task.CompletedTask;
+		}
 	};
 });
 
@@ -104,6 +121,8 @@ app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.UseCors();
+
+app.UseMiddleware<JwtMiddleware>();
 
 app.UseAuthorization();
 app.UseAuthentication();
