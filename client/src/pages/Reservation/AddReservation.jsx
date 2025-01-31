@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Grid, TextField, Box, Typography } from "@mui/material";
 import DateSelector from "./Components/DateSelector";
 import { useTheme } from '@mui/material/styles';
@@ -35,6 +35,7 @@ const ReservationPage = () => {
   const [view, setView] = useState("details"); // 'details' or 'seats'
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [tables, setTables] = useState([]);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -42,14 +43,19 @@ const ReservationPage = () => {
     mobileNumber: "",
   });
   const [selectedTables, setSelectedTables] = useState(null);
-  const [tables, setTables] = useState([
-    { id: 1, status: "available", pax: 2 },
-    { id: 2, status: "unavailable", pax: 2 },
-    { id: 3, status: "available", pax: 2 },
-    { id: 4, status: "available", pax: 4 },
-    { id: 5, status: "available", pax: 4 },
-    { id: 6, status: "unavailable", pax: 5 },
-  ]);
+
+  useEffect(() => {
+    const fetchTables = async () => {
+      try {
+        const response = await http.get("/Reservation/GetTables"); // Update with your actual API endpoint
+        setTables(response.data);
+      } catch (error) {
+        console.error("Error fetching tables:", error);
+        toast.error("Failed to load tables.");
+      }
+    };
+    fetchTables();
+  }, []);
 
   // Mock data for times
   const times = [
@@ -345,7 +351,7 @@ const ReservationPage = () => {
                       }
                     >
                       Table {table.id}<br />
-                      {table.pax} Pax
+                      {table.capacity} Pax
                     </Button>
                   </Grid>
                 ))}
