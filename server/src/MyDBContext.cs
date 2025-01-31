@@ -8,118 +8,134 @@ using System.Data;
 using vegeatery.Controllers;
 namespace vegeatery
 {
-	public class MyDbContext : DbContext
-	{
-		private readonly IConfiguration _configuration;
+  public class MyDbContext : DbContext
+  {
+    private readonly IConfiguration _configuration;
 
-		public MyDbContext(IConfiguration configuration)
-		{
-			_configuration = configuration;
-		}
+    public MyDbContext(IConfiguration configuration)
+    {
+      _configuration = configuration;
+    }
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			string? connectionString = _configuration.GetConnectionString("MyConnection");
-			if (connectionString != null)
-			{
-				optionsBuilder.UseSqlServer(connectionString);
-			}
-		}
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+      string? connectionString = _configuration.GetConnectionString("MyConnection");
+      if (connectionString != null)
+      {
+        optionsBuilder.UseSqlServer(connectionString);
+      }
+    }
 
-		public required DbSet<Product> Product { get; set; }
-        public required DbSet<Category> Category { get; set; }
-		public required DbSet<Cart> Cart { get; set; }
-		public required DbSet<Order> Order { get; set; }
-		public required DbSet<OrderItem> OrderItems { get; set; }
-		public required DbSet<CartItem> CartItems { get; set; }
-        public DbSet<Reservation> Reservations { get; set; }
-        public DbSet<ReservationLog> ReservationLogs { get; set; }
-        public required DbSet<Tier> Tiers { get; set; }
-        public required DbSet<Voucher> Vouchers { get; set; }
-        public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
-		public required DbSet<User> Users { get; set; }
-		public required DbSet<Role> Role { get; set; }
+    public required DbSet<Product> Product { get; set; }
+    public required DbSet<Category> Category { get; set; }
+    public required DbSet<Cart> Cart { get; set; }
+    public required DbSet<Order> Order { get; set; }
+    public required DbSet<OrderItem> OrderItems { get; set; }
+    public required DbSet<CartItem> CartItems { get; set; }
+    public required DbSet<Reservation> Reservations { get; set; }
+    public required DbSet<ReservationLog> ReservationLogs { get; set; }
+    public required DbSet<Table> Tables { get; set; }
+    public required DbSet<Tier> Tiers { get; set; }
+    public required DbSet<Voucher> Vouchers { get; set; }
+    public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
+    public required DbSet<User> Users { get; set; }
+    public required DbSet<Role> Role { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			//Reservation
-			modelBuilder.Entity<ReservationLog>()
-				.HasOne(r => r.Reservation)
-				.WithMany() // Assuming a Reservation has many logs
-				.HasForeignKey(r => r.ReservationId)
-				.OnDelete(DeleteBehavior.Cascade);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+      //Reservation
+      modelBuilder.Entity<ReservationLog>()
+        .HasOne(r => r.Reservation)
+        .WithMany() // Assuming a Reservation has many logs
+        .HasForeignKey(r => r.ReservationId)
+        .OnDelete(DeleteBehavior.Cascade);
 
-			base.OnModelCreating(modelBuilder);
+      modelBuilder.Entity<Reservation>()
+        .HasMany(r => r.Tables)
+        .WithMany(t => t.Reservations)
+        .UsingEntity(j => j.ToTable("ReservationTables"));
 
-			// Seed Roles
-			modelBuilder.Entity<Role>().HasData(
-				new Role { Id = 1, Name = "User" },
-				new Role { Id = 2, Name = "Staff" },
-				new Role { Id = 3, Name = "Admin" }
-			);
+      base.OnModelCreating(modelBuilder);
 
-			// Common token generation logic
-			string GenerateJwtToken(string username, string role)
-			{
-				var tokenHandler = new JwtSecurityTokenHandler();
-				var key = Encoding.ASCII.GetBytes(_configuration["Authentication:Secret"]);
-				var tokenDescriptor = new SecurityTokenDescriptor
-				{
-					Subject = new ClaimsIdentity(new Claim[]
-					{
-				new Claim(ClaimTypes.Name, username),
-				new Claim(ClaimTypes.Role, role)
-					}),
-					Expires = DateTime.UtcNow.AddDays(int.Parse(_configuration["Authentication:TokenExpiresDays"])),
-					SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-				};
-				var token = tokenHandler.CreateToken(tokenDescriptor);
-				return tokenHandler.WriteToken(token);
-			}
+      // Seed Roles
+      modelBuilder.Entity<Role>().HasData(
+        new Role { Id = 1, Name = "User" },
+        new Role { Id = 2, Name = "Staff" },
+        new Role { Id = 3, Name = "Admin" }
+      );
 
-			// Seed Users
-			var users = new List<User>
-	{
-		new User
-		{
-			Id = 1,
-			Username = "masteradmin",
-			PasswordHash = BCrypt.Net.BCrypt.HashPassword("MasterAdminPassword123!"),
-			Email = "admin@domain.com",
-			DateofBirth = "",
-			ContactNumber = "",
-			Gender = "Others",
-			DietPreference = "",
-			AllergyInfo = "",
-			MealTypes = "",
-			Promotions = true,
-			Agreement = true,
-			TotalPoints = 0,
-			RoleId = 3, // Admin role
+      // Common token generation logic
+      string GenerateJwtToken(string username, string role)
+      {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_configuration["Authentication:Secret"]);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+          Subject = new ClaimsIdentity(new Claim[]
+          {
+        new Claim(ClaimTypes.Name, username),
+        new Claim(ClaimTypes.Role, role)
+          }),
+          Expires = DateTime.UtcNow.AddDays(int.Parse(_configuration["Authentication:TokenExpiresDays"])),
+          SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
+      }
+
+      // Seed Users
+      var users = new List<User>
+  {
+    new User
+    {
+      Id = 1,
+      Username = "masteradmin",
+      PasswordHash = BCrypt.Net.BCrypt.HashPassword("MasterAdminPassword123!"),
+      Email = "admin@domain.com",
+      DateofBirth = "",
+      ContactNumber = "",
+      Gender = "Others",
+      DietPreference = "",
+      AllergyInfo = "",
+      MealTypes = "",
+      Promotions = true,
+      Agreement = true,
+      TotalPoints = 0,
+      RoleId = 3, // Admin role
             JwtToken = GenerateJwtToken("masteradmin", "Admin")
-		},
-		new User
-		{
-			Id = 2,  // Assuming the next available ID is 2
+    },
+    new User
+    {
+      Id = 2,  // Assuming the next available ID is 2
             Username = "staffuser",
-			PasswordHash = BCrypt.Net.BCrypt.HashPassword("StaffUserPassword123!"),
-			Email = "staff@domain.com",
-			DateofBirth = "",
-			ContactNumber = "",
-			Gender = "Female",
-			DietPreference = "",
-			AllergyInfo = "",
-			MealTypes = "",
-			Promotions = false,  // Staff might not have access to promotions
+      PasswordHash = BCrypt.Net.BCrypt.HashPassword("StaffUserPassword123!"),
+      Email = "staff@domain.com",
+      DateofBirth = "",
+      ContactNumber = "",
+      Gender = "Female",
+      DietPreference = "",
+      AllergyInfo = "",
+      MealTypes = "",
+      Promotions = false,  // Staff might not have access to promotions
             Agreement = true,
-			TotalPoints = 0,
-			RoleId = 2, // Staff role
+      TotalPoints = 0,
+      RoleId = 2, // Staff role
             JwtToken = GenerateJwtToken("staffuser", "Staff")
-		}
-	};
+    }
+  };
 
-			modelBuilder.Entity<User>().HasData(users);
-		}
+      modelBuilder.Entity<User>().HasData(users);
 
-	}
+            // Seed Tables
+            modelBuilder.Entity<Table>().HasData(
+               new Table { Id = 1, TableNumber = "1", Capacity = 2, Status = "available" },
+               new Table { Id = 2, TableNumber = "2", Capacity = 2, Status = "available" },
+               new Table { Id = 3, TableNumber = "3", Capacity = 2, Status = "available" },
+               new Table { Id = 4, TableNumber = "4", Capacity = 4, Status = "available" },
+               new Table { Id = 5, TableNumber = "5", Capacity = 4, Status = "available" },
+               new Table { Id = 6, TableNumber = "6", Capacity = 5, Status = "available" }
+           );
+        }
+
+  }
 }
