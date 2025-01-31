@@ -95,11 +95,7 @@ export default function ProfilePage() {
     // Function to fetch the user info from the API
     const fetchUserInfo = async () => {
         try {
-            const response = await http.get('/Auth/current-user', {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming you store the JWT token in localStorage
-                }
-            });
+            const response = await http.get('/Auth/current-user', { withCredentials: true });
 
             const userData = response.data;
             console.log(response.data);
@@ -124,16 +120,14 @@ export default function ProfilePage() {
 
     // Use useEffect to fetch user info when the component loads
     useEffect(() => {
-        if (localStorage.getItem("accessToken")) {
             http
-                .get("/Auth/auth")
+                .get("/Auth/auth", {withCredentials : true})
                 .then((res) => {
                     setUserId(res.data.user.id);
                 })
                 .catch((err) => {
                     console.error("Error fetching user data", err);
                 });
-        }
         fetchUserInfo();
         setLoading(false);
     }, []);
