@@ -1,18 +1,13 @@
 import React, { useContext } from "react";
 import { Box, Typography, TextField, Button, Grid } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import http from "../../../http";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import UserContext from "../../../contexts/UserContext";
-import loginbanner from "../assets/loginbanner.jpg";
+import loginbanner from "../../../assets/loginbanner.jpg";
 
 function Login() {
-  const navigate = useNavigate();
-  const { setUser } = useContext(UserContext);
-
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -35,15 +30,9 @@ function Login() {
       data.username = data.username.trim().toLowerCase();
       data.password = data.password.trim();
       http
-        .post("/auth/login", data)
-        .then((res) => {
-          console.log(res.data);
-          const { token, user } = res.data;
-          localStorage.setItem("accessToken", token); // Store token
-          console.log(token);  
-          setUser(user);
-          console.log(user)
-          window.location = "/overview";   // Set the user in the context and redirect to the overview page
+        .post("/auth/login", data, { withCredentials: true })
+        .then(() => {
+        window.location ="/overview";
         })
         .catch((err) => {
           if (err.response && err.response.data) {
@@ -59,7 +48,6 @@ function Login() {
         
     },
   });
-
 
   return (
     <Box
@@ -217,7 +205,6 @@ function Login() {
           </Box>
         </Grid>
       </Grid>
-
       <ToastContainer />
     </Box>
   );
