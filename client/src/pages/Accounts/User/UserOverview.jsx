@@ -16,30 +16,18 @@ function UserOverview() {
   }
 
   useEffect(() => {
-    // Only make the request if there is a valid token in localStorage
-    const token = localStorage.getItem("accessToken");
-    console.log(token);
-
-    if (token) {
-      http
-        .get("/Auth/current-user", {
-          headers: {
-            Authorization: `Bearer ${token}`  // Correct key for the JWT token in localStorage
-          }
-        })
-        .then((res) => {
-          console.log(res.data);
-          setUser(res.data);  // Store the user data in state
-          setLoading(false); // Stop loading once data is fetched
-        })
-        .catch((err) => {
-          console.error("Failed to fetch user data", err);
-          setError("Failed to fetch user data");  // Set error message
-          setLoading(false);  // Stop loading even in case of error
-        });
-    } else {
-      setLoading(false);  // If no token, stop loading
-    }
+    http
+    .get("/auth/current-user", { withCredentials: true })  // withCredentials ensures cookies are sent
+    .then((res) => {
+      console.log(res);
+      setUser(res);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error("Failed to fetch user data", err);
+      setError("Failed to fetch user data");
+      setLoading(false);
+    });
   }, []);
 
   // If still loading, show a loading message
@@ -69,14 +57,14 @@ function UserOverview() {
           <Box sx={{ display: 'flex', gap: 3 }}>
             <Avatar alt="User Photo" src="/path/to/avatar.jpg" sx={{ width: 80, height: 80 }} />
             <Box>
-              <Typography variant="h5">{user.username}</Typography>
+              <Typography variant="h5">{user.data.username}</Typography>
               <Typography variant="body1" color="textSecondary">BRONZE</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body1">{user.totalPoints}</Typography>
+                <Typography variant="body1">{user.data.totalPoints}</Typography>
                 <LinearProgress variant="determinate" value={50} sx={{ width: '100px', height: 10, borderRadius: 5 }} />
                 <Typography variant="body2" color="textSecondary">277 to Bronze</Typography>
               </Box>
-              <Typography variant="caption" color="textSecondary">Joined Since  {new Date(user.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+              <Typography variant="caption" color="textSecondary">Joined Since  {new Date(user.data.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
               </Typography>
             </Box>
           </Box>
@@ -135,7 +123,6 @@ function UserOverview() {
     </Box>
     );
   }
-
   // Fallback rendering if no user or error
   return <div>No user data available.</div>;
 }
