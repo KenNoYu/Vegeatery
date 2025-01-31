@@ -30,6 +30,7 @@ import PointsSystem from './pages/rewards/User/PointsSystem';
 import PointsHistory from './pages/rewards/User/PointsHistory';
 import AdminVouchersSystem from './pages/rewards/Admin/VouchersSystem';
 import AdminVouchersSystemEdit from './pages/rewards/Admin/VouchersSystemEdit';
+import VouchersSystemAdd from './pages/rewards/Admin/VouchersSystemAdd';
 import PointsRange from './pages/rewards/Admin/PointsRange';
 
 // FEEDBACKS
@@ -206,9 +207,11 @@ function App() {
               <Route path="/staff/reservationlogs" element={<StaffReserveLogs/>} />
               <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation/>}/>
               {/* REWARDS */}
-              <Route path="/rewards/user/pointssystem" element={<PointsSystem />} />
+              <Route path="/rewards" element={<PointsSystem />} />
               <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
               <Route path="/rewards/admin/voucherssystem" element={<AdminVouchersSystem />} />
+              <Route path="/rewards/admin/voucherssystem/edit/:id" element={<AdminVouchersSystemEdit />} />
+              <Route path="/rewards/admin/voucherssystemadd" element={<VouchersSystemAdd />} />
               <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />
               <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback />} />
               <Route path="/general-feedback/edit/:id" element={<GeneralFeedbackEdit />} />
