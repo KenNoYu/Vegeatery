@@ -93,52 +93,103 @@ const AdminVouchersSystemEdit = () => {
     }
 
     return (
-        <Box>
-            <Typography variant="h4">Edit Voucher</Typography>
-            {errorMessage && <Typography color="error">{errorMessage}</Typography>} {/* Display error message */}
-            <Box mt={2}>
-                <TextField
-                    label="Voucher Name"
-                    value={voucher.voucherName}
-                    onChange={(e) => setVoucher({ ...voucher, voucherName: e.target.value })}
-                    fullWidth
-                />
-                <TextField
-                    label="Discount Percentage"
-                    value={voucher.discountPercentage}
-                    onChange={(e) => setVoucher({ ...voucher, discountPercentage: parseFloat(e.target.value) || 0 })}
-                    fullWidth
-                    type="number"
-                    inputProps={{ step: "0.01", min: "1", max: "100" }}
-                />
-                <TextField
-                    label="Expiry Date"
-                    type="date"
-                    value={dayjs(voucher.expiryDate).format('YYYY-MM-DD')}
-                    onChange={(e) => setVoucher({ ...voucher, expiryDate: e.target.value })}
-                    fullWidth
-                />
-                <FormControl fullWidth>
-                    <InputLabel>Tier</InputLabel>
-                    <Select
-                        value={voucher.tierId}
-                        onChange={(e) => setVoucher({ ...voucher, tierId: e.target.value })}
-                    >
-                        {tiers.map((tier) => (
-                            <MenuItem key={tier.tierId} value={tier.tierId}>
-                                {tier.tierName}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <Box mt={2}>
-                    <Button variant="contained" color="primary" onClick={handleSave}>
-                        Save Changes
-                    </Button>
-                </Box>
-            </Box>
-        </Box>
-    );
+        <Box sx={{
+            maxWidth: 1200,
+            minHeight: 500,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#FFFFFF',
+            padding: '2rem',
+            boxShadow: 3,
+            borderRadius: 2,
+            overflow: "hidden",
+            overflowY: "auto",
+            overflowX: "hidden",
+            paddingBottom: '2rem',
+            marginTop: '2rem'
+        }}>
+            <Typography variant="h4" fontWeight="bold" mb={2}>Edit Voucher</Typography>
+            {errorMessage && <Typography color="error">{errorMessage}</Typography>} 
+            <Card sx={{ backgroundColor: '#E7F0FA', padding: '2rem', borderRadius: 2 }}>
+            <CardContent>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Voucher Name"
+                            value={voucher.voucherName}
+                            onChange={(e) => setVoucher({ ...voucher, voucherName: e.target.value })}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Discount (%)"
+                            type="number"
+                            value={voucher.discountPercentage}
+                            onChange={(e) => setVoucher({
+                                ...voucher,
+                                discountPercentage: parseFloat(e.target.value) || 0
+                            })}
+                            inputProps={{ step: "0.01", min: "1", max: "100" }}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Expiry Date"
+                            type="date"
+                            value={dayjs(voucher.expiryDate).format('YYYY-MM-DD')}
+                            onChange={(e) => setVoucher({ ...voucher, expiryDate: e.target.value })}
+                            InputLabelProps={{ shrink: true }}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Select
+                            fullWidth
+                            value={voucher.tierId}
+                            onChange={(e) => setVoucher({ ...voucher, tierId: e.target.value })}
+                            displayEmpty
+                        >
+                            <MenuItem value="" disabled>Select Tier</MenuItem>
+                            {tiers.map((tier) => (
+                                <MenuItem key={tier.tierId} value={tier.tierId}>{tier.tierName}</MenuItem>
+                            ))}
+                        </Select>
+                    </Grid>
+
+                    <Grid item xs={12} display="flex" justifyContent="space-between">
+                        <Button onClick={() => navigate('/rewards/admin/voucherssystem')} variant="contained" sx={{
+                            textTransform: 'none',
+                            color: '#C6487E',
+                            backgroundColor: '#FFFFFF',
+                            borderColor: '#C6487E',
+                            '&:hover': {
+                                backgroundColor: '#E7ABC5',
+                                color: '#FFFFFF'
+                            }
+                        }}>
+                            BACK
+                        </Button>
+                        <Button onClick={handleSave} variant="contained" sx={{
+                            textTransform: 'none',
+                            color: '#FFFFFF',
+                            backgroundColor: '#C6487E',
+                            '&:hover': { backgroundColor: '#E7ABC5' }
+                        }}>
+                            SAVE CHANGES
+                        </Button>
+                    </Grid>
+                </Grid>
+            </CardContent>
+        </Card>
+    </Box>
+);
 };
 
 export default AdminVouchersSystemEdit;
