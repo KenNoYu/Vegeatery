@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Card, CardContent, Typography, TextField, IconButton } from "@mui/material";
+import { Box, Typography, TextField, IconButton, Grid, CardContent, Card , Button} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -47,8 +47,8 @@ const PointsRange = () => {
             tier.tierId === updatedTier.tierId ? updatedTier : tier
           )
         );
-        setEditMode(null); 
-        setUpdatedTier(null); 
+        setEditMode(null);
+        setUpdatedTier(null);
         setError(null); // Clear any previous errors
       })
       .catch(() => {
@@ -57,13 +57,26 @@ const PointsRange = () => {
   };
 
   const handleCancelClick = () => {
-    setEditMode(null); 
-    setUpdatedTier(null); 
+    setEditMode(null);
+    setUpdatedTier(null);
   };
 
   return (
-    <Box sx={{ mt: 4 }}>
-      <Typography variant="h4" sx={{ mb: 3 }}>
+    <Box sx={{
+      maxWidth: 1200,
+      minHeight: 500,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#FFFFFF',
+      padding: '2rem',
+      boxShadow: 3,
+      borderRadius: 2,
+      overflow: 'hidden',
+      marginTop: '2rem'
+    }}>
+      <Typography variant="h4" fontWeight="bold" mb={2}>
         Manage Tier Points Range
       </Typography>
       {error && (
@@ -71,45 +84,69 @@ const PointsRange = () => {
           {error}
         </Typography>
       )}
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-        {tiers.map((tier) => (
-          <Card key={tier.tierId} sx={{ width: "300px", padding: "16px" }}>
-            <CardContent>
-              <Typography variant="h6">{tier.tierName} Tier</Typography>
-              {editMode === tier.tierId ? (
-                <>
-                  <TextField
-                    label="Min Points"
-                    variant="outlined"
-                    size="small"
-                    value={updatedTier?.minPoints || ""}
-                    onChange={(e) => handleInputChange("minPoints", e.target.value)}
-                    sx={{ mb: 2, width: "100%" }}
-                  />
-                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <IconButton onClick={handleSaveClick} color="primary">
-                      <SaveIcon />
-                    </IconButton>
-                    <IconButton onClick={handleCancelClick} color="secondary">
-                      <CancelIcon />
-                    </IconButton>
-                  </Box>
-                </>
-              ) : (
-                <>
-                  <Typography>Min Points: {tier.minPoints}</Typography>
-                  <IconButton
-                    onClick={() => handleEditClick(tier)}
-                    sx={{ color: "orange" }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+
+        <CardContent>
+          <Grid container spacing={2}>
+            {tiers.map((tier) => (
+              <Grid item xs={12} key={tier.tierId}>
+                <Card sx={{padding: '2rem', backgroundColor: '#E6F2FF', borderRadius: 2, width: '100%'}}>
+                  <CardContent>
+                    <Typography variant="h6">{tier.tierName} Tier</Typography>
+                    {editMode === tier.tierId ? (
+                      <>
+                        <TextField
+                          label="Min Points"
+                          variant="outlined"
+                          size="small"
+                          value={updatedTier?.minPoints || ""}
+                          onChange={(e) => handleInputChange("minPoints", e.target.value)}
+                          sx={{ mb: 2, width: "100%" }}
+                        />
+                        <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
+                          <Button onClick={handleSaveClick} variant="contained" sx={{
+                            textTransform: 'none',
+                            color: '#FFFFFF',
+                            backgroundColor: '#C6487E',
+                            '&:hover': { backgroundColor: '#E7ABC5' }
+                          }}>
+                            SAVE
+                          </Button>
+                          <Button onClick={handleCancelClick} variant="contained" sx={{
+                            textTransform: 'none',
+                            color: '#C6487E',
+                            backgroundColor: '#FFFFFF',
+                            borderColor: '#C6487E',
+                            '&:hover': {
+                                backgroundColor: '#E7ABC5',
+                                color: '#FFFFFF'
+                            }
+                          }}>
+                            CANCEL
+                          </Button>
+                        </Box>
+                      </>
+                    ) : (
+                      <>
+                        <Typography marginBottom={0}>Min Points: {tier.minPoints}</Typography>
+                        <Button
+                          onClick={() => handleEditClick(tier)}
+                          sx={{
+                            textTransform: 'none',
+                            color: '#FFFFFF',
+                            backgroundColor: '#C6487E',
+                            '&:hover': { backgroundColor: '#E7ABC5' }
+                          }}
+                        >
+                          EDIT
+                        </Button>
+                      </>
+                    )}
+                  </CardContent>
+                  </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </CardContent>
     </Box>
   );
 };
