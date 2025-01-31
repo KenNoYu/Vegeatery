@@ -1,38 +1,37 @@
 import axios from "axios";
 
+// Create an axios instance
 const instance = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    withCredentials: true, // Allows cookies to be sent with requests
 });
 
 // Add a request interceptor
-instance.interceptors.request.use(function (config) {
-    // Do something before request is sent
-    let accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-        config.headers["Authorization"] = `Bearer ${accessToken}`;
+instance.interceptors.request.use(
+    function (config) {
+
+        return config;
+    },
+    function (error) {
+        // Do something with the request error
+        return Promise.reject(error);
     }
-    if (config.data && config.data.user) {
-        delete config.data.user;
-    }
-    return config;
-}, function (error) {
-    // Do something with request error
-    return Promise.reject(error);
-});
+);
 
 // Add a response interceptor
-instance.interceptors.response.use(function (response) {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
-    return response;
-}, function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
-    if (error.response.status === 401 || error.response.status === 403) {
-        localStorage.clear();
-        window.location = "/login";
+instance.interceptors.response.use(
+    function (response) {
+        // Any status code that lies within the range of 2xx triggers this function
+        return response;
+    },
+    function (error) {
+        // Handle 401 (Unauthorized) or 403 (Forbidden) errors
+        if (error.response.status === 401 || error.response.status === 403) {
+            // Handle unauthorized access by redirecting to the login page or clearing user data
+            window.location = "/login";
+        }
+        return Promise.reject(error);
     }
-    return Promise.reject(error);
-});
+);
 
 export default instance;
