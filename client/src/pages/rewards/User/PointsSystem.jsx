@@ -1,12 +1,12 @@
-import { Box, Typography, LinearProgress, Button, Card, CardContent, Grid2 as Grid, Input, IconButton } from '@mui/material';
+import { Box, Typography, LinearProgress, Button, Card, CardContent, Grid2 as Grid, Input, IconButton, Container } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import http from '../../../http'; // Import http for API requests
+import http from '../../../http'; 
 import dayjs from 'dayjs';
 
 const PointsSystem = () => {
-  const points = 23; // Current points
+  const points = 100; // Current points
   const maxPoints = 276; // Points required for the next tier
   const [vouchers, setVouchers] = useState([]); // State to store fetched vouchers
 
@@ -24,9 +24,32 @@ const PointsSystem = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F5F5', padding: '2rem' }}>
+    <Box sx={{ maxWidth: 1200,
+          minHeight: 500, 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      backgroundColor: '#FFFFFF', 
+      padding: '2rem', 
+      boxShadow: 3, 
+      borderRadius: 2,
+      overflow: "hidden",
+      overflowY: "auto",  // Allow vertical scrolling
+      overflowX: "hidden",  // Prevent horizontal overflow
+      paddingBottom: '2rem',
+    marginTop: '2rem'}}
+          >
+    <Container maxWidth="md"
+     sx={{ display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      py: 4,
+      paddingBottom: '1rem',
+      width: '100%' }}>
       {/* Header Section */}
-      <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '1rem', textAlign: 'center' }}>
+      <Typography variant="h4" fontWeight="bold" gutterBottom textAlign="center">
         Sustainable Points
       </Typography>
 
@@ -35,11 +58,20 @@ const PointsSystem = () => {
       </Typography>
 
       {/* Points Bar */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', width: '100%', maxWidth: '500px' }}>
-        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', maxWidth: 500, mb: 2 }}>
+        <Typography variant="h6" fontWeight="bold">
           {points} pts
         </Typography>
-        <LinearProgress variant="determinate" value={(points / maxPoints) * 100} sx={{ flexGrow: 1, height: '10px', borderRadius: '5px', backgroundColor: '#E0E0E0' }} />
+        <LinearProgress variant="determinate" 
+        value={(points / maxPoints) * 100} 
+        sx={{ 
+          flexGrow: 1, 
+          height: '10px', 
+          borderRadius: '5px', 
+          backgroundColor: '#E0E0E0',
+          '& .MuiLinearProgress-bar': {
+      backgroundColor: '#C2185B',
+    }}} />
         <Typography>{points} / {maxPoints}</Typography>
       </Box>
 
@@ -49,31 +81,29 @@ const PointsSystem = () => {
 
       {/* Rewards Section */}
       <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '1rem' }}>
-        Your Rewards
+        Rewards Vouchers
       </Typography>
 
-      <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
+      <Grid container spacing={3} justifyContent="center">
         {vouchers.map((voucher) => (
-          <Grid item xs={12} sm={6} md={4} key={voucher.voucherId} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Card sx={{ backgroundColor: '#E3F2FD', boxShadow: 3, width: '100%', maxWidth: '300px' }}>
+          <Grid item xs={12} sm={6} md={4} key={voucher.voucherId} display="flex" justifyContent="center">
+            <Card sx={{ backgroundColor: '#E3F2FD', boxShadow: 3, width: '100%', maxWidth: 300 }}>
               <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'center' }}>
-                  {voucher.VoucherName}
+                <Typography variant="h6" fontWeight="bold" textAlign="center" gutterBottom>
+                  {voucher.voucherName}
                 </Typography>
-                <Typography variant="body2" sx={{ marginBottom: '0.5rem', textAlign: 'center' }}>
-                  {voucher.VoucherDescription}
-                </Typography>
-                <Typography variant="caption" display="block" sx={{ marginBottom: '1rem', textAlign: 'center' }}>
+                <Typography variant="caption" display="block" textAlign="center" gutterBottom>
                   Expires on {dayjs(voucher.ExpiryDate).format('DD/MM/YYYY')}
                 </Typography>
-                <Button variant="contained" fullWidth sx={{ textTransform: 'none', fontWeight: 'bold', backgroundColor: '#C6487E', '&:hover': { backgroundColor: '#B0376D' } }}>
-                  Use Voucher
+                <Button variant="contained" fullWidth sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}>
+                  USE VOUCHER
                 </Button>
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
+    </Container>
     </Box>
   );
 };
