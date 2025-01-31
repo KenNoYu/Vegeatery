@@ -70,7 +70,6 @@ import Accounts from "./pages/Accounts/Admin/Accounts";
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
 import { AccountCircle } from '@mui/icons-material'; // Import AccountCircle icon
-import { AccountCircle } from '@mui/icons-material'; // Import AccountCircle icon
 
 function App() {
   const [user, setUser] = useState(null);
