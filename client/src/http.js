@@ -28,7 +28,9 @@ instance.interceptors.response.use(
         // Handle 401 (Unauthorized) or 403 (Forbidden) errors
         if (error.response.status === 401 || error.response.status === 403) {
             // Handle unauthorized access by redirecting to the login page or clearing user data
-            window.location = "/login";
+            if(!window.location.startWith("/login")) {
+                window.location = "/login";
+            }
         }
         return Promise.reject(error);
     }
