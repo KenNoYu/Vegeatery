@@ -23,11 +23,9 @@ const AdminVouchersSystemEdit = () => {
     const navigate = useNavigate();
 
     const [voucher, setVoucher] = useState({
-        voucherName: '',
-        voucherDescription: '',
-        expiryDate: '',
-        tierId: '',
-    });
+        voucherName: '', discountPercentage: 1.0, expiryDate: '', tierId: '',
+        tier: { tierId: '', tierName: '', minPoints: 0 } // Added tier object
+      });
 
     const [tiers, setTiers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -56,8 +54,8 @@ const AdminVouchersSystemEdit = () => {
             return;
         }
 
-        if (voucher.voucherDescription.length > 100) {
-            setErrorMessage("Voucher description cannot exceed 100 characters.");
+        if (voucher.discountPercentage <= 0 || voucher.discountPercentage > 100) {
+            setErrorMessage("Discount percentage must be between 1 and 100.");
             return;
         }
 
@@ -66,10 +64,7 @@ const AdminVouchersSystemEdit = () => {
             return;
         }
 
-        if (!voucher.voucherDescription.trim()) {
-            setErrorMessage("Voucher description cannot be empty.");
-            return;
-        }
+        
 
         const currentDate = new Date();
         const expiryDate = new Date(voucher.expiryDate);
@@ -109,11 +104,12 @@ const AdminVouchersSystemEdit = () => {
                     fullWidth
                 />
                 <TextField
-                    label="Description"
-                    value={voucher.voucherDescription}
-                    onChange={(e) => setVoucher({ ...voucher, voucherDescription: e.target.value })}
+                    label="Discount Percentage"
+                    value={voucher.discountPercentage}
+                    onChange={(e) => setVoucher({ ...voucher, discountPercentage: parseFloat(e.target.value) || 0 })}
                     fullWidth
-                    multiline
+                    type="number"
+                    inputProps={{ step: "0.01", min: "1", max: "100" }}
                 />
                 <TextField
                     label="Expiry Date"
