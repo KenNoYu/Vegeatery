@@ -7,7 +7,7 @@ import http from "../../../http";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserContext from "../../../contexts/UserContext";
-import loginbanner from "../assets/loginbanner.jpg";
+import loginbanner from "../../../assets/loginbanner.jpg";
 
 function Login() {
   const navigate = useNavigate();
