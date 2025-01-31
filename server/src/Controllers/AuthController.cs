@@ -32,11 +32,6 @@ public class AuthController : ControllerBase
 			.Where(u => u.Username == registerDto.username || u.Email == registerDto.email)
 			.ToListAsync();
 
-		if (existingUser.Count > 1)
-		{
-			return BadRequest(new { message = "Multiple users found with the same Username or Email" });
-		}
-
 		if (existingUser.Count == 1)
 		{
 			return BadRequest(new { message = "Username or Email already exists" });
@@ -68,17 +63,23 @@ public class AuthController : ControllerBase
 			Role = role // Assign the role to the user
 		};
 
-		if (user == null || user.Role == null)
-		{
-			throw new System.Exception("User or user role is not properly initialized.");
-		}
-
 		user.JwtToken = CreateToken(user);
 
 		_context.Users.Add(user);
 		await _context.SaveChangesAsync();
 
-		return Ok(new { message = "Registration successful", token = user.JwtToken });
+		// Create a cookie to store the JWT token
+		var cookieOptions = new CookieOptions
+		{
+			HttpOnly = true,
+			Secure = true,
+			SameSite = SameSiteMode.None,
+			Expires = DateTime.Now.AddHours(1000)
+		};
+
+		Response.Cookies.Append("jwtToken", user.JwtToken, cookieOptions);
+
+		return Ok(new { message = "Registration successful" });
 	}
 
 	[HttpPost("login")]
@@ -93,10 +94,40 @@ public class AuthController : ControllerBase
 			return Unauthorized(new { message = "Invalid credentials" });
 		}
 
-		// Generate a JWT token
-		user.JwtToken = CreateToken(user);
+		 // Generate a JWT token
+		var token = CreateToken(user);
 
-		return Ok(new { message = "Login successful", token = user.JwtToken });
+		// Create a cookie to store the JWT token
+		var cookieOptions = new CookieOptions
+		{
+			HttpOnly = true, // The cookie is inaccessible from JavaScript
+			Secure = true, // Cookie is only sent over HTTPS
+			SameSite = SameSiteMode.None, // Prevent cross-site request forgery (CSRF)
+			Expires = DateTime.Now.AddHours(1000) // Set an expiration time
+		};
+
+		Response.Cookies.Append("jwtToken", token, cookieOptions);
+
+		return Ok(new
+		{
+			message = "Login successful",
+			jwtToken = token
+		});
+	}
+
+	[HttpPost("logout")]
+	public IActionResult Logout()
+	{
+		// Remove the jwtToken cookie by setting its expiration date in the past
+		Response.Cookies.Append("jwtToken", "", new CookieOptions
+		{
+			Expires = DateTime.UtcNow.AddDays(-1), // Set expiration to a past date
+			HttpOnly = true, // Ensure it's not accessible via JavaScript
+			Secure = true, // Only send the cookie over HTTPS
+			SameSite = SameSiteMode.None // Ensure it works with cross-origin requests
+		});
+
+		return Ok(new { message = "Logged out successfully" });
 	}
 
 	[HttpGet("auth")]
@@ -104,30 +135,29 @@ public class AuthController : ControllerBase
 	public IActionResult Auth()
 	{
 		// Extract user claims
-		var idClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-		var nameClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-		var emailClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+		var idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+		var nameClaim = User.FindFirst(ClaimTypes.Name);
+		var emailClaim = User.FindFirst(ClaimTypes.Email);
 
 		// Validate claims
-		if (idClaim != null && nameClaim != null && emailClaim != null)
+		if (idClaim == null || nameClaim == null || emailClaim == null)
 		{
-			var userId = Convert.ToInt32(idClaim.Value);
-			var userName = nameClaim.Value;
-			var userEmail = emailClaim.Value;
+			return Unauthorized(new { message = "User claims are missing or invalid" });
+		}
 
-			var user = new
+		var userId = Convert.ToInt32(idClaim.Value);
+		var userName = nameClaim.Value;
+		var userEmail = emailClaim.Value;
+
+		return Ok(new
+		{
+			User = new
 			{
 				Id = userId,
 				Username = userName,
 				Email = userEmail
-			};
-
-			return Ok(new { User = user });
-		}
-		else
-		{
-			return Unauthorized();
-		}
+			}
+		});
 	}
 
 	[HttpGet("current-user")]
@@ -135,11 +165,11 @@ public class AuthController : ControllerBase
 	public async Task<IActionResult> GetCurrentUser()
 	{
 		// Get the currently logged-in user's Id from the authenticated principal
-		var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-		if (userIdString == null || !int.TryParse(userIdString, out var userId))
+		if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
 		{
-			return Unauthorized();  // If no user is logged in
+			return Unauthorized(new { message = "Invalid or missing user token" });
 		}
 
 		var user = await _context.Users
