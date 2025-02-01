@@ -42,7 +42,7 @@ const ReservationPage = () => {
     email: "",
     mobileNumber: "",
   });
-  const [selectedTables, setSelectedTables] = useState(null);
+  const [selectedTables, setSelectedTables] = useState([]);
 
   useEffect(() => {
     const fetchTables = async () => {
@@ -90,22 +90,32 @@ const ReservationPage = () => {
 
   const handleTableClick = (id) => {
     setTables((prevTables) => {
-      const updatedTables = prevTables.map((table) => {
-        if (table.id === id) {
-          const newStatus = table.status === "available" ? "selected" : "available";
-          return { ...table, status: newStatus };
+      let updatedTables = [...prevTables];
+      let newSelectedTables = [...selectedTables];
+
+      // Find the table being selected
+      const tableIndex = updatedTables.findIndex((table) => table.id === id);
+      if (tableIndex !== -1) {
+        const table = updatedTables[tableIndex];
+
+        if (selectedTables.includes(id)) {
+          // Deselect the table
+          newSelectedTables = newSelectedTables.filter(tableId => tableId !== id);
+          updatedTables[tableIndex] = { ...table, status: "available" };
+        } else {
+          if (selectedTables.length >= 2) {
+            toast.warning("You can only select up to 2 tables.");
+            return prevTables;
+          }
+
+          // Select the table
+          newSelectedTables.push(id);
+          updatedTables[tableIndex] = { ...table, status: "selected" };
         }
-        return table;
-      });
+      }
 
-      // Collect all selected table IDs using the updated tables
-      const selected = updatedTables.filter((table) => table.status === "selected").map((table) => table.id);
-      console.log(selected);
-
-      // Update selectedTables state with a comma-separated string
-      setSelectedTables(selected.join(", "));
-
-      return updatedTables; // Update the state with the new table statuses
+      setSelectedTables(newSelectedTables);
+      return updatedTables;
     });
   };
 
