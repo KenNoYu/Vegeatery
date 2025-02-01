@@ -31,7 +31,10 @@ namespace vegeatery.Models
         [Range(0, int.MaxValue, ErrorMessage = "Total points must be a non-negative value.")]
         public int TotalPoints { get; set; } // Points used for this order
 
-        [Required]
+		[Required]
+		public string TimeSlot { get; set; }
+
+		[Required]
         public string Status { get; set; } = "Pending"; // Pending, In Progress, Completed, Cancelled
 
         [Required, Column(TypeName = "datetime")]
