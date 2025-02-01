@@ -92,7 +92,6 @@ const AdminOrders = () => {
                             <TableRow>
                                 <TableCell>Id</TableCell>
                                 <TableCell>Name</TableCell>
-                                <TableCell>Service</TableCell>
                                 <TableCell>Address</TableCell>
                                 <TableCell>Pick-Up Time</TableCell>
                                 <TableCell>Status</TableCell>
@@ -146,7 +145,6 @@ const AdminOrders = () => {
                         <TableRow>
                             <TableCell>Id</TableCell>
                             <TableCell>Name</TableCell>
-                            <TableCell>Service</TableCell>
                             <TableCell>Address</TableCell>
                             <TableCell>Pick-Up Time</TableCell>
                             <TableCell>Status</TableCell>
@@ -159,7 +157,6 @@ const AdminOrders = () => {
                             <TableRow key={order.id}>
                                 <TableCell>{order.id}</TableCell>
                                 <TableCell>{order.name}</TableCell>
-                                <TableCell>{order.service}</TableCell>
                                 <TableCell>{order.address}</TableCell>
                                 <TableCell>{order.pickUpTime}</TableCell>
                                 <TableCell>{order.status}</TableCell>
