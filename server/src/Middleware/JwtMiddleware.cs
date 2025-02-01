@@ -41,8 +41,10 @@ namespace vegeatery.Middleware
 
 					context.User = claimsPrincipal; // Attach the claims to the HttpContext user
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
+					// Log the error
+					Console.WriteLine("Token validation failed: " + ex.Message);
 					// Invalid token, respond with 401 Unauthorized
 					context.Response.StatusCode = 401;
 					await context.Response.WriteAsync("Unauthorized");
