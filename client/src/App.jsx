@@ -198,7 +198,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/form" element={<MyForm />} />
               <Route path="/overview" element={<UserOverview />} />
-              <Route path="/overview/profile" element={<Profile />} />
+              <Route path="/user/profile" element={<Profile />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/Admin/Accounts" element={<Accounts />} />
               {/* PRODUCTS */}

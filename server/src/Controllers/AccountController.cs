@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using vegeatery;
 using vegeatery.Dtos;
 
@@ -48,7 +45,8 @@ public class AccountController : ControllerBase
 			JwtToken = user.JwtToken,
 			CreatedAt = user.CreatedAt,
 			RoleId = user.RoleId,
-			RoleName = user.Role.Name
+			RoleName = user.Role.Name,
+			CartId = user.CartId
 		};
 
 		return Ok(userDto);
@@ -80,7 +78,8 @@ public class AccountController : ControllerBase
 			JwtToken = user.JwtToken ?? string.Empty,
 			CreatedAt = user.CreatedAt,
 			RoleId = user.RoleId,
-			RoleName = user.Role?.Name ?? string.Empty
+			RoleName = user.Role?.Name ?? string.Empty,
+			CartId = user.CartId
 		}).ToList();
 
 		return Ok(userDtos);

@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Data;
 using vegeatery.Controllers;
+using Newtonsoft.Json.Linq;
 namespace vegeatery
 {
 	public class MyDbContext : DbContext
@@ -96,7 +97,8 @@ namespace vegeatery
 			Agreement = true,
 			TotalPoints = 0,
 			RoleId = 3, // Admin role
-            JwtToken = GenerateJwtToken("masteradmin", "Admin")
+			CartId = Guid.NewGuid(),
+			JwtToken = GenerateJwtToken("masteradmin", "Admin")
 		},
 		new User
 		{
@@ -114,7 +116,8 @@ namespace vegeatery
             Agreement = true,
 			TotalPoints = 0,
 			RoleId = 2, // Staff role
-            JwtToken = GenerateJwtToken("staffuser", "Staff")
+			CartId = Guid.NewGuid(),
+			JwtToken = GenerateJwtToken("staffuser", "Staff")
 		}
 	};
 
