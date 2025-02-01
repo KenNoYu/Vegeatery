@@ -94,7 +94,7 @@ public class AuthController : ControllerBase
 			return Unauthorized(new { message = "Invalid credentials" });
 		}
 
-		 // Generate a JWT token
+		// Generate a JWT token
 		var token = CreateToken(user);
 
 		// Create a cookie to store the JWT token
@@ -159,6 +159,37 @@ public class AuthController : ControllerBase
 			}
 		});
 	}
+
+	[HttpGet("role")]
+	[Authorize]
+	public async Task<IActionResult> GetUserRole()  // Make the method async
+	{
+		var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+		if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+		{
+			return Unauthorized(new { message = "Invalid or missing user token" });
+		}
+
+		var user = await _context.Users  // Add await here
+			.Include(u => u.Role)
+			.Where(u => u.Id == userId)
+			.Select(u => new UserDto
+			{
+				Id = u.Id,
+				RoleId = u.RoleId,
+				RoleName = u.Role.Name
+			})
+			.FirstOrDefaultAsync();  // Add await here
+
+		if (user == null)
+		{
+			return NotFound();  // If the user is not found
+		}
+
+		return Ok(user);  // Return the user data
+	}
+
 
 	[HttpGet("current-user")]
 	[Authorize]  // Ensures the user is authenticated
