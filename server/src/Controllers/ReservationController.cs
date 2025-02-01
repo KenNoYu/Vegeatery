@@ -84,6 +84,13 @@ namespace vegeatery.Controllers
             }
         }
 
+        [HttpGet("GetTables")]
+        public async Task<ActionResult<IEnumerable<Table>>> GetTables()
+        {
+            var tables = await _dbContext.Tables.ToListAsync();
+            return Ok(tables);
+        }
+
         [HttpGet("GetReservations")]
         public IActionResult GetReservations([FromQuery] DateOnly date)
         {
