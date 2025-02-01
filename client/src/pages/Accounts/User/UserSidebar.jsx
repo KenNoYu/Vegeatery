@@ -59,12 +59,12 @@ const Sidebar = () => {
             component={Link} // Use Link from React Router
             to={item.path} // Link to respective path
             sx={{
-              backgroundColor: isRouteActive(item.path) ? '#D81B60' : 'transparent',
+              backgroundColor: isRouteActive(item.path) ? '#C6487E' : 'transparent',
               color: isRouteActive(item.path) ? '#FFFFFF' : 'inherit',
               borderRadius: isRouteActive(item.path) ? '20px' : '0px',
               marginBottom: '8px',
               '&:hover': {
-                backgroundColor: isRouteActive(item.path) ? '#D81B60' : '#F1F1F1',
+                backgroundColor: isRouteActive(item.path) ? '#A83866' : '#F1F1F1',
               },
             }}
           >
