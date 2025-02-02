@@ -24,12 +24,13 @@ import AddCategory from './pages/ProductCategory/AddCategory';
 import AddProduct from './pages/ProductCategory/AddProduct';
 import ProductDetails from './pages/ProductCategory/ProductDetails';
 import EditProduct from './pages/ProductCategory/EditProduct';
+import UserMenu from './pages/ProductCategory/User/UserMenu';
 
 // REWARDS
-import PointsSystem from './pages/rewards/User/PointsSystem';
-import PointsHistory from './pages/rewards/User/PointsHistory';
+//import PointsSystem from './pages/rewards/User/PointsSystem';
+//import PointsHistory from './pages/rewards/User/PointsHistory';
 import AdminVouchersSystem from './pages/rewards/Admin/VouchersSystem';
-import AdminVouchersSystemEdit from './pages/rewards/Admin/VouchersSystemEdit';
+// import AdminVouchersSystemEdit from './pages/rewards/Admin/VouchersSystemEdit';
 import PointsRange from './pages/rewards/Admin/PointsRange';
 
 // FEEDBACKS
@@ -206,6 +207,8 @@ function App() {
                   <Route path={"/viewcategories/:id"} element={<CategoryList />} />
                   <Route path="/product/:productId" element={<ProductDetails />} />
                   <Route path="/editproduct/:productId" element={<EditProduct />} />
+                  <Route path="/Store" element={<UserMenu/>} />
+                  <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
                   {/* RESERVATION */}
                   <Route path="/reserve" element={<ReservationPage/>} />
                   <Route path="/reserve/confirmed" element={<ConfirmationPage/>} />
@@ -213,8 +216,8 @@ function App() {
                   <Route path="/staff/reservationlogs" element={<StaffReserveLogs/>} />
                   <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation/>}/>
                   {/* REWARDS */}
-                  <Route path="/rewards/user/pointssystem" element={<PointsSystem />} />
-                  <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
+                  {/* <Route path="/rewards/user/pointssystem" element={<PointsSystem />} /> */}
+                  {/* <Route path="/rewards/user/pointshistory" element={<PointsHistory />} /> */}
                   <Route path="/rewards/admin/voucherssystem" element={<AdminVouchersSystem />} />
                   <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />
                   <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback />} />
