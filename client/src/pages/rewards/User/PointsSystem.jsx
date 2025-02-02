@@ -4,8 +4,10 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import http from '../../../http'; 
 import dayjs from 'dayjs';
+import RoleGuard from '../../../utils/RoleGuard';
 
 const PointsSystem = () => {
+  RoleGuard('user');
   const points = 100; // Current points
   const maxPoints = 276; // Points required for the next tier
   const [vouchers, setVouchers] = useState([]); // State to store fetched vouchers
