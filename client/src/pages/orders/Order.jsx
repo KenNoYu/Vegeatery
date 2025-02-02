@@ -340,7 +340,6 @@ const Orders = () => {
                     </Grid>
 
                     {/* Order Summary */}
-                    {/*
                     <Grid size={{ xs: 12, md: 6, lg: 4 }}>
                         <Paper elevation={3} sx={{ padding: 4 }}>
                             <Typography variant="h5" gutterBottom>
@@ -369,7 +368,6 @@ const Orders = () => {
                             </Button>
                         </Paper>
                     </Grid>
-                    */}
                 </Grid>
             </Box>
 
