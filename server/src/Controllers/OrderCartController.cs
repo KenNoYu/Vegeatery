@@ -104,6 +104,7 @@ namespace vegeatery.Controllers
                     cartItem.Product.ProductPrice,
                     cartItem.Quantity,
                     cartItem.Price,
+                    cartItem.Points,
                     cartItem.CreatedAt,
                     cartItem.UpdatedAt
                 })

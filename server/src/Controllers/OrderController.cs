@@ -28,9 +28,10 @@ namespace vegeatery.Controllers
                         FullName = request.FullName,
                         Email = request.Email,
                         Address = request.Address,
-                        OrderDate = DateTime.Now,
+                        OrderDate = request.OrderDate,
                         TotalPrice = cart.CartItems.Sum(item => item.Price * item.Quantity),
                         TotalPoints = request.TotalPoints,
+                        TimeSlot = request.TimeSlot,
                         Status = request.Status,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
@@ -94,8 +95,10 @@ namespace vegeatery.Controllers
                     Email = order.Email,
                     Address = order.Address,
                     OrderDate = order.OrderDate,
+                    TimeSlot = order.TimeSlot,
                     TotalPrice = order.TotalPrice,
-                    OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
+					TotalPoints = order.TotalPoints,
+					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
                     {
                         ProductName = oi.Product.ProductName, // Assuming ProductName is a property of Product
                         Quantity = oi.Quantity,
@@ -169,6 +172,7 @@ namespace vegeatery.Controllers
                         Order.OrderId,
                         Order.FullName,
                         Order.OrderDate,
+                        Order.TimeSlot,
                         Order.Status,
                         Items = Order.OrderItems.Select(item => new
                         {

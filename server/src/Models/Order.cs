@@ -21,7 +21,7 @@ namespace vegeatery.Models
         public string Address { get; set; }
 
         [Column(TypeName = "datetime")]
-        public DateTime OrderDate { get; set; } = DateTime.Now;
+        public DateTime OrderDate { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
@@ -31,8 +31,7 @@ namespace vegeatery.Models
         [Range(0, int.MaxValue, ErrorMessage = "Total points must be a non-negative value.")]
         public int TotalPoints { get; set; } // Points used for this order
 
-		[Required]
-		public string TimeSlot { get; set; }
+		public TimeOnly TimeSlot { get; set; }
 
 		[Required]
         public string Status { get; set; } = "Pending"; // Pending, In Progress, Completed, Cancelled
