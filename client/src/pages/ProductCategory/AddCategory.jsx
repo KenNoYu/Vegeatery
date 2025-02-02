@@ -6,15 +6,16 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import http from '../../http';
+import RoleGuard from '../../utils/RoleGuard';
 
 function AddCategory() {
+    RoleGuard('Admin');
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
     const formik = useFormik({
         initialValues: {
-            categoryName: '',
-            totalProduct: ''
+            categoryName: ''
         },
         validationSchema: yup.object({
             categoryName: yup
@@ -22,13 +23,7 @@ function AddCategory() {
                 .trim()
                 .min(3, 'Category name must be at least 3 characters')
                 .max(50, 'Category name must be at most 50 characters')
-                .required('Category name is required'),
-            totalProduct: yup
-                .number()
-                .typeError('Total products must be a number')
-                .integer('Total products must be an integer')
-                .min(1, 'Total products must be at least 1')
-                .required('Total products is required'),
+                .required('Category name is required')
         }),
         onSubmit: (data) => {
             setLoading(true);
@@ -76,22 +71,7 @@ function AddCategory() {
                         formik.touched.categoryName && formik.errors.categoryName
                     }
                 />
-                <TextField
-                    fullWidth
-                    margin="dense"
-                    label="Total Products"
-                    name="totalProduct"
-                    value={formik.values.totalProduct}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={
-                        formik.touched.totalProduct &&
-                        Boolean(formik.errors.totalProduct)
-                    }
-                    helperText={
-                        formik.touched.totalProduct && formik.errors.totalProduct
-                    }
-                />
+                
                 <Box sx={{ mt: 2 }}>
                     <Button
                         variant="contained"
