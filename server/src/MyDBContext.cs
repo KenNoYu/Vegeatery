@@ -59,6 +59,13 @@ namespace vegeatery
 				new Role { Id = 3, Name = "Admin" }
 			);
 
+			// Seed Tier
+			modelBuilder.Entity<Tier>().HasData(
+				new Tier { TierId = 1, TierName = "Bronze", MinPoints = 0},
+				new Tier { TierId = 2, TierName = "Bronze", MinPoints = 278},
+				new Tier { TierId = 3, TierName = "Bronze", MinPoints = 778}
+			);
+
 			// Common token generation logic
 			string GenerateJwtToken(string username, string role)
 			{
