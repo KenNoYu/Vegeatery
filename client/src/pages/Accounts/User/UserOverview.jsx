@@ -22,6 +22,7 @@ function UserOverview() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -39,6 +40,7 @@ function UserOverview() {
       .then((res) => {
         console.log(res);
         setUser(res);
+        getCustOrders(user.id)
         setLoading(false);
       })
       .catch((err) => {
@@ -47,6 +49,19 @@ function UserOverview() {
         setLoading(false);
       });
   }, []);
+
+  const getCustOrders = (userId) => {
+    http.get(`/order/getByCustId/custId=${userId}`)
+      .then((res) => {
+        setLoading(false);
+        setOrders(res.data || []);
+        console.log("API response:", res.data);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error("Error fetching orders:", error);
+      })
+  }
 
   // If still loading, show a loading message
   if (loading) {
@@ -244,35 +259,52 @@ function UserOverview() {
             <Typography variant="h6" gutterBottom>
               Recent Purchases
             </Typography>
-            <Card sx={{ mb: 2 }}>
-              <CardContent
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Box sx={{ display: "flex", gap: 2 }}>
-                  <img
-                    src="/path/to/product.jpg"
-                    alt="Product"
-                    style={{ width: 80, height: 80 }}
-                  />
-                  <Box>
-                    <Typography variant="body1">Green Bowl Bliss</Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      x2
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ textAlign: "right" }}>
-                  <Typography variant="body1">$10.50</Typography>
-                  <Button variant="contained" size="small">
-                    Buy Again
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
+            {orders.length > 0 ? (
+              orders.map((order, i) => {
+                return (
+                  <Card sx={{ mb: 2 }}>
+                    <CardContent
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box key={item.productName || i} sx={{ display: "flex", gap: 2 }}>
+                      <Typography variant="body1">{order.date}</Typography>
+                        {order.items.map((item, i) => {
+                          return (
+                            <>
+                              <img
+                                src="/path/to/product.jpg"
+                                alt="Product"
+                                style={{ width: 80, height: 80 }}
+                              />
+                              <Box>
+                                <Typography variant="body1">{item.productName}</Typography>
+                                <Typography variant="caption" color="textSecondary">
+                                  x{item.quantity}
+                                </Typography>
+                              </Box>
+                            </>
+                          )
+                        })}
+                      </Box>
+                      <Box sx={{ textAlign: "right" }}>
+                        <Typography variant="body1">$10.50</Typography>
+                        <Button variant="contained" size="small">
+                          Buy Again
+                        </Button>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                )
+              })
+            ) : (
+              <Typography variant="body1" sx={{ mt: 2 }}>
+                No Past Purchases
+              </Typography>
+            )}
           </Box>
         </Box>
       </Box>
