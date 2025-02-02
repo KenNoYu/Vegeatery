@@ -24,12 +24,17 @@ import AddCategory from './pages/ProductCategory/AddCategory';
 import AddProduct from './pages/ProductCategory/AddProduct';
 import ProductDetails from './pages/ProductCategory/ProductDetails';
 import EditProduct from './pages/ProductCategory/EditProduct';
+import UserMenu from './pages/ProductCategory/User/UserMenu';
+import EditCategory from './pages/ProductCategory/EditCategory';
 
 // REWARDS
 import PointsSystem from './pages/rewards/User/PointsSystem';
 import PointsHistory from './pages/rewards/User/PointsHistory';
 import AdminVouchersSystem from './pages/rewards/Admin/VouchersSystem';
+// import AdminVouchersSystemEdit from './pages/rewards/Admin/VouchersSystemEdit';
 import PointsRange from './pages/rewards/Admin/PointsRange';
+
+// FEEDBACKS
 import GeneralFeedback from './pages/feedback/User/GeneralFeedback';
 import GeneralFeedbackEdit from './pages/feedback/User/GeneralFeedbackEdit';
 import AdminGeneralFeedback from './pages/feedback/Admin/GeneralFeedback';
@@ -52,8 +57,8 @@ import Tutorials from "./pages/Tutorials";
 import AddTutorial from "./pages/AddTutorial";
 import EditTutorial from "./pages/EditTutorial";
 import MyForm from "./pages/MyForm";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
+import Register from "./pages/Accounts/User/Register";
+import Login from "./pages/Accounts/User/Login";
 import Home from "./pages/Home";
 import ProductsTemp from "./pages/ProductTemporary";
 
@@ -65,8 +70,7 @@ import Accounts from "./pages/Accounts/Admin/Accounts";
 
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
-import { AccountCircle } from '@mui/icons-material';
-
+import { AccountCircle, Edit } from '@mui/icons-material'; // Import AccountCircle icon
 
 function App() {
   const [user, setUser] = useState(null);
@@ -82,12 +86,9 @@ function App() {
     setAnchorEl(null);
   };
 
-
-
   useEffect(() => {
-    if (localStorage.getItem("accessToken")) {
       http
-        .get("/Auth/auth")
+        .get("/Auth/auth", { withCredentials: true })
         .then((res) => {
           console.log(res.data.user.id);
           setUser(res.data.user);
@@ -97,14 +98,20 @@ function App() {
           console.error("Error fetching user data", err);
           setLoading(false); // Stop loading even if there's an error
         });
-    } else {
-      setLoading(false); // If no token, stop loading
-    }
   }, []);
 
   const logout = () => {
-    localStorage.clear();
-    window.location = "/";
+    // Send POST request to logout and clear cookie
+    http
+      .post("/auth/logout", {}, { withCredentials: true })
+      .then((res) => {
+        console.log(res.data.message);  // Log the logout success message
+        localStorage.clear();  // Optionally clear localStorage as well
+        window.location = "/";  // Redirect to the login or home page
+      })
+      .catch((err) => {
+        console.error("Error during logout", err);
+      });
   };
 
   return (
@@ -179,7 +186,6 @@ function App() {
         </Toolbar>
       </Container>
     </AppBar>
-
               <Container>
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -192,7 +198,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/form" element={<MyForm />} />
                   <Route path="/overview" element={<UserOverview />} />
-                  <Route path="/overview/profile" element={<Profile />} />
+                  <Route path="/user/profile" element={<Profile />} />
                   <Route path="/unauthorized" element={<Unauthorized />} />
                   <Route path="/Admin/Accounts" element={<Accounts />} />
                   {/* PRODUCTS */}
@@ -202,6 +208,9 @@ function App() {
                   <Route path={"/viewcategories/:id"} element={<CategoryList />} />
                   <Route path="/product/:productId" element={<ProductDetails />} />
                   <Route path="/editproduct/:productId" element={<EditProduct />} />
+                  <Route path="/Store" element={<UserMenu/>} />
+                  <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
+                  <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
                   {/* RESERVATION */}
                   <Route path="/reserve" element={<ReservationPage/>} />
                   <Route path="/reserve/confirmed" element={<ConfirmationPage/>} />
@@ -209,7 +218,7 @@ function App() {
                   <Route path="/staff/reservationlogs" element={<StaffReserveLogs/>} />
                   <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation/>}/>
                   {/* REWARDS */}
-                  <Route path="/rewards/user/pointssystem" element={<PointsSystem />} />
+                  <Route path="/rewards/user/pointssystem" element={<PointsSystem />} /> 
                   <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
                   <Route path="/rewards/admin/voucherssystem" element={<AdminVouchersSystem />} />
                   <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />

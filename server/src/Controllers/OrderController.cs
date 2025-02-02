@@ -75,41 +75,41 @@ namespace vegeatery.Controllers
         {
             try
             {
-				// Retrieve the order and its items
-				var order = _context.Order
-					.Include(o => o.OrderItems)
-					.ThenInclude(oi => oi.Product) // Assuming OrderItem has a navigation property to Product
-					.FirstOrDefault(o => o.OrderId == orderId);
+                // Retrieve the order and its items
+                var order = _context.Order
+                    .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product) // Assuming OrderItem has a navigation property to Product
+                    .FirstOrDefault(o => o.OrderId == orderId);
 
-				if (order == null)
-				{
-					return NotFound(new { Message = "Order not found" });
-				}
+                if (order == null)
+                {
+                    return NotFound(new { Message = "Order not found" });
+                }
 
-				// Map the order and its items to a response DTO
-				var orderResponse = new OrderResponse
-				{
-					OrderId = order.OrderId,
-					FullName = order.FullName,
-					Email = order.Email,
-					Address = order.Address,
-					OrderDate = order.OrderDate,
-					TotalPrice = order.TotalPrice,
-					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
-					{
-						ProductName = oi.Product.ProductName, // Assuming ProductName is a property of Product
-						Quantity = oi.Quantity,
-						Price = oi.Price
-					}).ToList()
-				};
+                // Map the order and its items to a response DTO
+                var orderResponse = new OrderResponse
+                {
+                    OrderId = order.OrderId,
+                    FullName = order.FullName,
+                    Email = order.Email,
+                    Address = order.Address,
+                    OrderDate = order.OrderDate,
+                    TotalPrice = order.TotalPrice,
+                    OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
+                    {
+                        ProductName = oi.Product.ProductName, // Assuming ProductName is a property of Product
+                        Quantity = oi.Quantity,
+                        Price = oi.Price
+                    }).ToList()
+                };
 
-				return Ok(orderResponse);
+                return Ok(orderResponse);
 
-			}
-            catch (Exception ex) 
+            }
+            catch (Exception ex)
             {
-				return StatusCode(500, new { Message = "An error occurred while getting orders.", Details = ex.Message });
-			}
+                return StatusCode(500, new { Message = "An error occurred while getting orders.", Details = ex.Message });
+            }
         }
 
         // Get all orders (for admin)
@@ -217,51 +217,47 @@ namespace vegeatery.Controllers
             }
         }
 
-        // Get all orders by customer id (for customer)
+        // Get order by customer id (for customer)
         [HttpGet("customerId")]
         public IActionResult GetOrderByCustId(int custId)
         {
             try
             {
-				// retireve customer and all their orders
-                var order = _context.Order.FirstOrDefault(order => order.CustomerId == custId);
-				if (order == null)
-				{
-					return NotFound(new { Message = "No order made yet" });
-				}
-
                 var result = _context.Order
-					.Include(order => order.OrderItems)
-					.Where(order => order.CustomerId == custId)
-					.Select(Order => new
-					{
-						Order.OrderId,
-						Order.OrderDate,
-						Order.TotalPrice,
-						Items = Order.OrderItems.Select(item => new
-						{
-							ProductName = item.Product != null ? item.Product.ProductName : "Unknown",
-							item.Quantity,
-							item.PointsEarned
-						}).ToList()
-					})
-					.ToList()
-					.OrderBy(order => order.OrderDate);
-
-				if (!result.Any())
+                .Include(Order => Order.OrderItems)
+                .Where(Order => Order.CustomerId == custId)
+                .Select(Order => new
                 {
-					return Ok(new { Message = "You don't have any orders", Orders = result });
-				}
-				return Ok(result);
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, new { Message = "An error occurred while getting orders.", Details = ex.Message });
-			} 
-		}
+                    Order.OrderId,
+                    Order.CustomerId,
+                    Order.OrderDate,
+                    Order.Status,
+                    Order.TotalPrice,
+                    OrderItems = Order.OrderItems.Select(item => new
+                    {
+                        ProductName = item.Product != null ? item.Product.ProductName : "Unknown",
+                        item.Price,
+                        item.Quantity,
+                        item.PointsEarned
+                    }).ToList()
+                })
+                .ToList();
 
-		// Delete Order (Debug purpose)
-		[HttpDelete("deleteOrder")]
+                if (!result.Any())
+                {
+                    return NotFound(new { Message = "No orders found for the given customer ID." });
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while getting your order.", Details = ex.Message });
+            }
+        }
+
+        // Delete Order (Debug purpose)
+        [HttpDelete("deleteOrder")]
         public IActionResult DeleteOrder(int orderId)
         {
             try
