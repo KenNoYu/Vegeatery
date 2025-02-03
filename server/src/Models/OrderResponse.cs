@@ -9,7 +9,7 @@
 		public DateTime OrderDate { get; set; }
 		public TimeOnly TimeSlot { get; set; }
 		public decimal TotalPrice { get; set; }
-		public decimal TotalPoints { get; set; }
+		public int TotalPoints { get; set; }
 		public List<OrderItemResponse> OrderItems { get; set; }
 	}
 }
