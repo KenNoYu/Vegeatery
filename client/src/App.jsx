@@ -38,7 +38,6 @@ import PointsRange from "./pages/rewards/Admin/PointsRange";
 
 // FEEDBACKS
 import GeneralFeedback from "./pages/feedback/User/GeneralFeedback";
-import GeneralFeedbackEdit from "./pages/feedback/User/GeneralFeedbackEdit";
 import AdminGeneralFeedback from "./pages/feedback/Admin/GeneralFeedback";
 
 // RESERVATIONS
@@ -347,7 +346,6 @@ function App() {
               <Route path="/rewards/admin/voucherssystem" element={<AdminVouchersSystem />} />
               <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />
               <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback />} />
-              <Route path="/general-feedback/edit/:id" element={<GeneralFeedbackEdit />} />
               <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />} />
 
               {/* ORDERS */}
