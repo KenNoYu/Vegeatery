@@ -100,6 +100,19 @@ const StaffOrders = () => {
         }
     };
 
+    // convert back to 12 hour clock
+    const convertTo12HourFormat = (timeStr) => {
+        if (!timeStr) return null;
+    
+        const [hours, minutes] = timeStr.split(":").map(Number);
+        const period = hours >= 12 ? "PM" : "AM";
+        let displayHours = hours % 12;
+    
+        if (displayHours === 0) displayHours = 12; // Handle 12 AM/PM case
+    
+        return `${displayHours}:${String(minutes).padStart(2, "0")}${period}`;
+    };
+
     if (loading) {
         return (
             <Box>
@@ -145,7 +158,7 @@ const StaffOrders = () => {
                                         </Box>
                                     )
                                 })}
-                                <Typography>Pick-Up Time: {order.date}</Typography>
+                                <Typography>Pick-Up Time: {convertTo12HourFormat(order.timeSlot)}</Typography>
                                 <Typography>Status: {order.status}</Typography>
                                 <Button
                                     variant="contained"
