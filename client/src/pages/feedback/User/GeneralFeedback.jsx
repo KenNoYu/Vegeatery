@@ -107,7 +107,7 @@ const GeneralFeedback = () => {
                                 backgroundColor: '#E7ABC5'
                             }
                         }}
-                        onClick={() => navigate('/feedback/user/generalfeedbackadd')}
+                        onClick={() => navigate('/user/generalfeedbackadd')}
                     >
                         PROVIDE FEEDBACK
                     </Button>

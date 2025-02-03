@@ -353,16 +353,16 @@ function App() {
               />
 
               {/* REWARDS */}
-              <Route path="/rewards" element={<PointsSystem />} />
-              <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
-              <Route path="/rewards/admin/voucherssystem"element={<AdminVouchersSystem />}/>
+              <Route path="/user/rewards" element={<PointsSystem />} />
+              <Route path="/user/pointshistory" element={<PointsHistory />} />
+              <Route path="/admin/rewards"element={<AdminVouchersSystem />}/>
               <Route path="/rewards/admin/voucherssystem/edit/:id" element={<AdminVouchersSystemEdit />} />
-              <Route path="/rewards/admin/voucherssystemadd" element={<VouchersSystemAdd />} />
-              <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />
-              <Route path="/feedback" element={<GeneralFeedback />} />
-              <Route path="/feedback/user/generalfeedbackadd" element={<GeneralFeedbackAdd />} />
-              <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />} />
-              <Route path="/feedback/admin/ratingstatistics" element={<RatingStatistics />} />
+              <Route path="/admin/voucherssystemadd" element={<VouchersSystemAdd />} />
+              <Route path="/admin/pointsrange" element={<PointsRange />} />
+              <Route path="/user/feedback" element={<GeneralFeedback />} />
+              <Route path="/user/generalfeedbackadd" element={<GeneralFeedbackAdd />} />
+              <Route path="/admin/feedback" element={<AdminGeneralFeedback />} />
+              <Route path="/admin/ratingstatistics" element={<RatingStatistics />} />
               {/* ORDERS */}
               <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />

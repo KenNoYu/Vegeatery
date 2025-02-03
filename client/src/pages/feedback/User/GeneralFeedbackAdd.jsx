@@ -57,7 +57,7 @@ const GeneralFeedbackAdd = () => {
 
             setForm({ feedbackTitle: "", imagePath: null, rating: 1, review: "" });
             setEditId(null);
-            navigate(`/feedback`);
+            navigate(`/user/feedback`);
         } catch (error) {
             console.error("Error submitting feedback:", error);
             setErrorMessage("Failed to submit feedback. Please try again.");
@@ -177,7 +177,7 @@ const GeneralFeedbackAdd = () => {
 
                             <Grid container spacing={2} justifyContent="space-between" mt={5} >
 
-                                <Button onClick={() => navigate('/feedback')} variant="contained" sx={{
+                                <Button onClick={() => navigate('/user/feedback')} variant="contained" sx={{
                                     textTransform: 'none',
                                     color: '#C6487E',
                                     backgroundColor: '#FFFFFF',
