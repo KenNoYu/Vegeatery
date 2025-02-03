@@ -35,6 +35,26 @@ namespace vegeatery.Controllers
             return Ok(feedbacks);
         }
 
+        [HttpGet("user/{userId}")]
+        public IActionResult GetFeedbacksByUserId(int userId)
+        {
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var feedbacks = _context.GeneralFeedbacks
+                .Where(f => f.UserId == userId)
+                .Select(f => new
+                {
+                    f.FeedbackId,
+                    f.UserId,
+                    f.FeedbackTitle,
+                    ImagePath = string.IsNullOrEmpty(f.ImagePath) ? null : $"{baseUrl}{f.ImagePath}",
+                    f.Rating,
+                    Review = string.IsNullOrWhiteSpace(f.Review) ? "Not provided" : f.Review,
+                    f.CreatedAt,
+                    f.UpdatedAt
+                }).ToList();
+            return Ok(feedbacks);
+        }
+
 
         [HttpGet("{id}")]
         public IActionResult GetFeedback(int id)

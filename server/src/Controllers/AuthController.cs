@@ -34,7 +34,17 @@ public class AuthController : ControllerBase
 	[HttpPost("register")]
 	public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
 	{
-		var existingUser = await _context.Users
+
+      
+
+        var tier = await _context.Tiers.SingleOrDefaultAsync(r => r.TierId == 1); // Default tier is Bronse
+
+        if (tier == null)
+        {
+            return BadRequest(new { message = "Tier not found" });
+        }
+
+        var existingUser = await _context.Users
 			.Where(u => u.Username == registerDto.username || u.Email == registerDto.email)
 			.ToListAsync();
 
@@ -43,9 +53,9 @@ public class AuthController : ControllerBase
 			return BadRequest(new { message = "Username or Email already exists" });
 		}
 
-		var role = await _context.Role.SingleOrDefaultAsync(r => r.Id == 1); // Default role is User
+        var role = await _context.Role.SingleOrDefaultAsync(r => r.Id == 1); // Default role is User
 
-		if (role == null)
+        if (role == null)
 		{
 			return BadRequest(new { message = "Role not found" });
 		}
@@ -61,7 +71,7 @@ public class AuthController : ControllerBase
 		_context.Cart.Add(cart);
 		await _context.SaveChangesAsync();
 
-		var user = new User
+        var user = new User
 		{
 			Username = registerDto.username,
 			PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.password),
@@ -76,7 +86,9 @@ public class AuthController : ControllerBase
 			Promotions = registerDto.promotions,
 			Agreement = registerDto.agreement,
 			TotalPoints = 0,
-			RoleId = role.Id,
+            TierId = tier.TierId,
+			Tier = tier,
+            RoleId = role.Id,
 			Role = role, // Assign the role to the user
 			CartId = cart.CartId
 		};
@@ -230,6 +242,7 @@ public class AuthController : ControllerBase
 
 		var user = await _context.Users
 			.Include(u => u.Role)
+			.Include(u => u.Tier)
 			.Where(u => u.Id == userId)
 			.Select(u => new UserDto
 			{
@@ -249,6 +262,8 @@ public class AuthController : ControllerBase
 				JwtToken = u.JwtToken,
 				CreatedAt = u.CreatedAt,
 				RoleId = u.RoleId,
+				TierId = u.TierId,
+				TierName = u.Tier.TierName,
 				RoleName = u.Role.Name,
 				CartId = u.CartId,
 			})
@@ -380,6 +395,34 @@ public class AuthController : ControllerBase
 		string token = tokenHandler.WriteToken(securityToken);
 		return token;
 	}
+
+    [HttpPost("user/{userId}/add-points")]
+    public async Task<IActionResult> UpdateUserPoints(int userId, int pointsToAdd)
+{
+    var user = await _context.Users.FindAsync(userId);
+    if (user == null)
+    {
+        return NotFound("User not found");
+    }
+
+    user.TotalPoints += pointsToAdd;
+
+    // Update tier based on points
+    var newTier = await _context.Tiers
+        .Where(t => t.MinPoints <= user.TotalPoints)
+        .OrderByDescending(t => t.MinPoints)
+        .FirstOrDefaultAsync();
+
+    if (newTier != null && newTier.TierId != user.TierId)
+    {
+        user.TierId = newTier.TierId;
+    }
+
+    await _context.SaveChangesAsync();
+    return Ok(user);
+}
+
+    
 }
 
 public class RegisterDto

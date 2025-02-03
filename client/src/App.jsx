@@ -30,15 +30,18 @@ import UserMenu from "./pages/ProductCategory/User/UserMenu";
 import EditCategory from "./pages/ProductCategory/EditCategory";
 
 // REWARDS
-import PointsSystem from "./pages/rewards/User/PointsSystem";
-import PointsHistory from "./pages/rewards/User/PointsHistory";
-import AdminVouchersSystem from "./pages/rewards/Admin/VouchersSystem";
-// import AdminVouchersSystemEdit from "./pages/rewards/Admin/VouchersSystemEdit';
-import PointsRange from "./pages/rewards/Admin/PointsRange";
+import PointsSystem from './pages/rewards/User/PointsSystem';
+import PointsHistory from './pages/rewards/User/PointsHistory';
+import AdminVouchersSystem from './pages/rewards/Admin/VouchersSystem';
+import AdminVouchersSystemEdit from './pages/rewards/Admin/VouchersSystemEdit';
+import VouchersSystemAdd from './pages/rewards/Admin/VouchersSystemAdd';
+import PointsRange from './pages/rewards/Admin/PointsRange';
 
 // FEEDBACKS
-import GeneralFeedback from "./pages/feedback/User/GeneralFeedback";
-import AdminGeneralFeedback from "./pages/feedback/Admin/GeneralFeedback";
+import GeneralFeedback from './pages/feedback/User/GeneralFeedback';
+import GeneralFeedbackAdd from './pages/feedback/User/GeneralFeedbackAdd';
+import AdminGeneralFeedback from './pages/feedback/Admin/GeneralFeedback';
+import RatingStatistics from "./pages/feedback/Admin/RatingStatistics";
 
 // RESERVATIONS
 import ReservationPage from "./pages/Reservation/AddReservation";
@@ -344,13 +347,16 @@ function App() {
               <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation />} />
 
               {/* REWARDS */}
-              <Route path="/rewards/user/pointssystem" element={<PointsSystem />} />
-              <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
-              <Route path="/rewards/admin/voucherssystem" element={<AdminVouchersSystem />} />
-              <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />
-              <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback />} />
-              <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />} />
-
+              <Route path="/user/rewards" element={<PointsSystem />} />
+              <Route path="/user/pointshistory" element={<PointsHistory />} />
+              <Route path="/admin/rewards"element={<AdminVouchersSystem />}/>
+              <Route path="/rewards/admin/voucherssystem/edit/:id" element={<AdminVouchersSystemEdit />} />
+              <Route path="/admin/voucherssystemadd" element={<VouchersSystemAdd />} />
+              <Route path="/admin/pointsrange" element={<PointsRange />} />
+              <Route path="/user/feedback" element={<GeneralFeedback />} />
+              <Route path="/user/generalfeedbackadd" element={<GeneralFeedbackAdd />} />
+              <Route path="/admin/feedback" element={<AdminGeneralFeedback />} />
+              <Route path="/admin/ratingstatistics" element={<RatingStatistics />} />
               {/* ORDERS */}
               <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />
