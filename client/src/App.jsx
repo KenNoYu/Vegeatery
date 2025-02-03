@@ -54,14 +54,10 @@ import Checkout from "./pages/orders/Checkout";
 import OrderConfirmation from "./pages/orders/OrderConfirmation";
 import StaffOrders from "./pages/orders/StaffOrders";
 
-import Tutorials from "./pages/Tutorials";
-import AddTutorial from "./pages/AddTutorial";
-import EditTutorial from "./pages/EditTutorial";
-import MyForm from "./pages/MyForm";
 import Register from "./pages/Accounts/User/Register";
 import Login from "./pages/Accounts/User/Login";
 import Home from "./pages/Home";
-import ProductsTemp from "./pages/ProductTemporary";
+import MyForm from "./pages/MyForm";
 
 // Accounts
 import UserOverview from "./pages/Accounts/User/UserOverview";
@@ -307,10 +303,6 @@ function App() {
           <Container>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path={"/productsTemporary"} element={<ProductsTemp />} />
-              <Route path="/tutorials" element={<Tutorials />} />
-              <Route path="/addtutorial" element={<AddTutorial />} />
-              <Route path="/edittutorial/:id" element={<EditTutorial />} />
 
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
