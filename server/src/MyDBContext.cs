@@ -52,19 +52,21 @@ namespace vegeatery
 
 			base.OnModelCreating(modelBuilder);
 
-			// Seed Roles
-			modelBuilder.Entity<Role>().HasData(
+            // Seed Tier
+            modelBuilder.Entity<Tier>().HasData(
+                new Tier { TierId = 1, TierName = "Bronze", MinPoints = 0 },
+                new Tier { TierId = 2, TierName = "Silver", MinPoints = 278 },
+                new Tier { TierId = 3, TierName = "Gold", MinPoints = 778 }
+            );
+
+            // Seed Roles
+            modelBuilder.Entity<Role>().HasData(
 				new Role { Id = 1, Name = "User" },
 				new Role { Id = 2, Name = "Staff" },
 				new Role { Id = 3, Name = "Admin" }
 			);
 
-			// Seed Tier
-			modelBuilder.Entity<Tier>().HasData(
-				new Tier { TierId = 1, TierName = "Bronze", MinPoints = 0},
-				new Tier { TierId = 2, TierName = "Bronze", MinPoints = 278},
-				new Tier { TierId = 3, TierName = "Bronze", MinPoints = 778}
-			);
+			
 
 			// Common token generation logic
 			string GenerateJwtToken(string username, string role)
@@ -104,6 +106,7 @@ namespace vegeatery
 			Agreement = true,
 			TotalPoints = 0,
 			RoleId = 3, // Admin role
+			TierId = 3,
 			CartId = Guid.NewGuid(),
 			JwtToken = GenerateJwtToken("masteradmin", "Admin")
 		},
@@ -123,6 +126,7 @@ namespace vegeatery
             Agreement = true,
 			TotalPoints = 0,
 			RoleId = 2, // Staff role
+			TierId= 3,
 			CartId = Guid.NewGuid(),
 			JwtToken = GenerateJwtToken("staffuser", "Staff")
 		}
