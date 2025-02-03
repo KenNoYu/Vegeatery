@@ -41,6 +41,7 @@ import PointsRange from './pages/rewards/Admin/PointsRange';
 import GeneralFeedback from './pages/feedback/User/GeneralFeedback';
 import GeneralFeedbackAdd from './pages/feedback/User/GeneralFeedbackAdd';
 import AdminGeneralFeedback from './pages/feedback/Admin/GeneralFeedback';
+import RatingStatistics from "./pages/feedback/Admin/RatingStatistics";
 
 // RESERVATIONS
 import ReservationPage from "./pages/Reservation/AddReservation";
@@ -357,12 +358,11 @@ function App() {
               <Route path="/rewards/admin/voucherssystem"element={<AdminVouchersSystem />}/>
               <Route path="/rewards/admin/voucherssystem/edit/:id" element={<AdminVouchersSystemEdit />} />
               <Route path="/rewards/admin/voucherssystemadd" element={<VouchersSystemAdd />} />
-              <Route path="/rewards/admin/pointsrange"element={<PointsRange />}/>
-              <Route path="/feedback"element={<GeneralFeedback />}/>
-              <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />}/>
-              <Route path="/feedback/user/generalfeedbackadd" element={<GeneralFeedbackAdd />}/>
-
-              
+              <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />
+              <Route path="/feedback" element={<GeneralFeedback />} />
+              <Route path="/feedback/user/generalfeedbackadd" element={<GeneralFeedbackAdd />} />
+              <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />} />
+              <Route path="/feedback/admin/ratingstatistics" element={<RatingStatistics />} />
               {/* ORDERS */}
               <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />

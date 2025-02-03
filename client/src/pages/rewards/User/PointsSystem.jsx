@@ -1,87 +1,73 @@
-import { Box, Typography, LinearProgress, Button, Card, CardContent, Grid2 as Grid, Input, IconButton, Container } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, LinearProgress, Button, Card, CardContent, Grid } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
-import React, { useEffect, useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import http from '../../../http'; 
+import http from '../../../http';
 import dayjs from 'dayjs';
 import RoleGuard from '../../../utils/RoleGuard';
 
 const PointsSystem = () => {
-  RoleGuard('user');
-  const points = 100; // Current points
-  const maxPoints = 276; // Points required for the next tier
-  const [vouchers, setVouchers] = useState([]); // State to store fetched vouchers
+  RoleGuard('User');
+  const [vouchers, setVouchers] = useState([]);
+  const [userId, setUserId] = useState(null);
+
 
   useEffect(() => {
-    fetchVouchers();
+    fetchUserData();
   }, []);
+
+  useEffect(() => {
+    if (userId) {
+      fetchVouchers(userId);
+    }
+  }, [userId]); 
+
+  const fetchUserData = async () => {
+    try {
+      const { data } = await http.get('/Auth/current-user');
+      setUserId(data);
+      console.log(data.id);
+      fetchVouchers(data.userId);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+  console.log(userId);
 
   const fetchVouchers = async () => {
     try {
-      const { data } = await http.get('/vouchers'); // Fetch vouchers from the API
-      setVouchers(data); // Store the fetched vouchers
+      const { data } = await http.get(`/vouchers/user/${userId.id}`);
+      setVouchers(data);
     } catch (error) {
       console.error('Error fetching vouchers:', error);
     }
   };
 
+  if (!userId) return <Typography>Loading...</Typography>;
+
+
+
   return (
-    <Box sx={{ maxWidth: 1200,
-          minHeight: 500, 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      backgroundColor: '#FFFFFF', 
-      padding: '2rem', 
-      boxShadow: 3, 
-      borderRadius: 2,
-      overflow: "hidden",
-      overflowY: "auto",  
-      overflowX: "hidden",  
-      paddingBottom: '2rem',
-    marginTop: '2rem'}}
-          >
-    <Container maxWidth="md"
-     sx={{ display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      py: 4,
-      paddingBottom: '1rem',
-      width: '100%' }}>
-      {/* Header Section */}
+    <Box sx={{ maxWidth: 1200, minHeight: 500, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', padding: '2rem', boxShadow: 3, borderRadius: 2, overflow: "hidden", overflowY: "auto", overflowX: "hidden", paddingBottom: '2rem', marginTop: '2rem' }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom textAlign="center">
         Sustainable Points
       </Typography>
 
       <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', color: '#C2185B' }}>
-        Bronze Member <StarIcon sx={{ marginLeft: '0.5rem' }} />
+        {userId.tierName} Member <StarIcon sx={{ marginLeft: '0.5rem' }} />
       </Typography>
 
-      {/* Points Bar */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', maxWidth: 500, mb: 2 }}>
         <Typography variant="h6" fontWeight="bold">
-          {points} pts
+          {userId.totalPoints} pts
         </Typography>
-        <LinearProgress variant="determinate" 
-        value={(points / maxPoints) * 100} 
-        sx={{ 
-          flexGrow: 1, 
-          height: '10px', 
-          borderRadius: '5px', 
-          backgroundColor: '#E0E0E0',
-          '& .MuiLinearProgress-bar': {
-      backgroundColor: '#C2185B',
-    }}} />
-        <Typography>{points} / {maxPoints}</Typography>
+        <LinearProgress variant="determinate" value={(userId.totalPoints / 777) * 100} sx={{ flexGrow: 1, height: '10px', borderRadius: '5px', backgroundColor: '#E0E0E0', '& .MuiLinearProgress-bar': { backgroundColor: '#C2185B' } }} />
+        <Typography>777 pts</Typography>
       </Box>
 
       <Typography variant="body2" sx={{ marginBottom: '2rem' }}>
-        * {points} pts will be expired on <b>01/06/2025</b>
+        * {userId.totalPoints} pts will be expired on <b>01/06/2025</b>
       </Typography>
 
-      {/* Rewards Section */}
       <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '1rem' }}>
         Rewards Vouchers
       </Typography>
@@ -105,7 +91,6 @@ const PointsSystem = () => {
           </Grid>
         ))}
       </Grid>
-    </Container>
     </Box>
   );
 };

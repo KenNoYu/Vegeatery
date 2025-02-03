@@ -17,8 +17,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import http from '../../../http';
 import dayjs from 'dayjs';
+import RoleGuard from '../../../utils/RoleGuard';
 
 const AdminVouchersSystemEdit = () => {
+    RoleGuard('Admin');
     const { id } = useParams();
     const navigate = useNavigate();
 

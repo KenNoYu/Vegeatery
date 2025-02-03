@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, List, ListItem, ListItemText, Paper, Typography } from "@mui/material";
 import { Star, StarBorder } from "@mui/icons-material";
 import http from "../../../http"; // Adjust the path to your http.js
+import RoleGuard from '../../../utils/RoleGuard';
+
 
 const AdminGeneralFeedback = () => {
+  RoleGuard('Admin');
+
   const [feedbackList, setFeedbackList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 

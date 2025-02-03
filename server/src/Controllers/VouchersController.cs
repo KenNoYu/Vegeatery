@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using vegeatery.Models;
 
 namespace vegeatery.Controllers
@@ -13,7 +15,7 @@ namespace vegeatery.Controllers
         public VouchersController(MyDbContext context)
         {
             _context = context;
-        }
+        }      
 
         // POST: /vouchers
         [HttpPost]
@@ -56,6 +58,23 @@ namespace vegeatery.Controllers
             return CreatedAtAction(nameof(GetVoucherById), new { voucherId = voucher.VoucherId }, voucher);
         }
 
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetVouchersByUserTier(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var vouchers = await _context.Vouchers
+                .Include(v => v.Tier)
+                .Where(v => v.TierId == user.TierId)
+                .OrderBy(v => v.TierId)
+                .ToListAsync();
+
+            return Ok(vouchers);
+        }
 
 
         // GET: /vouchers
