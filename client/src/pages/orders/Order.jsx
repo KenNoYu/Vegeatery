@@ -22,7 +22,24 @@ const Orders = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
+
+    // get user info
+    useEffect(() => {
+        http
+            .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
+            .then((res) => {
+                console.log(res);
+                setUser(res);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch user data", err);
+                setError("Failed to fetch user data");
+                setLoading(false);
+            });
+    }, []);
 
     const formik = useFormik({
         initialValues: {
@@ -89,7 +106,7 @@ const Orders = () => {
     const calculateTotalPoints = (cartItems) => {
         const totalPoints = cartItems.reduce((sum, item) => {
             const quantity = item.quantity || 1;
-            return sum + quantity * item.productPoints;
+            return sum + quantity * item.points;
         }, 0);
         setPoints(totalPoints);
     };
@@ -108,7 +125,7 @@ const Orders = () => {
         else {
             const orderData = {
                 // auto fill id next time
-                cartId: 1,
+                cartId: user.data.cartId,
                 fullname: fullName,
                 email: email,
                 address: address,
@@ -118,7 +135,7 @@ const Orders = () => {
                 status: "Pending",
                 voucherId: null,
                 // autofill session and customer id next time
-                customerId: null,
+                customerId: user.data.id,
                 sessionId: null
             };
 
@@ -226,7 +243,7 @@ const Orders = () => {
                     {/* Customer Details */}
                     <Grid size={{ xs: 12, md: 6, lg: 8 }} container spacing={2}>
                         <Paper elevation={3} sx={{ padding: 4 }}>
-                            <Typography variant="h6" gutterBottom>
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                                 Customer Information
                             </Typography>
                             <TextField
@@ -325,7 +342,7 @@ const Orders = () => {
                                     },
                                 }}
                             />
-                            <Typography variant="h6" gutterBottom>
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                                 Pick-Up Timing
                             </Typography>
                             {/* Display selected date and time */}
@@ -333,7 +350,7 @@ const Orders = () => {
                                 {/* Only show the selected date and time if they exist */}
                                 {selectedDate && selectedTime ? (
                                     <>
-                                        <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#292827' }}>
+                                        <Typography variant="body1" sx={{ color: '#292827' }}>
                                             Pick-Up Timing
                                         </Typography>
                                         <Typography variant="body1" sx={{ color: '#292827' }}>
@@ -347,7 +364,7 @@ const Orders = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#292827' }}>
+                                        <Typography variant="body1" sx={{ color: '#292827' }}>
                                             Pick-Up Timing
                                         </Typography>
                                         <Typography variant="body1" sx={{ color: '#585858' }}>
@@ -365,11 +382,11 @@ const Orders = () => {
                                 </Button>
                             </Box>
                             {/* TODO: Pick up Timing for the day */}
-                            <Typography variant="h6" gutterBottom>
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                                 Carbon Tracker
                             </Typography>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="body1">
                                     Total Eco Points Earned
                                 </Typography>
 
@@ -378,7 +395,7 @@ const Orders = () => {
                                     {points} Points
                                 </Typography>
                             </Box>
-                            <Typography variant="h6" gutterBottom>
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                                 Vouchers
                             </Typography>
                         </Paper>
