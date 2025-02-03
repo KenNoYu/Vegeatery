@@ -3,16 +3,35 @@ import { Box, Typography, Grid2 as Grid, Card, CardContent, Button, TextField, C
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import http from '../../http';
+import RoleGuard from '../../utils/RoleGuard';
 
 const Cart = () => {
+    RoleGuard('User');
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
+    const [user, setUser] = useState(null);
+
+    // get user info
+    useEffect(() => {
+        http
+            .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
+            .then((res) => {
+                console.log(res);
+                setUser(res);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch user data", err);
+                setError("Failed to fetch user data");
+                setLoading(false);
+            });
+    }, []);
 
     // Fetch the cart items
     const GetCartItems = () => {
         // autofill cartId next time
-        http.get(`/ordercart?cartId=${1}`).then((res) => {
+        http.get(`/ordercart?cartId=${user.data.cartId}`).then((res) => {
             console.log("API Response:", res.data);
             setCartItems(res.data);
             calculateTotal(res.data);
@@ -67,7 +86,7 @@ const Cart = () => {
 
     // Remove item from cart
     const RemoveCartItem = (productId) => {
-        http.delete(`/ordercart?CartId=${1}&ProductId=${productId}`).then((res) => {
+        http.delete(`/ordercart?CartId=${user.data.cartId}&ProductId=${productId}`).then((res) => {
             console.log("product deleted from cart");
             // Refresh cart data
             GetCartItems();
@@ -129,7 +148,7 @@ const Cart = () => {
                                                 size="small"
                                                 value={product.quantity}
                                                 onChange={(e) =>
-                                                    UpdateCartItems(1, product.productId, Number(e.target.value))
+                                                    UpdateCartItems(user.data.cartId, product.productId, Number(e.target.value))
                                                 }
                                             />
                                         </Box>
