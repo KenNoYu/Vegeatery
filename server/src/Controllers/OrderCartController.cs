@@ -14,7 +14,7 @@ namespace vegeatery.Controllers
         public IActionResult AddtoCart(CartItem Item)
         {
             // Validate input parameters
-            if (Item.CartId <= 0 || Item.ProductId <= 0 || Item.Quantity <= 0)
+            if (Item.CartId == 0 || Item.ProductId <= 0 || Item.Quantity <= 0)
             {
                 return BadRequest(new { Message = "Invalid input parameters." });
             }
@@ -49,7 +49,7 @@ namespace vegeatery.Controllers
                     if (existingCartItem != null)
                     {
                         // Update the quantity if the item already exists
-                        existingCartItem.Quantity += Item.Quantity;
+						existingCartItem.Quantity += Item.Quantity;
                         existingCartItem.UpdatedAt = DateTime.Now; 
                         _context.CartItems.Update(existingCartItem);
                     }
@@ -59,6 +59,7 @@ namespace vegeatery.Controllers
                         var cartItem = new CartItem
                         {
                             CartId = Item.CartId,
+                            ProductName = Item.ProductName,
                             ProductId = Item.ProductId,
                             Quantity = Item.Quantity,
                             Price = product.ProductPrice,
@@ -124,7 +125,7 @@ namespace vegeatery.Controllers
         public IActionResult UpdateCartItem(CartItem Item)
         {
             // Validate input parameters
-            if (Item.CartId <= 0 || Item.ProductId <= 0 || Item.Quantity <= 0)
+            if (Item.CartId == 0 || Item.ProductId <= 0 || Item.Quantity <= 0)
             {
                 return BadRequest(new { Message = "Invalid input parameters." });
             }
@@ -172,7 +173,7 @@ namespace vegeatery.Controllers
         public IActionResult Delete(int CartId, int ProductId) 
         {
             // Validate input parameters
-            if (CartId <= 0 || ProductId <= 0)
+            if (CartId == 0 || ProductId <= 0)
             {
                 return BadRequest(new { Message = "Invalid input parameters." });
             }

@@ -48,7 +48,8 @@ namespace vegeatery.Controllers
                         var orderItem = new OrderItem
                         {
                             OrderId = order.OrderId,
-                            ProductId = cartItem.ProductId,
+							ProductName = cartItem.ProductName,
+							ProductId = cartItem.ProductId,
                             Price = cartItem.Price,
                             Quantity = cartItem.Quantity,
                             PointsEarned = cartItem.Points,
@@ -100,7 +101,7 @@ namespace vegeatery.Controllers
 					TotalPoints = order.TotalPoints,
 					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
                     {
-                        ProductName = oi.Product.ProductName, // Assuming ProductName is a property of Product
+                        ProductName = oi.ProductName, // Assuming ProductName is a property of Product
                         Quantity = oi.Quantity,
                         Price = oi.Price
                     }).ToList()
@@ -137,7 +138,7 @@ namespace vegeatery.Controllers
                         Order.CreatedAt,
                         Items = Order.OrderItems.Select(item => new
                         {
-                            ProductName = item.Product != null ? item.Product.ProductName : "Unknown",
+							item.ProductName,
                             item.Price,
                             item.Quantity,
                             item.PointsEarned
@@ -176,7 +177,7 @@ namespace vegeatery.Controllers
                         Order.Status,
                         Items = Order.OrderItems.Select(item => new
                         {
-                            ProductName = item.Product != null ? item.Product.ProductName : "Unknown",
+                            item.ProductName,
                             item.Price,
                             item.Quantity,
                             item.PointsEarned
@@ -239,8 +240,8 @@ namespace vegeatery.Controllers
                     Order.TotalPrice,
                     OrderItems = Order.OrderItems.Select(item => new
                     {
-                        ProductName = item.Product != null ? item.Product.ProductName : "Unknown",
-                        item.Price,
+						item.ProductName,
+						item.Price,
                         item.Quantity,
                         item.PointsEarned
                     }).ToList()
