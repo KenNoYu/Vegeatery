@@ -21,5 +21,6 @@ namespace vegeatery.Models
 
         // Navigation property for related cart items
         public ICollection<CartItem>? CartItems { get; set; }
-    }
+		public User User { get; set; }
+	}
 }

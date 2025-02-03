@@ -60,8 +60,14 @@ namespace vegeatery
                 new Tier { TierId = 3, TierName = "Gold", MinPoints = 778 }
             );
 
-            // Seed Roles
-            modelBuilder.Entity<Role>().HasData(
+			modelBuilder.Entity<User>()
+				.HasOne(u => u.Cart) // A user has one cart
+				.WithOne(c => c.User) // A cart belongs to one user
+				.HasForeignKey<Cart>(c => c.UserId) // Cart references UserId
+				.OnDelete(DeleteBehavior.Cascade); // If a user is deleted, delete the cart too
+
+			// Seed Roles
+			modelBuilder.Entity<Role>().HasData(
 				new Role { Id = 1, Name = "User" },
 				new Role { Id = 2, Name = "Staff" },
 				new Role { Id = 3, Name = "Admin" }
@@ -88,6 +94,12 @@ namespace vegeatery
 				return tokenHandler.WriteToken(token);
 			}
 
+			// Seed Carts for staff and adming
+			var adminCart = new Cart { CartId = -1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, UserId = 1 };
+			var staffCart = new Cart { CartId = -2, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, UserId = 2 };
+
+			modelBuilder.Entity<Cart>().HasData(adminCart, staffCart);
+
 			// Seed Users
 			var users = new List<User>
 	{
@@ -107,8 +119,7 @@ namespace vegeatery
 			Agreement = true,
 			TotalPoints = 0,
 			RoleId = 3, // Admin role
-			TierId = 3,
-			CartId = Guid.NewGuid(),
+			CartId = adminCart.CartId,
 			JwtToken = GenerateJwtToken("masteradmin", "Admin")
 		},
 		new User
@@ -127,8 +138,7 @@ namespace vegeatery
             Agreement = true,
 			TotalPoints = 0,
 			RoleId = 2, // Staff role
-			TierId= 3,
-			CartId = Guid.NewGuid(),
+			CartId = staffCart.CartId,
 			JwtToken = GenerateJwtToken("staffuser", "Staff")
 		}
 	};

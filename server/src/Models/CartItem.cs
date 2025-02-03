@@ -8,7 +8,9 @@ namespace vegeatery.Models
         [Key]
         public int CartItemId { get; set; }
 
-        [Required]
+		public string ProductName { get; set; }
+
+		[Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 

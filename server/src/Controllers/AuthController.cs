@@ -59,7 +59,17 @@ public class AuthController : ControllerBase
 		{
 			return BadRequest(new { message = "Role not found" });
 		}
-		       
+
+		// Create a new cart for the user
+		var cart = new Cart
+		{
+			CreatedAt = DateTime.Now,
+			UpdatedAt = DateTime.Now
+		};
+
+		// Save to generate CartId
+		_context.Cart.Add(cart);
+		await _context.SaveChangesAsync();
 
         var user = new User
 		{
@@ -80,12 +90,17 @@ public class AuthController : ControllerBase
 			Tier = tier,
             RoleId = role.Id,
 			Role = role, // Assign the role to the user
-			CartId = Guid.NewGuid()
+			CartId = cart.CartId
 		};
 
 		user.JwtToken = CreateToken(user);
 
 		_context.Users.Add(user);
+		await _context.SaveChangesAsync();
+
+		// Now update the cart with the UserId
+		cart.UserId = user.Id;
+		_context.Cart.Update(cart);
 		await _context.SaveChangesAsync();
 
 		// Create a cookie to store the JWT token
