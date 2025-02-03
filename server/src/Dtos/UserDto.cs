@@ -1,4 +1,6 @@
-﻿namespace vegeatery.Dtos
+﻿using vegeatery.Models;
+
+namespace vegeatery.Dtos
 {
 
 	internal class UserDto
@@ -19,7 +21,9 @@
 		public string JwtToken { get; set; }
 		public DateTime CreatedAt { get; set; }
 		public int RoleId { get; set; }
-		public string RoleName { get; set; }
+        public int TierId { get; set; }
+        public string TierName { get; set; }
+        public string RoleName { get; set; }
 		public Guid CartId { get; set; }
 	}
 }
