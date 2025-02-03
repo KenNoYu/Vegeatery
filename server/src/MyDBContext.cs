@@ -53,6 +53,13 @@ namespace vegeatery
 
 			base.OnModelCreating(modelBuilder);
 
+            // Seed Tier
+            modelBuilder.Entity<Tier>().HasData(
+                new Tier { TierId = 1, TierName = "Bronze", MinPoints = 0 },
+                new Tier { TierId = 2, TierName = "Silver", MinPoints = 278 },
+                new Tier { TierId = 3, TierName = "Gold", MinPoints = 778 }
+            );
+
 			modelBuilder.Entity<User>()
 				.HasOne(u => u.Cart) // A user has one cart
 				.WithOne(c => c.User) // A cart belongs to one user
@@ -66,12 +73,7 @@ namespace vegeatery
 				new Role { Id = 3, Name = "Admin" }
 			);
 
-			// Seed Tier
-			modelBuilder.Entity<Tier>().HasData(
-				new Tier { TierId = 1, TierName = "Bronze", MinPoints = 0},
-				new Tier { TierId = 2, TierName = "Bronze", MinPoints = 278},
-				new Tier { TierId = 3, TierName = "Bronze", MinPoints = 778}
-			);
+			
 
 			// Common token generation logic
 			string GenerateJwtToken(string username, string role)
