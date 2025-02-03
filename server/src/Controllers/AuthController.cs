@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -10,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using vegeatery;
 using vegeatery.Dtos;
+using vegeatery.Models;
+using vegeatery.Services;
 
 
 [Route("[controller]")]
@@ -18,11 +21,14 @@ public class AuthController : ControllerBase
 {
 	private readonly MyDbContext _context;
 	private readonly IConfiguration _configuration;
+	private readonly IEmailService _emailService;
 
-	public AuthController(MyDbContext context, IConfiguration configuration)
+	// Inject EmailService via constructor
+	public AuthController(MyDbContext context, IConfiguration configuration, IEmailService emailService)
 	{
-		_context = context;
-		_configuration = configuration;
+		_context = context ?? throw new ArgumentNullException(nameof(context));
+		_configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+		_emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
 	}
 
 	[HttpPost("register")]
@@ -139,9 +145,10 @@ public class AuthController : ControllerBase
 		var idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 		var nameClaim = User.FindFirst(ClaimTypes.Name);
 		var emailClaim = User.FindFirst(ClaimTypes.Email);
+		var roleClaim = User.FindFirst(ClaimTypes.Role);
 
 		// Validate claims
-		if (idClaim == null || nameClaim == null || emailClaim == null)
+		if (idClaim == null || nameClaim == null || emailClaim == null || roleClaim == null)
 		{
 			return Unauthorized(new { message = "User claims are missing or invalid" });
 		}
@@ -149,6 +156,7 @@ public class AuthController : ControllerBase
 		var userId = Convert.ToInt32(idClaim.Value);
 		var userName = nameClaim.Value;
 		var userEmail = emailClaim.Value;
+		var userRole = roleClaim.Value;
 
 		return Ok(new
 		{
@@ -156,7 +164,8 @@ public class AuthController : ControllerBase
 			{
 				Id = userId,
 				Username = userName,
-				Email = userEmail
+				Email = userEmail,
+				Role = userRole
 			}
 		});
 	}
@@ -235,6 +244,96 @@ public class AuthController : ControllerBase
 		}
 
 		return Ok(user);  // Return the user data
+	}
+
+	[HttpPost("/reset-password")]
+	public async Task<IActionResult> SendResetPasswordLink([FromBody] ResetPasswordLinkRequest model)
+	{
+
+		if (!ModelState.IsValid)
+		{
+			return BadRequest("Invalid input.");
+		}
+
+		// Find the user based on email
+		var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+		if (user == null)
+		{
+			return BadRequest("User with this email does not exist.");
+		}
+
+		// Remove existing reset tokens for the user to avoid multiple valid tokens
+		var existingTokens = await _context.PasswordResetToken
+			.Where(t => t.UserId == user.Id && t.ExpiryDate > DateTime.UtcNow && !t.IsUsed)
+			.ToListAsync();
+
+		if (existingTokens.Any())
+		{
+			foreach (var token in existingTokens)
+			{
+				token.IsUsed = true; // Mark old tokens as used
+			}
+			await _context.SaveChangesAsync();
+		}
+
+		// Generate new token
+		var resetToken = Guid.NewGuid().ToString();
+		var passwordResetToken = new PasswordResetToken
+		{
+			Token = resetToken,
+			ExpiryDate = DateTime.UtcNow.AddHours(2), // Token valid for 2 hours
+			UserId = user.Id
+		};
+
+		_context.PasswordResetToken.Add(passwordResetToken);
+		await _context.SaveChangesAsync();
+
+		// Generate reset link
+		var resetLink = $"http://localhost:3000/passwordreset?token={resetToken}&email={user.Email}";
+
+		// Send the reset email with the reset link
+		await _emailService.SendResetEmail(user.Email, resetLink);
+
+		return Ok(new { message = "Password reset link has been sent to your email.", resetToken });
+	}
+
+	[HttpPost("/reset-password/confirm")]
+	public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordConfirmRequest model)
+	{
+		if (!ModelState.IsValid)
+		{
+			return BadRequest("Invalid input.");
+		}
+
+		// Validate the reset token (resetCode)
+		var resetTokenRecord = await _context.PasswordResetToken
+			.FirstOrDefaultAsync(t => t.Token == model.ResetCode && t.ExpiryDate > DateTime.UtcNow && !t.IsUsed);
+
+		if (resetTokenRecord == null)
+		{
+			var errorMessage = $"Token: {model.ResetCode}, Expiry: {resetTokenRecord?.ExpiryDate}, Current Time: {DateTime.UtcNow}";
+			return BadRequest("Invalid or expired reset token.");
+		}
+
+		// Find the user associated with the token
+		var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == resetTokenRecord.UserId);
+		if (user == null)
+		{
+			return BadRequest("User not found.");
+		}
+
+		// Update user's password (make sure to hash it before saving)
+		user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+		_context.Users.Update(user);
+		await _context.SaveChangesAsync();
+
+		// Mark the token as used
+		resetTokenRecord.IsUsed = true;
+		_context.PasswordResetToken.Remove(resetTokenRecord);
+		await _context.SaveChangesAsync();
+
+
+		return Ok(new { message = "Password has been reset successfully."});
 	}
 
 	private string CreateToken(User user)
