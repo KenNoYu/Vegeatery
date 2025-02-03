@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, CircularProgress, Card, CardMedia, CardContent, Button } from '@mui/material';
 import http from '../../http';
 import { toast } from 'react-toastify';
+import RoleGuard from '../../utils/RoleGuard';
 
 function ProductDetails() {
+  RoleGuard('Admin');
   const { productId } = useParams(); // Get the product ID from the URL
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +15,7 @@ function ProductDetails() {
   useEffect(() => {
     // Fetch product details from the API
     http
-      .get(`/Category/${productId}`)
+      .get(`/Product/${productId}`)
       .then((res) => {
         setProduct(res.data);
       })

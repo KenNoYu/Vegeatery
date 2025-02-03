@@ -6,8 +6,10 @@ import * as yup from 'yup';
 import http from '../../http';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import RoleGuard from '../../utils/RoleGuard';
 
 function AddProduct() {
+    RoleGuard('Admin');
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
     const [categories, setCategories] = useState([]);
@@ -46,6 +48,7 @@ function AddProduct() {
             ingredients: yup.string().trim().required('Ingredients is required')
             .min(3, 'Ingredients must be at least 3 characters')
             .max(500, 'Ingredients must be at most 500 characters'),
+            productPoints: yup.number().min(1, "ProductPoints must be at least 1.").max(5, "ProductPoints must be at most 5.").required("ProductPoints is required."),
             calories: yup.number().min(0, 'Cannot be negative').required('Calories are required'),
             fats: yup.number().min(0, 'Cannot be negative').required('Fats are required'),
             carbs: yup.number().min(0, 'Cannot be negative').required('Carbs are required'),
@@ -59,12 +62,13 @@ function AddProduct() {
                 data.imageFile = imageFile;
             }
 
-            http.post('/Category/add-product', data) // Send the product data including categoryId to the backend
+            http.post('/Product/add-product', data) // Send the product data including categoryId to the backend
                 .then(() => {
                     toast.success('Product added successfully!');
                     navigate('/viewcategories'); // Redirect after successful addition
                 })
-                .catch(() => {
+                .catch((err) => {
+                    console.error("Error:", err); // Log the error to the console for debugging
                     toast.error('Failed to add product');
                 });
         }
@@ -115,6 +119,17 @@ function AddProduct() {
                     onChange={formik.handleChange} onBlur={formik.handleBlur}
                     error={formik.touched.ingredients && Boolean(formik.errors.ingredients)}
                     helperText={formik.touched.ingredients && formik.errors.ingredients}
+                />
+                <TextField
+                    fullWidth margin="dense" 
+                    type="number"
+                    label="ProductPoints"
+                    name="productPoints"
+                    value={formik.values.productPoints}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.productPoints && Boolean(formik.errors.productPoints)}
+                    helperText={formik.touched.productPoints && formik.errors.productPoints}
                 />
                 <TextField
                     fullWidth margin="dense" type="number" label="Calories"
