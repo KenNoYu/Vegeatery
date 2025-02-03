@@ -9,21 +9,25 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Button
+  Button,
+  Tooltip
 } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import MyTheme from "./themes/MyTheme";
 import http from "./http";
 import UserContext from "./contexts/UserContext";
-import logo from './assets/logo/vegeateryMain.png';
+import logo from "./assets/logo/vegeateryMain.png";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 // PRODUCTS
-import CategoryList from './pages/ProductCategory/ViewCategories';
-import AddCategory from './pages/ProductCategory/AddCategory';
-import AddProduct from './pages/ProductCategory/AddProduct';
-import ProductDetails from './pages/ProductCategory/ProductDetails';
-import EditProduct from './pages/ProductCategory/EditProduct';
+import CategoryList from "./pages/ProductCategory/ViewCategories";
+import AddCategory from "./pages/ProductCategory/AddCategory";
+import AddProduct from "./pages/ProductCategory/AddProduct";
+import ProductDetails from "./pages/ProductCategory/ProductDetails";
+import EditProduct from "./pages/ProductCategory/EditProduct";
+import UserMenu from "./pages/ProductCategory/User/UserMenu";
+import EditCategory from "./pages/ProductCategory/EditCategory";
 
 // REWARDS
 import PointsSystem from './pages/rewards/User/PointsSystem';
@@ -36,7 +40,6 @@ import PointsRange from './pages/rewards/Admin/PointsRange';
 // FEEDBACKS
 import GeneralFeedback from './pages/feedback/User/GeneralFeedback';
 import GeneralFeedbackAdd from './pages/feedback/User/GeneralFeedbackAdd';
-// import GeneralFeedbackEdit from './pages/feedback/User/GeneralFeedbackEdit';
 import AdminGeneralFeedback from './pages/feedback/Admin/GeneralFeedback';
 
 // RESERVATIONS
@@ -47,11 +50,11 @@ import StaffReserveLogs from "./pages/Reservation/StaffLogs";
 import StaffFocusedReservation from "./pages/Reservation/StaffFocusedReservation";
 
 // ORDERS
-import Cart from './pages/orders/Cart';
-import Orders from './pages/orders/Order';
-import Checkout from './pages/orders/Checkout';
-import OrderConfirmation from './pages/orders/OrderConfirmation';
-import StaffOrders from './pages/orders/StaffOrders';
+import Cart from "./pages/orders/Cart";
+import Orders from "./pages/orders/Order";
+import Checkout from "./pages/orders/Checkout";
+import OrderConfirmation from "./pages/orders/OrderConfirmation";
+import StaffOrders from "./pages/orders/StaffOrders";
 
 import Tutorials from "./pages/Tutorials";
 import AddTutorial from "./pages/AddTutorial";
@@ -67,10 +70,12 @@ import UserOverview from "./pages/Accounts/User/UserOverview";
 import Profile from "./pages/Accounts/User/Profile";
 import Unauthorized from "./pages/Accounts/User/Unauthorized";
 import Accounts from "./pages/Accounts/Admin/Accounts";
+import RequestPasswordReset from "./pages/Accounts/User/RequestPasswordReset";
+import ResetPassword from "./pages/Accounts/User/ResetPassword";
 
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
-import { AccountCircle } from '@mui/icons-material'; // Import AccountCircle icon
+import { AccountCircle } from "@mui/icons-material"; // Import AccountCircle icon
 
 function App() {
   const [user, setUser] = useState(null);
@@ -90,7 +95,6 @@ function App() {
     http
       .get("/Auth/auth", { withCredentials: true })
       .then((res) => {
-        console.log(res.data.user.id);
         setUser(res.data.user);
         setLoading(false); // Update loading state when data is fetched
       })
@@ -105,9 +109,9 @@ function App() {
     http
       .post("/auth/logout", {}, { withCredentials: true })
       .then((res) => {
-        console.log(res.data.message);  // Log the logout success message
-        localStorage.clear();  // Optionally clear localStorage as well
-        window.location = "/";  // Redirect to the login or home page
+        console.log(res.data.message); // Log the logout success message
+        localStorage.clear(); // Optionally clear localStorage as well
+        window.location = "/"; // Redirect to the login or home page
       })
       .catch((err) => {
         console.error("Error during logout", err);
@@ -120,45 +124,149 @@ function App() {
         <ThemeProvider theme={MyTheme}>
           <AppBar position="static" className="AppBar">
             <Container>
-              <Toolbar disableGutters={true} sx={{ width: "100%", justifyContent: "space-between" }}>
+              <Toolbar
+                disableGutters={true}
+                sx={{ width: "100%", justifyContent: "space-between" }}
+              >
                 {/* Left side: 3 directories */}
                 <Box sx={{ display: "flex", gap: 3 }}>
-                  <Link to="/store">
-                    <Typography>Store</Typography>
-                  </Link>
-                  <Link to="/rewards">
-                    <Typography>Rewards</Typography>
-                  </Link>
-                  <Link to="/reserve">
-                    <Typography>Reserve</Typography>
-                  </Link>
+                  {/* Conditional Rendering based on user.role */}
+                  {loading ? (
+                    <CircularProgress color="inherit" />
+                  ) : user ? (
+                    <>
+                      {/* Show navigation for 'admin' role */}
+                      {user.role === "Admin" && (
+                        <>
+                          <Link to="/admin/overview">
+                            <Typography>Overview</Typography>
+                          </Link>
+                          <Link to="/admin/store">
+                            <Typography>Store</Typography>
+                          </Link>
+                          <Link to="/admin/rewards">
+                            <Typography>Rewards</Typography>
+                          </Link>
+                        </>
+                      )}
+
+                      {/* Show navigation for 'staff' role */}
+                      {user.role === "Staff" && (
+                        <>
+                          <Link to="/staff/vieworders">
+                            <Typography>Orders</Typography>
+                          </Link>
+                          <Link to="/staff/viewproducts">
+                            <Typography>Products</Typography>
+                          </Link>
+                          <Link to="/staff/viewreservations">
+                            <Typography>Reservations</Typography>
+                          </Link>
+                        </>
+                      )}
+
+                      {/* Show navigation for 'customer' role */}
+                      {user.role === "User" && (
+                        <>
+                          <Link to="/user/store">
+                            <Typography>Store</Typography>
+                          </Link>
+                          <Link to="/user/rewards">
+                            <Typography>Rewards</Typography>
+                          </Link>
+                          <Link to="/user/feedback">
+                            <Typography>Feedback</Typography>
+                          </Link>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    // Show default navigation for unauthenticated users
+                    <>
+                      <Link to="/store">
+                        <Typography>Store</Typography>
+                      </Link>
+                      <Link to="/rewards">
+                        <Typography>Rewards</Typography>
+                      </Link>
+                      <Link to="/feedback">
+                        <Typography>Feedback</Typography>
+                      </Link>
+                    </>
+                  )}
                 </Box>
 
                 {/* Center logo (now an image) */}
-                <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
                   <Link to="/home">
-                    <img src={logo} alt="Vegeatery Logo" style={{ height: "50px", width: "auto" }} />
+                    <img
+                      src={logo}
+                      alt="Vegeatery Logo"
+                      style={{ height: "50px", width: "auto" }}
+                    />
                   </Link>
                 </Box>
 
                 {/* Right side: 2 directories and sign-in button */}
                 <Box sx={{ display: "flex", gap: 3 }}>
-                  <Link to="/story">
-                    <Typography>Our Story</Typography>
-                  </Link>
-                  <Link to="/feedback">
-                    <Typography>Feedback</Typography>
-                  </Link>
+                  {loading ? (
+                    <CircularProgress color="inherit" />
+                  ) : user ? (
+                    <>
+                      {/* Show navigation for 'admin' role */}
+                      {user.role === "Admin" && (
+                        <>
+                          <Link to="/admin/accounts">
+                            <Typography>Accounts</Typography>
+                          </Link>
+                          <Link to="/admin/feedback">
+                            <Typography>Feedback</Typography>
+                          </Link>
+                        </>
+                      )}
 
-                  {loading ? (  // Show loading spinner until user state is set
+                      {/* Show navigation for 'staff' role */}
+                      {user.role === "Staff" && <></>}
+
+                      {/* Show navigation for 'customer' role */}
+                      {user.role === "User" && (
+                        <>
+                          <Link to="/user/reservations">
+                            <Typography>Reserve</Typography>
+                          </Link>
+                          <Link to="#">
+                            <Tooltip title="cart">
+                              {/* Add a tooltip for better UX */}
+                              <IconButton aria-label="Your cart">
+                                {/* Add aria-label for accessibility */}
+                                <ShoppingCartIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </Link>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    // Show default navigation for unauthenticated users
+                    <>
+                      <Link to="/reserve">
+                        <Typography>Reserve</Typography>
+                      </Link>
+                    </>
+                  )}
+
+                  {loading ? ( // Show loading spinner until user state is set
                     <CircularProgress color="inherit" />
                   ) : user ? (
                     <>
                       {/* Profile Icon and Menu */}
-                      <IconButton
-                        onClick={handleMenuClick}
-                        color="inherit"
-                      >
+                      <IconButton onClick={handleMenuClick} color="inherit">
                         <AccountCircle />
                       </IconButton>
 
@@ -169,8 +277,11 @@ function App() {
                         onClose={handleMenuClose}
                       >
                         <MenuItem onClick={handleMenuClose}>
-                          <Link to="/overview" style={{ textDecoration: 'none', color: 'black' }}>
-                            Manage Profile
+                          <Link
+                            to="/overview"
+                            style={{ textDecoration: "none", color: "black" }}
+                          >
+                            Account Overview
                           </Link>
                         </MenuItem>
                         <MenuItem onClick={logout}>Logout</MenuItem>
@@ -178,8 +289,16 @@ function App() {
                     </>
                   ) : (
                     <>
-                      <Link to="/register"><Typography color="Accent"><b>Register</b></Typography></Link>
-                      <Link to="/login"><Typography color="Accent"><b>Login</b></Typography></Link>
+                      <Link to="/register">
+                        <Typography color="Accent">
+                          <b>Register</b>
+                        </Typography>
+                      </Link>
+                      <Link to="/login">
+                        <Typography color="Accent">
+                          <b>Login</b>
+                        </Typography>
+                      </Link>
                     </>
                   )}
                 </Box>
@@ -193,6 +312,7 @@ function App() {
               <Route path="/tutorials" element={<Tutorials />} />
               <Route path="/addtutorial" element={<AddTutorial />} />
               <Route path="/edittutorial/:id" element={<EditTutorial />} />
+              
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
@@ -200,7 +320,10 @@ function App() {
               <Route path="/overview" element={<UserOverview />} />
               <Route path="/user/profile" element={<Profile />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
-              <Route path="/Admin/Accounts" element={<Accounts />} />
+              <Route path="/admin/accounts" element={<Accounts />} />
+              <Route path="/requestreset" element={<RequestPasswordReset />} />
+              <Route path="/passwordreset" element={<ResetPassword />} />
+
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />
               <Route path={"/viewcategories"} element={<CategoryList />} />
@@ -208,28 +331,46 @@ function App() {
               <Route path={"/viewcategories/:id"} element={<CategoryList />} />
               <Route path="/product/:productId" element={<ProductDetails />} />
               <Route path="/editproduct/:productId" element={<EditProduct />} />
+              <Route path="/Store" element={<UserMenu/>} />
+              <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
+              <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
+
               {/* RESERVATION */}
               <Route path="/reserve" element={<ReservationPage />} />
               <Route path="/reserve/confirmed" element={<ConfirmationPage />} />
-              <Route path="/staff/viewreservations" element={<StaffReservations />} />
-              <Route path="/staff/reservationlogs" element={<StaffReserveLogs />} />
-              <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation />} />
+              <Route
+                path="/staff/viewreservations"
+                element={<StaffReservations />}
+              />
+              <Route
+                path="/staff/reservationlogs"
+                element={<StaffReserveLogs />}
+              />
+              <Route
+                path="/staff/viewreservations/:id"
+                element={<StaffFocusedReservation />}
+              />
+
               {/* REWARDS */}
               <Route path="/rewards" element={<PointsSystem />} />
               <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
-              <Route path="/rewards/admin/voucherssystem" element={<AdminVouchersSystem />} />
+              <Route path="/rewards/admin/voucherssystem"element={<AdminVouchersSystem />}/>
               <Route path="/rewards/admin/voucherssystem/edit/:id" element={<AdminVouchersSystemEdit />} />
               <Route path="/rewards/admin/voucherssystemadd" element={<VouchersSystemAdd />} />
-              <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />
-              <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback />} />
-              <Route path="/feedback/user/generalfeedbackadd" element={<GeneralFeedbackAdd />} />
-              {/* <Route path="/general-feedback/edit/:id" element={<GeneralFeedbackEdit />} /> */}
-              <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />} />
+              <Route path="/rewards/admin/pointsrange"element={<PointsRange />}/>
+              <Route path="/feedback"element={<GeneralFeedback />}/>
+              <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />}/>
+              <Route path="/feedback/user/generalfeedbackadd" element={<GeneralFeedbackAdd />}/>
+
+              
               {/* ORDERS */}
               <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
-              <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
+              <Route
+                path={"/orderconfirmation"}
+                element={<OrderConfirmation />}
+              />
               <Route path={"/stafforders"} element={<StaffOrders />} />
             </Routes>
           </Container>
