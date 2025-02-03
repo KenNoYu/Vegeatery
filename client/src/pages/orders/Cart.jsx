@@ -3,16 +3,41 @@ import { Box, Typography, Grid2 as Grid, Card, CardContent, Button, TextField, C
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import http from '../../http';
+import RoleGuard from '../../utils/RoleGuard';
 
 const Cart = () => {
+    RoleGuard('User');
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
+    const [user, setUser] = useState(null);
+
+    // get user info
+    useEffect(() => {
+        http
+            .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
+            .then((res) => {
+                console.log(res);
+                setUser(res);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch user data", err);
+                setLoading(false);
+            });
+    }, []);
+
+    // Fetch cart items when user is set
+    useEffect(() => {
+        if (user?.data.cartId) {
+            GetCartItems();
+            setLoading(false);
+        }
+    }, [user]);
 
     // Fetch the cart items
     const GetCartItems = () => {
         // autofill cartId next time
-        http.get(`/ordercart?cartId=${1}`).then((res) => {
+        http.get(`/ordercart?cartId=${user.data.cartId}`).then((res) => {
             console.log("API Response:", res.data);
             setCartItems(res.data);
             calculateTotal(res.data);
@@ -23,10 +48,6 @@ const Cart = () => {
                 setLoading(false);
             })
     };
-
-    useEffect(() => {
-        GetCartItems();
-    }, []);
 
     // Update cart item
     const UpdateCartItems = (cartId, productId, quantity) => {
@@ -67,7 +88,7 @@ const Cart = () => {
 
     // Remove item from cart
     const RemoveCartItem = (productId) => {
-        http.delete(`/ordercart?CartId=${1}&ProductId=${productId}`).then((res) => {
+        http.delete(`/ordercart?CartId=${user.data.cartId}&ProductId=${productId}`).then((res) => {
             console.log("product deleted from cart");
             // Refresh cart data
             GetCartItems();
@@ -98,7 +119,7 @@ const Cart = () => {
                 <Typography variant="h5" sx={{ my: 2 }}>
                     Your Cart
                 </Typography>
-                <Grid container spacing={2}><CircularProgress />;</Grid>
+                <Grid container spacing={2}><CircularProgress /></Grid>
             </Box>
         )
     }
@@ -129,7 +150,7 @@ const Cart = () => {
                                                 size="small"
                                                 value={product.quantity}
                                                 onChange={(e) =>
-                                                    UpdateCartItems(1, product.productId, Number(e.target.value))
+                                                    UpdateCartItems(user.data.cartId, product.productId, Number(e.target.value))
                                                 }
                                             />
                                         </Box>
