@@ -40,7 +40,7 @@ function UserOverview() {
       .then((res) => {
         console.log(res);
         setUser(res);
-        getCustOrders(user.id)
+        getCustOrders(res.data.id)
         setLoading(false);
       })
       .catch((err) => {
@@ -51,7 +51,7 @@ function UserOverview() {
   }, []);
 
   const getCustOrders = (userId) => {
-    http.get(`/order/getByCustId/custId=${userId}`)
+    http.get(`/order/customerId/custId=${userId}`)
       .then((res) => {
         setLoading(false);
         setOrders(res.data || []);
