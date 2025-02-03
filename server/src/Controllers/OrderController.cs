@@ -245,8 +245,8 @@ namespace vegeatery.Controllers
 
                 if (!result.Any())
                 {
-                    return NotFound(new { Message = "No orders found for the given customer ID." });
-                }
+					return Ok(new Order[] {});
+				}
 
                 return Ok(result);
             }
