@@ -35,36 +35,66 @@ const ReservationPage = () => {
   const navigate = useNavigate();
   const [view, setView] = useState("details"); // 'details' or 'seats'
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
-  const [tables, setTables] = useState([]);
+  const [selectedTime, setSelectedTime] = useState(null);const [user, setUser] = useState(null); // Stores user data or remains null if not logged in
+  const [tables, setTables] = useState([]); 
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: "",
-    mobileNumber: "",
+    email: user ? user.email : "",
+    mobileNumber: user ? user.contactNumber : "",
   });
   const [selectedTables, setSelectedTables] = useState([]);
 
   useEffect(() => {
-    const fetchTables = async () => {
-      try {
-          let url = "/Reservation/GetTables";
+    const fetchUserAndTables = async () => {
+        setLoading(true); // Start loading when fetching starts
 
-          if (selectedDate && selectedTime) {
-              url += `?date=${selectedDate}&timeSlot=${selectedTime}`;
+        try {
+            let userData = null;
+
+            // Try fetching user data
+            try {
+                const userResponse = await http.get("/Auth/current-user", { withCredentials: true });
+                if (userResponse.data) {
+                    console.log(userResponse.data);
+                    setUser(userResponse.data);
+                    userData = userResponse.data;
+                }
+            } catch (userError) {
+                console.warn("User not logged in or authentication failed.");
+                setUser(null); // Ensure user state is cleared if no user is found
+            }
+
+            if (userData) {
+              setFormData(prevState => ({
+                  ...prevState,
+                  mobileNumber: userData.contactNumber,
+                  email: userData.email, // Auto-fill email when user is available
+              }));
           }
 
-          const response = await http.get(url);
-          setTables(response.data);
-      } catch (error) {
-          console.error("Error fetching tables:", error);
-          toast.error("Failed to load tables.");
-      }
-  };
+            // Fetch tables regardless of user authentication status
+            let url = "/Reservation/GetTables";
+            if (selectedDate && selectedTime) {
+                url += `?date=${selectedDate}&timeSlot=${selectedTime}`;
+            }
 
-    fetchTables();
+            const response = await http.get(url);
+            setTables(response.data);
 
-  }, [selectedDate, selectedTime]);
+        } catch (error) {
+            console.error("Error fetching data", error);
+            toast.error("Failed to load data.");
+        } finally {
+            setLoading(false); // Stop loading state in all cases
+        }
+    };
+
+    fetchUserAndTables(); // Invoke the function
+
+}, [selectedDate, selectedTime]); // Runs when selectedDate or selectedTime changes
+
 
 
   // Mock data for times
