@@ -6,8 +6,13 @@ import http from "../../../http";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import loginbanner from "../../../assets/loginbanner.jpg";
+import { useNavigate } from "react-router-dom"; 
+
+
 
 function Login() {
+  const navigate = useNavigate();
+  
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -32,7 +37,7 @@ function Login() {
       http
         .post("/auth/login", data, { withCredentials: true })
         .then(() => {
-        window.location ="/overview";
+          window.location = "/overview";
         })
         .catch((err) => {
           if (err.response && err.response.data) {
@@ -42,7 +47,9 @@ function Login() {
               }`
             );
           } else {
-            toast.error("An unexpected error occurred. Please try again later.");
+            toast.error(
+              "An unexpected error occurred. Please try again later."
+            );
           }
         });
     },
@@ -187,7 +194,12 @@ function Login() {
                 align="center"
                 sx={{ mt: 2, color: "#6e6e6e" }}
               >
-                Forgot Password?
+                <Button
+                  onClick={() => navigate("/requestreset")} // Navigate to the forgot password page
+                  sx={{ textDecoration: "none", color: "inherit" }}
+                >
+                  Forgot Password?
+                </Button>
               </Typography>
 
               <Typography
@@ -197,7 +209,12 @@ function Login() {
               >
                 Don’t have an account?{" "}
                 <span style={{ color: "#FF69B4", cursor: "pointer" }}>
-                  Register here!
+                  <Button
+                    onClick={() => navigate("/register")} // Navigate to the registration page
+                    sx={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    Register here!
+                  </Button>
                 </span>
               </Typography>
             </Box>
