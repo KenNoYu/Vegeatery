@@ -19,15 +19,20 @@ const Cart = () => {
             .then((res) => {
                 console.log(res);
                 setUser(res);
-                GetCartItems(res.data.cartId);
-                setLoading(false);
             })
             .catch((err) => {
                 console.error("Failed to fetch user data", err);
-                setError("Failed to fetch user data");
                 setLoading(false);
             });
     }, []);
+
+    // Fetch cart items when user is set
+    useEffect(() => {
+        if (user?.data.cartId) {
+            GetCartItems();
+            setLoading(false);
+        }
+    }, [user]);
 
     // Fetch the cart items
     const GetCartItems = () => {
