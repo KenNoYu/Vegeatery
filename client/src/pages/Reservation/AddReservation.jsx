@@ -57,7 +57,6 @@ const ReservationPage = () => {
             try {
                 const userResponse = await http.get("/Auth/current-user", { withCredentials: true });
                 if (userResponse.data) {
-                    console.log(userResponse.data);
                     setUser(userResponse.data);
                     userData = userResponse.data;
                 }
@@ -233,7 +232,11 @@ const ReservationPage = () => {
       const emailParams = {
         customer_name: reservationData.customerName,
         customer_email: reservationData.customerEmail,
-        reservation_date: reservationData.reservationDate,
+        reservation_date: new Intl.DateTimeFormat('en-GB', { 
+          day: '2-digit', 
+          month: 'short', 
+          year: 'numeric' 
+      }).format(new Date(reservationData.reservationDate)),
         reservation_time: reservationData.timeSlot,
         table_numbers: selectedTables.join(", ") // Convert array to string
     };
@@ -245,7 +248,7 @@ const ReservationPage = () => {
         "HpadWHSOZyo_0NyHD" 
     );
 
-      navigate("/reserve/confirmed"); // Redirect after success
+      navigate("/user/reserve/confirmed"); // Redirect after success
     } catch (error) {
       toast.error("Failed to create reservation.");
       console.error("Error:", error.response?.data || error.message);
