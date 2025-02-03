@@ -55,6 +55,10 @@ public class User
 
 	public Role? Role { get; set; }
 
-	public Guid CartId { get; set; }
+	// foreign key
+	public int CartId { get; set; }
+
+	// Navigation property
+	public Cart Cart { get; set; }
 }
 

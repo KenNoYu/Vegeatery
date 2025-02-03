@@ -20,6 +20,6 @@
 		public DateTime CreatedAt { get; set; }
 		public int RoleId { get; set; }
 		public string RoleName { get; set; }
-		public Guid CartId { get; set; }
+		public int CartId { get; set; }
 	}
 }
