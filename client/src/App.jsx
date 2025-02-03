@@ -311,7 +311,7 @@ function App() {
               <Route path="/tutorials" element={<Tutorials />} />
               <Route path="/addtutorial" element={<AddTutorial />} />
               <Route path="/edittutorial/:id" element={<EditTutorial />} />
-              
+
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
@@ -330,58 +330,31 @@ function App() {
               <Route path={"/viewcategories/:id"} element={<CategoryList />} />
               <Route path="/product/:productId" element={<ProductDetails />} />
               <Route path="/editproduct/:productId" element={<EditProduct />} />
-              <Route path="/Store" element={<UserMenu/>} />
+              <Route path="/Store" element={<UserMenu />} />
               <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
               <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
 
               {/* RESERVATION */}
               <Route path="/reserve" element={<ReservationPage />} />
               <Route path="/reserve/confirmed" element={<ConfirmationPage />} />
-              <Route
-                path="/staff/viewreservations"
-                element={<StaffReservations />}
-              />
-              <Route
-                path="/staff/reservationlogs"
-                element={<StaffReserveLogs />}
-              />
-              <Route
-                path="/staff/viewreservations/:id"
-                element={<StaffFocusedReservation />}
-              />
+              <Route path="/staff/viewreservations" element={<StaffReservations />} />
+              <Route path="/staff/reservationlogs" element={<StaffReserveLogs />} />
+              <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation />} />
 
               {/* REWARDS */}
               <Route path="/rewards/user/pointssystem" element={<PointsSystem />} />
               <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
-              <Route
-                path="/rewards/admin/voucherssystem"
-                element={<AdminVouchersSystem />}
-              />
-              <Route
-                path="/rewards/admin/pointsrange"
-                element={<PointsRange />}
-              />
-              <Route
-                path="/feedback/user/generalfeedback"
-                element={<GeneralFeedback />}
-              />
-              <Route
-                path="/general-feedback/edit/:id"
-                element={<GeneralFeedbackEdit />}
-              />
-              <Route
-                path="/feedback/admin/generalfeedback"
-                element={<AdminGeneralFeedback />}
-              />
-              
+              <Route path="/rewards/admin/voucherssystem" element={<AdminVouchersSystem />} />
+              <Route path="/rewards/admin/pointsrange" element={<PointsRange />} />
+              <Route path="/feedback/user/generalfeedback" element={<GeneralFeedback />} />
+              <Route path="/general-feedback/edit/:id" element={<GeneralFeedbackEdit />} />
+              <Route path="/feedback/admin/generalfeedback" element={<AdminGeneralFeedback />} />
+
               {/* ORDERS */}
               <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
-              <Route
-                path={"/orderconfirmation"}
-                element={<OrderConfirmation />}
-              />
+              <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
               <Route path={"/stafforders"} element={<StaffOrders />} />
             </Routes>
           </Container>
