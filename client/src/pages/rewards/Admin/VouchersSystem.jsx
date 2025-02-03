@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import http from '../../../http';
+import RoleGuard from '../../../utils/RoleGuard';
 
 const AdminVouchersSystem = () => {
-  // const [tiers, setTiers] = useState([]);
+  RoleGuard('Admin');
+  const [tiers, setTiers] = useState([]);
   const [vouchers, setVouchers] = useState([]);
   const navigate = useNavigate();
 
