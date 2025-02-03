@@ -270,7 +270,7 @@ function UserOverview() {
                         alignItems: "center",
                       }}
                     >
-                      <Box key={item.productName || i} sx={{ display: "flex", gap: 2 }}>
+                      <Box key={order.orderId || i} sx={{ display: "flex", gap: 2 }}>
                       <Typography variant="body1">{order.date}</Typography>
                         {order.items.map((item, i) => {
                           return (
