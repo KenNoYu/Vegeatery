@@ -9,6 +9,7 @@ const UserMenu = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   const [currentCategoryId, setCurrentCategoryId] = useState(null);  // Track selected category
@@ -60,6 +61,44 @@ const UserMenu = () => {
     navigate(`/userviewcategories/${categoryId}`); // Update the URL with the selected category
   };
 
+  // get user info if available
+  useEffect(() => {
+    http
+      .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
+      .then((res) => {
+        console.log(res);
+        setUser(res);
+        console.log(res.data.cartId)
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user data", err);
+        setError("Failed to fetch user data");
+        setLoading(false);
+      });
+  }, []);
+
+  // handle add to cart button
+  const addToCart = (cartId, productId, productName, quantity) => {
+    const cartData = {
+      // auto fill id next time
+      cartId: cartId,
+      productId: productId,
+      productName: productName,
+      quantity: quantity,
+    };
+
+    http.post("/ordercart", cartData)
+      .then((res) => {
+        console.log("Added to cart:", res.data);
+        alert(`Product added to cart!`);
+      })
+      .catch((error) => {
+        console.error("Error adding product to cart:", error);
+        alert("Failed to add product to cart.");
+      });
+  };
+
   return (
     <>
       {/* First Container - Category Navigation */}
@@ -70,9 +109,7 @@ const UserMenu = () => {
           backgroundColor: 'white',
           padding: '16px',
           marginTop: '20px',
-        
           boxShadow: 2,
-        
           maxWidth: '1200px',
           width: '100%',
         }}
@@ -82,7 +119,7 @@ const UserMenu = () => {
         ) : (
           <Box>
             {/* Navbar for categories */}
-            <Box display="flex" justifyContent="space-between"  sx={{ overflowX: 'auto' }}>
+            <Box display="flex" justifyContent="space-between" sx={{ overflowX: 'auto' }}>
               {categories.map((category) => (
                 <Button
                   key={category.categoryId}
@@ -137,7 +174,7 @@ const UserMenu = () => {
                         borderRadius: '16px',
                         boxShadow: 2,
                         overflow: 'hidden',
-                        height: '85%',
+                        height: '100%',
                         width: '100%',
                         margin: '0',
                       }}
@@ -155,16 +192,24 @@ const UserMenu = () => {
                           }}
                         />
                       </Box>
-                      <Box sx={{ padding: '16px' }}>
+                      <Box sx={{ padding: '20px' }}>
                         <Typography variant="h6">{product.productName}</Typography>
                         <Typography variant="body2">Price: ${product.productPrice}</Typography>
                         <Typography variant="body2">{product.productPoints} Sustainable Points</Typography>
                         <Button
-                          onClick={() => navigate(`/editproduct/${product.productId}`)}
-                          sx={{ cursor: 'pointer', marginTop: '10px' }}
+                          variant='contained'
+                          color={user ? 'Accent' : 'secondary'}
+                          onClick={() => addToCart(user.data.cartId, product.productId, product.productName, 1)}
+                          sx={{ cursor: user ? 'pointer' : 'not-allowed', marginTop: '10px' }}
+                          disabled={!user} // Disable if user is not logged in
                         >
-                          Edit
+                          Add to Cart
                         </Button>
+                        {!user && (
+                          <Typography variant="body2" color="error" sx={{ marginTop: '5px' }}>
+                            You must log in to purchase.
+                          </Typography>
+                        )}
                       </Box>
                     </Box>
                   </Grid>
