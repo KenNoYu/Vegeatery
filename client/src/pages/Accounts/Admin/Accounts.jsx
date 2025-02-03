@@ -208,7 +208,7 @@ export default function Accounts() {
           width: "60%",
         }}
       >
-        <Box>
+        <Box sx={{ marginBottom: "2em" }}>
             <UserRegistrationsGraph />
         </Box>
         <Box>
