@@ -68,9 +68,7 @@ namespace vegeatery.Controllers
             }
 
             var vouchers = await _context.Vouchers
-                .Include(v => v.Tier)
                 .Where(v => v.TierId == user.TierId)
-                .OrderBy(v => v.TierId)
                 .ToListAsync();
 
             return Ok(vouchers);
