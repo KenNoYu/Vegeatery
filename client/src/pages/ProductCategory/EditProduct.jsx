@@ -7,8 +7,10 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import RoleGuard from '../../utils/RoleGuard';
 
 const EditProduct = () => {
+    RoleGuard('Admin');
     const { productId } = useParams(); // Get product ID from URL
     const [imageFile, setImageFile] = useState(null);
     const [product, setProduct] = useState({
@@ -28,7 +30,7 @@ const EditProduct = () => {
     useEffect(() => {
         // Fetch the product details for editing
         http
-            .get(`/Category/${productId}`)
+            .get(`/Product/${productId}`)
             .then((res) => {
                 setProduct(res.data); // Initialize state with product data
                 setImageFile(res.data.imageFile);
@@ -70,7 +72,7 @@ const EditProduct = () => {
                 data.imageFile = imageFile;
             }
 
-            http.put(`/Category/${productId}`, data)
+            http.put(`/Product/${productId}`, data)
             .then(() => {
                 toast.success('Product updated successfully');
                 navigate(`/product/${productId}`);
@@ -93,7 +95,7 @@ const EditProduct = () => {
     };
 
     const deleteProduct = () => {
-        http.delete(`/Category/${productId}`)
+        http.delete(`/Product/${productId}`)
             .then((res) => {
                 console.log(res.data);
                 navigate("/viewcategories");

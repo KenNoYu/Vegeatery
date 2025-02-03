@@ -60,7 +60,8 @@ public class AuthController : ControllerBase
 			Agreement = registerDto.agreement,
 			TotalPoints = 0,
 			RoleId = role.Id,
-			Role = role // Assign the role to the user
+			Role = role, // Assign the role to the user
+			CartId = Guid.NewGuid()
 		};
 
 		user.JwtToken = CreateToken(user);
@@ -190,7 +191,6 @@ public class AuthController : ControllerBase
 		return Ok(user);  // Return the user data
 	}
 
-
 	[HttpGet("current-user")]
 	[Authorize]  // Ensures the user is authenticated
 	public async Task<IActionResult> GetCurrentUser()
@@ -224,7 +224,8 @@ public class AuthController : ControllerBase
 				JwtToken = u.JwtToken,
 				CreatedAt = u.CreatedAt,
 				RoleId = u.RoleId,
-				RoleName = u.Role.Name
+				RoleName = u.Role.Name,
+				CartId = u.CartId,
 			})
 			.FirstOrDefaultAsync();
 
@@ -235,7 +236,6 @@ public class AuthController : ControllerBase
 
 		return Ok(user);  // Return the user data
 	}
-
 
 	private string CreateToken(User user)
 	{
@@ -266,6 +266,7 @@ public class AuthController : ControllerBase
 		return token;
 	}
 }
+
 public class RegisterDto
 {
 	public string username { get; set; }

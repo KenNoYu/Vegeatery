@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Data;
 using vegeatery.Controllers;
+using Newtonsoft.Json.Linq;
 namespace vegeatery
 {
 	public class MyDbContext : DbContext
@@ -58,6 +59,13 @@ namespace vegeatery
 				new Role { Id = 3, Name = "Admin" }
 			);
 
+			// Seed Tier
+			modelBuilder.Entity<Tier>().HasData(
+				new Tier { TierId = 1, TierName = "Bronze", MinPoints = 0},
+				new Tier { TierId = 2, TierName = "Bronze", MinPoints = 278},
+				new Tier { TierId = 3, TierName = "Bronze", MinPoints = 778}
+			);
+
 			// Common token generation logic
 			string GenerateJwtToken(string username, string role)
 			{
@@ -96,7 +104,8 @@ namespace vegeatery
 			Agreement = true,
 			TotalPoints = 0,
 			RoleId = 3, // Admin role
-            JwtToken = GenerateJwtToken("masteradmin", "Admin")
+			CartId = Guid.NewGuid(),
+			JwtToken = GenerateJwtToken("masteradmin", "Admin")
 		},
 		new User
 		{
@@ -114,7 +123,8 @@ namespace vegeatery
             Agreement = true,
 			TotalPoints = 0,
 			RoleId = 2, // Staff role
-            JwtToken = GenerateJwtToken("staffuser", "Staff")
+			CartId = Guid.NewGuid(),
+			JwtToken = GenerateJwtToken("staffuser", "Staff")
 		}
 	};
 

@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import http from '../../http';
 import RoleGuard from '../../utils/RoleGuard';
 
-function AddCategory() {
+function EditCategory() {
     RoleGuard('Admin');
     const navigate = useNavigate();
+    const { categoryId } = useParams();
     const [loading, setLoading] = useState(false);
+
+    // Fetch category details when the component mounts
+    useEffect(() => {
+        http.get(`/Category/categories/${categoryId}`)
+            .then((res) => {
+                formik.setValues({ categoryName: res.data.categoryName });
+            })
+            .catch((err) => {
+                console.error(err);
+                toast.error('Failed to fetch category details');
+            });
+    }, [categoryId]);
 
     const formik = useFormik({
         initialValues: {
@@ -27,20 +40,18 @@ function AddCategory() {
         }),
         onSubmit: (data) => {
             setLoading(true);
-
-            // Trim input fields
             data.categoryName = data.categoryName.trim();
 
-            http.post('/Category/add-category', data)
-                .then((res) => {
-                    toast.success('Category added successfully!');
+            http.put(`/Category/${categoryId}`, data)
+                .then(() => {
+                    toast.success('Category updated successfully!');
                     navigate('/viewcategories');
                 })
                 .catch((err) => {
                     console.error(err.response);
                     const message =
                         err.response?.data?.message ||
-                        'An error occurred while adding the category';
+                        'An error occurred while updating the category';
                     toast.error(message);
                 })
                 .finally(() => {
@@ -52,7 +63,7 @@ function AddCategory() {
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Add Category
+                Edit Category
             </Typography>
             <Box component="form" onSubmit={formik.handleSubmit} noValidate>
                 <TextField
@@ -71,7 +82,7 @@ function AddCategory() {
                         formik.touched.categoryName && formik.errors.categoryName
                     }
                 />
-                
+
                 <Box sx={{ mt: 2 }}>
                     <Button
                         variant="contained"
@@ -79,7 +90,7 @@ function AddCategory() {
                         disabled={loading}
                         sx={{ mr: 2 }}
                     >
-                        {loading ? 'Submitting...' : 'Add Category'}
+                        {loading ? 'Updating...' : 'Update Category'}
                     </Button>
                     <Button
                         variant="outlined"
@@ -94,4 +105,4 @@ function AddCategory() {
     );
 }
 
-export default AddCategory;
+export default EditCategory;
