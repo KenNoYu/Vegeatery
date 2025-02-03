@@ -177,12 +177,12 @@ function Login() {
                 variant="contained"
                 sx={{
                   mt: 3,
-                  backgroundColor: "#FF69B4",
+                  backgroundColor: "#C6487E",
                   padding: "10px",
                   fontSize: "1rem",
                   color: "#fff",
                   borderRadius: "8px",
-                  "&:hover": { backgroundColor: "#FF1493" },
+                  "&:hover": { backgroundColor: "#C6487E" },
                 }}
                 type="submit"
               >
