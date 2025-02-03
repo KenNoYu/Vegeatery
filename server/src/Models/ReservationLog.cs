@@ -10,5 +10,6 @@
         public DateOnly ReservationDate { get; set; }
         public string TimeSlot { get; set; }
         public string Tables { get; set; }
+        public string DoneBy { get; set; }
     }
 }

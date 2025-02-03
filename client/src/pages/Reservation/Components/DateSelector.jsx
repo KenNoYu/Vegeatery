@@ -3,7 +3,7 @@ import { Button, Box, Typography } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { useTheme } from '@mui/material/styles';
 
-const DateSelector = ({ selectedDate, onDateChange}) => {
+const DateSelector = ({ selectedDate, onDateChange }) => {
   const theme = useTheme();
   const [currentDate, setCurrentDate] = useState(new Date()); // Tracks the current week
 
@@ -35,7 +35,12 @@ const DateSelector = ({ selectedDate, onDateChange}) => {
   };
 
   const handleDateClick = (date) => {
-    const formattedDate = date.toLocaleDateString("en-CA"); // Convert to YYYY-MM-DD format
+    const formattedDate = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Singapore',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(date);
     console.log(formattedDate);
     onDateChange(formattedDate);
   };
@@ -80,7 +85,7 @@ const DateSelector = ({ selectedDate, onDateChange}) => {
             "&:hover": {
               color: theme.palette.secondaryText.main
             }
-            }}/>
+          }} />
         </Button>
         <Typography variant="h6" sx={{ margin: "0 1rem", width: "50%" }}>
           {weekDates[0].toLocaleDateString("en-US", { month: "long" })}{" "}
@@ -96,24 +101,36 @@ const DateSelector = ({ selectedDate, onDateChange}) => {
           }}
           onClick={handleNextWeek}
         >
-          <ArrowForward  sx={{
+          <ArrowForward sx={{
             color: "black",
             "&:hover": {
               color: theme.palette.secondaryText.main
             }
-            }}/>
+          }} />
         </Button>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "space-around" }}>
-      {weekDates.map((date, index) => {
+        {weekDates.map((date, index) => {
           const isBeforeToday = isDateBeforeToday(date);
           return (
             <Button
               key={index}
               sx={{
-                background:
-                  selectedDate === date.toISOString().split("T")[0] ? theme.palette.Accent.main : "#fff",
-                color: selectedDate === date.toISOString().split("T")[0] ? "primary" : "black",
+                background: selectedDate === new Intl.DateTimeFormat('en-CA', {
+                  timeZone: 'Asia/Singapore',
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                }).format(date)
+                  ? theme.palette.Accent.main
+                  : "#fff",
+                color: selectedDate === new Intl.DateTimeFormat('en-CA', {
+                  timeZone: 'Asia/Singapore',
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                }).format(date)
+                  ? "primary" : "black",
                 padding: "0.5rem",
                 flex: "1",
                 textAlign: "center",

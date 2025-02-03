@@ -84,24 +84,11 @@ const StaffReservations = () => {
         borderRadius: '20px'
       }}
     >
-      <Box
-        sx={{
-          width: '20%',
-          height: '80vh',
-          backgroundColor: 'black',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderTopLeftRadius: '20px',
-          borderBottomLeftRadius: '20px'
-        }}
-      >
-        <Typography variant="h6" color="primary">Sidebar Content</Typography>
-      </Box>
+      
       <Box
         sx={{
           backgroundColor: 'white',
-          width: '80%',
+          width: '100%',
           height: '80vh',
           display: 'flex',
           justifyContent: 'flex-start',
@@ -220,7 +207,7 @@ const StaffReservations = () => {
                     {reservation.customerPhone} | {reservation.customerEmail}
                   </Typography>
                   <Typography variant="body2" sx={{ marginTop: "10px" }}>
-                    Table(s) {reservation.tables}
+                    Table(s) {reservation.tables.map(table => table.tableNumber).join(", ")}
                   </Typography>
                 </CardContent>
                 <Typography variant="h6" sx={{ marginRight: "20px" }}>

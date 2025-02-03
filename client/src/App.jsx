@@ -239,7 +239,7 @@ function App() {
                       {/* Show navigation for 'customer' role */}
                       {user.role === "User" && (
                         <>
-                          <Link to="/user/reservations">
+                          <Link to="/reserve">
                             <Typography>Reserve</Typography>
                           </Link>
                           <Link to="#">

@@ -9,7 +9,7 @@
         public string CustomerEmail { get; set; } // Email of the customer
         public string CustomerPhone { get; set; } // Phone number of the customer
         public string Status { get; set; } // e.g., "Pending", "Seated", "Cancelled", "No-Show"
-        public string Tables { get; set; }
+        public ICollection<Table> Tables { get; set; } = new List<Table>();
 
     }
 }
