@@ -10,7 +10,7 @@ public class Table
     public string Status { get; set; }
 
     [JsonIgnore] // Prevents circular references
-    public ICollection<Reservation> Reservations { get; set; }
-}
+    public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+    }
 
 }
