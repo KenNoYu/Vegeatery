@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, TextField, IconButton, Grid, CardContent, Card , Button} from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Cancel";
 import http from "../../../http"; // Adjust the path to your http.js
+import RoleGuard from '../../../utils/RoleGuard';
 
 const PointsRange = () => {
-  const [tiers, setTiers] = useState([]);
+  RoleGuard('Admin');
   const [editMode, setEditMode] = useState(null); // ID of the tier in edit mode
   const [updatedTier, setUpdatedTier] = useState({});
   const [error, setError] = useState(null); // To handle errors
+  const [tiers, setTiers] = useState([]);
+
 
   // Fetch tiers from the API
   useEffect(() => {
