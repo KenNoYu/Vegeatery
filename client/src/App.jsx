@@ -236,7 +236,7 @@ function App() {
                       {/* Show navigation for 'customer' role */}
                       {user.role === "User" && (
                         <>
-                          <Link to="/user/reservations">
+                          <Link to="/user/reserve">
                             <Typography>Reserve</Typography>
                           </Link>
                           <Link to="#">
@@ -254,7 +254,7 @@ function App() {
                   ) : (
                     // Show default navigation for unauthenticated users
                     <>
-                      <Link to="/reserve">
+                      <Link to="/user/reserve">
                         <Typography>Reserve</Typography>
                       </Link>
                     </>
@@ -337,8 +337,8 @@ function App() {
               <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
 
               {/* RESERVATION */}
-              <Route path="/reserve" element={<ReservationPage />} />
-              <Route path="/reserve/confirmed" element={<ConfirmationPage />} />
+              <Route path="/user/reserve" element={<ReservationPage />} />
+              <Route path="/user/reserve/confirmed" element={<ConfirmationPage />} />
               <Route path="/staff/viewreservations" element={<StaffReservations />} />
               <Route path="/staff/reservationlogs" element={<StaffReserveLogs />} />
               <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation />} />
