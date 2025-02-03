@@ -5,80 +5,29 @@ namespace vegeatery.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CategoryController(MyDbContext context) : ControllerBase
+    public class ProductController : ControllerBase
     {
-        private readonly MyDbContext _context = context;
+        private readonly MyDbContext _context;
 
-        // Get product
-        [HttpGet]
-        [Route("categories")]
-        public IActionResult GetAllCategories()
+        public ProductController(MyDbContext context)
         {
-            var categories = _context.Category.ToList();
-            return Ok(categories);
+            _context = context;
         }
 
-        // Add a new category (limit to 5)
-        [HttpPost("add-category")]
-        public IActionResult AddCategory(Category category)
-        {
-            // Check if the category limit is reached
-            if (_context.Category.Count() >= 5)
-            {
-                return BadRequest(new { message = "Cannot add more than 5 categories." });
-            }
-
-            var newCategory = new Category
-            {
-                CategoryName = category.CategoryName.Trim(),
-                TotalProduct = category.TotalProduct,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            };
-
-            _context.Category.Add(newCategory);
-            _context.SaveChanges();
-            return Ok(newCategory);
-        }
-
-        [HttpGet("categories/{id}")]
-        public IActionResult GetCategoryById(int id)
-        {
-            var category = _context.Category
-                .Where(c => c.CategoryId == id)
-                .Select(c => new
-                {
-                    c.CategoryId,
-                    c.CategoryName,
-                    c.TotalProduct,
-                    c.CreatedAt,
-                    c.UpdatedAt
-                })
-                .FirstOrDefault();
-
-            if (category == null)
-            {
-                return NotFound(new { message = "Category not found." });
-            }
-
-            return Ok(category);
-        }
-
-        [HttpGet]
-        [Route("products")]
+        [HttpGet("products")]
         public IActionResult GetAllProducts(string? search, int? categoryId)
         {
             IQueryable<Product> result = _context.Product;
 
             if (!string.IsNullOrEmpty(search))
             {
-                 result = result.Where(x => x.ProductName.Contains(search) ||
+                result = result.Where(x => x.ProductName.Contains(search) ||
                                            x.ProductDescription.Contains(search) ||
                                            x.Ingredients.Contains(search));
             }
 
             if (categoryId.HasValue)
-            {       
+            {
                 result = result.Where(x => x.CategoryId == categoryId.Value);
             }
 
@@ -91,15 +40,17 @@ namespace vegeatery.Controllers
                     x.ProductName,
                     x.ProductDescription,
                     x.Ingredients,
+                    x.ProductPoints,
                     x.Calories,
                     x.Fats,
                     x.Carbs,
                     x.Protein,
                     x.ProductPrice,
                     x.DiscountPercentage,
-                    x.DiscountedPrice, // Computed
+                    x.DiscountedPrice,
                     x.CategoryId,
                     x.Category.CategoryName,
+                    
                     x.CreatedAt,
                     x.UpdatedAt
                 })
@@ -108,25 +59,31 @@ namespace vegeatery.Controllers
             return Ok(products);
         }
 
-        // Create new product
         [HttpPost("add-product")]
         public IActionResult AddProduct(Product product)
         {
-            var now = DateTime.Now;
 
-            // Validate that the CategoryId exists
+            // Validate the ProductPoints range (1 to 5)
+            if (product.ProductPoints < 1 || product.ProductPoints > 5)
+            {
+                return BadRequest(new { message = "ProductPoints must be between 1 and 5." });
+            }
+
+
+            // Find the category based on the provided CategoryId
             var category = _context.Category.FirstOrDefault(c => c.CategoryId == product.CategoryId);
             if (category == null)
             {
                 return BadRequest(new { message = "Invalid CategoryId. Please create the category first." });
             }
 
-            // Create the new product
+            // Create a new product instance
             var newProduct = new Product
             {
                 ImageFile = product.ImageFile,
                 ProductName = product.ProductName.Trim(),
                 ProductDescription = product.ProductDescription.Trim(),
+                ProductPoints = product.ProductPoints,
                 ProductPrice = product.ProductPrice,
                 DiscountPercentage = product.DiscountPercentage,
                 Ingredients = product.Ingredients.Trim(),
@@ -137,10 +94,19 @@ namespace vegeatery.Controllers
                 CategoryId = product.CategoryId,
             };
 
+            // Add the new product to the database
             _context.Product.Add(newProduct);
+            _context.SaveChanges(); // Save the new product first
+
+            // Recalculate TotalProduct dynamically to ensure consistency
+            category.TotalProduct = _context.Product.Count(p => p.CategoryId == product.CategoryId);
+
+            // Save changes to the database
             _context.SaveChanges();
+
             return Ok(newProduct);
         }
+
 
         [HttpGet("{id}")]
         public IActionResult GetProductById(int id)
@@ -160,9 +126,10 @@ namespace vegeatery.Controllers
                     p.Protein,
                     p.ProductPrice,
                     p.DiscountPercentage,
-                    p.DiscountedPrice, // Computed
+                    p.DiscountedPrice,
                     p.CategoryId,
                     p.Category.CategoryName,
+                    p.ProductPoints,
                     p.CreatedAt,
                     p.UpdatedAt
                 })
@@ -179,6 +146,12 @@ namespace vegeatery.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateProduct(int id, Product product)
         {
+            // Validate the ProductPoints range (1 to 5)
+            if (product.ProductPoints < 1 || product.ProductPoints > 5)
+            {
+                return BadRequest(new { message = "ProductPoints must be between 1 and 5." });
+            }
+
             var existingProduct = _context.Product.FirstOrDefault(p => p.ProductId == id);
             if (existingProduct == null)
             {
@@ -189,6 +162,7 @@ namespace vegeatery.Controllers
             existingProduct.ProductName = product.ProductName.Trim();
             existingProduct.ProductDescription = product.ProductDescription.Trim();
             existingProduct.Ingredients = product.Ingredients.Trim();
+            existingProduct.ProductPoints = product.ProductPoints;
             existingProduct.Calories = product.Calories;
             existingProduct.Fats = product.Fats;
             existingProduct.Carbs = product.Carbs;

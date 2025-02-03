@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Data;
 using vegeatery.Controllers;
+using Newtonsoft.Json.Linq;
 namespace vegeatery
 {
   public class MyDbContext : DbContext
@@ -57,12 +58,19 @@ namespace vegeatery
 
       base.OnModelCreating(modelBuilder);
 
-      // Seed Roles
-      modelBuilder.Entity<Role>().HasData(
-        new Role { Id = 1, Name = "User" },
-        new Role { Id = 2, Name = "Staff" },
-        new Role { Id = 3, Name = "Admin" }
-      );
+			// Seed Roles
+			modelBuilder.Entity<Role>().HasData(
+				new Role { Id = 1, Name = "User" },
+				new Role { Id = 2, Name = "Staff" },
+				new Role { Id = 3, Name = "Admin" }
+			);
+
+			// Seed Tier
+			modelBuilder.Entity<Tier>().HasData(
+				new Tier { TierId = 1, TierName = "Bronze", MinPoints = 0},
+				new Tier { TierId = 2, TierName = "Bronze", MinPoints = 278},
+				new Tier { TierId = 3, TierName = "Bronze", MinPoints = 778}
+			);
 
       // Common token generation logic
       string GenerateJwtToken(string username, string role)
@@ -83,30 +91,31 @@ namespace vegeatery
         return tokenHandler.WriteToken(token);
       }
 
-      // Seed Users
-      var users = new List<User>
-  {
-    new User
-    {
-      Id = 1,
-      Username = "masteradmin",
-      PasswordHash = BCrypt.Net.BCrypt.HashPassword("MasterAdminPassword123!"),
-      Email = "admin@domain.com",
-      DateofBirth = "",
-      ContactNumber = "",
-      Gender = "Others",
-      DietPreference = "",
-      AllergyInfo = "",
-      MealTypes = "",
-      Promotions = true,
-      Agreement = true,
-      TotalPoints = 0,
-      RoleId = 3, // Admin role
-            JwtToken = GenerateJwtToken("masteradmin", "Admin")
-    },
-    new User
-    {
-      Id = 2,  // Assuming the next available ID is 2
+			// Seed Users
+			var users = new List<User>
+	{
+		new User
+		{
+			Id = 1,
+			Username = "masteradmin",
+			PasswordHash = BCrypt.Net.BCrypt.HashPassword("MasterAdminPassword123!"),
+			Email = "admin@domain.com",
+			DateofBirth = "",
+			ContactNumber = "",
+			Gender = "Others",
+			DietPreference = "",
+			AllergyInfo = "",
+			MealTypes = "",
+			Promotions = true,
+			Agreement = true,
+			TotalPoints = 0,
+			RoleId = 3, // Admin role
+			CartId = Guid.NewGuid(),
+			JwtToken = GenerateJwtToken("masteradmin", "Admin")
+		},
+		new User
+		{
+			Id = 2,  // Assuming the next available ID is 2
             Username = "staffuser",
       PasswordHash = BCrypt.Net.BCrypt.HashPassword("StaffUserPassword123!"),
       Email = "staff@domain.com",
@@ -118,11 +127,12 @@ namespace vegeatery
       MealTypes = "",
       Promotions = false,  // Staff might not have access to promotions
             Agreement = true,
-      TotalPoints = 0,
-      RoleId = 2, // Staff role
-            JwtToken = GenerateJwtToken("staffuser", "Staff")
-    }
-  };
+			TotalPoints = 0,
+			RoleId = 2, // Staff role
+			CartId = Guid.NewGuid(),
+			JwtToken = GenerateJwtToken("staffuser", "Staff")
+		}
+	};
 
       modelBuilder.Entity<User>().HasData(users);
 

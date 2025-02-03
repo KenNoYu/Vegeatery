@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using vegeatery;
 using Stripe;
 using vegeatery.Middleware;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,7 +91,34 @@ builder.Services.AddCors(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+	c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+	// Add JWT Authentication to Swagger
+	var jwtSecurityScheme = new OpenApiSecurityScheme
+	{
+		BearerFormat = "JWT",
+		Name = "JWT Authentication",
+		In = ParameterLocation.Header,
+		Type = SecuritySchemeType.Http,
+		Scheme = "bearer",
+		Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+
+		Reference = new OpenApiReference
+		{
+			Id = JwtBearerDefaults.AuthenticationScheme,
+			Type = ReferenceType.SecurityScheme
+		}
+	};
+
+	c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+	c.AddSecurityRequirement(new OpenApiSecurityRequirement
+	{
+		{ jwtSecurityScheme, Array.Empty<string>() }
+	});
+});
 
 var app = builder.Build();
 
