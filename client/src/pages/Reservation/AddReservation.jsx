@@ -248,7 +248,7 @@ const ReservationPage = () => {
         "HpadWHSOZyo_0NyHD" 
     );
 
-      navigate("/user/reserve/confirmed"); // Redirect after success
+      navigate("/reserve/confirmed"); // Redirect after success
     } catch (error) {
       toast.error("Failed to create reservation.");
       console.error("Error:", error.response?.data || error.message);
