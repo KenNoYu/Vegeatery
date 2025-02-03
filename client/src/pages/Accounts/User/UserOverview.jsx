@@ -51,7 +51,7 @@ function UserOverview() {
   }, []);
 
   const getCustOrders = (userId) => {
-    http.get(`/order/customerId/custId=${userId}`)
+    http.get(`/order/customerId?custId=${userId}`)
       .then((res) => {
         setLoading(false);
         setOrders(res.data || []);

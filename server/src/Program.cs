@@ -7,6 +7,8 @@ using vegeatery;
 using Stripe;
 using vegeatery.Middleware;
 using Microsoft.OpenApi.Models;
+using vegeatery.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddControllers()
 	.AddJsonOptions(opts => { });
 builder.Services.AddDbContext<MyDbContext>();
