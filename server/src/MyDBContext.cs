@@ -41,6 +41,7 @@ namespace vegeatery
     public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
     public required DbSet<User> Users { get; set; }
     public required DbSet<Role> Role { get; set; }
+		public required DbSet<PasswordResetToken> PasswordResetToken { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,6 +59,12 @@ namespace vegeatery
 
       base.OnModelCreating(modelBuilder);
 
+			modelBuilder.Entity<User>()
+				.HasOne(u => u.Cart) // A user has one cart
+				.WithOne(c => c.User) // A cart belongs to one user
+				.HasForeignKey<Cart>(c => c.UserId) // Cart references UserId
+				.OnDelete(DeleteBehavior.Cascade); // If a user is deleted, delete the cart too
+
 			// Seed Roles
 			modelBuilder.Entity<Role>().HasData(
 				new Role { Id = 1, Name = "User" },
@@ -72,24 +79,30 @@ namespace vegeatery
 				new Tier { TierId = 3, TierName = "Bronze", MinPoints = 778}
 			);
 
-      // Common token generation logic
-      string GenerateJwtToken(string username, string role)
-      {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_configuration["Authentication:Secret"]);
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-          Subject = new ClaimsIdentity(new Claim[]
-          {
-        new Claim(ClaimTypes.Name, username),
-        new Claim(ClaimTypes.Role, role)
-          }),
-          Expires = DateTime.UtcNow.AddDays(int.Parse(_configuration["Authentication:TokenExpiresDays"])),
-          SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        };
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
-      }
+			// Common token generation logic
+			string GenerateJwtToken(string username, string role)
+			{
+				var tokenHandler = new JwtSecurityTokenHandler();
+				var key = Encoding.ASCII.GetBytes(_configuration["Authentication:Secret"]);
+				var tokenDescriptor = new SecurityTokenDescriptor
+				{
+					Subject = new ClaimsIdentity(new Claim[]
+					{
+				new Claim(ClaimTypes.Name, username),
+				new Claim(ClaimTypes.Role, role)
+					}),
+					Expires = DateTime.UtcNow.AddDays(int.Parse(_configuration["Authentication:TokenExpiresDays"])),
+					SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+				};
+				var token = tokenHandler.CreateToken(tokenDescriptor);
+				return tokenHandler.WriteToken(token);
+			}
+
+			// Seed Carts for staff and adming
+			var adminCart = new Cart { CartId = -1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, UserId = 1 };
+			var staffCart = new Cart { CartId = -2, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now, UserId = 2 };
+
+			modelBuilder.Entity<Cart>().HasData(adminCart, staffCart);
 
 			// Seed Users
 			var users = new List<User>
@@ -110,7 +123,7 @@ namespace vegeatery
 			Agreement = true,
 			TotalPoints = 0,
 			RoleId = 3, // Admin role
-			CartId = Guid.NewGuid(),
+			CartId = adminCart.CartId,
 			JwtToken = GenerateJwtToken("masteradmin", "Admin")
 		},
 		new User
@@ -129,7 +142,7 @@ namespace vegeatery
             Agreement = true,
 			TotalPoints = 0,
 			RoleId = 2, // Staff role
-			CartId = Guid.NewGuid(),
+			CartId = staffCart.CartId,
 			JwtToken = GenerateJwtToken("staffuser", "Staff")
 		}
 	};

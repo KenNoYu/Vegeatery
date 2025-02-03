@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import http from '../../http';
 import { Box, Typography, CircularProgress } from '@mui/material';
+import RoleGuard from '../../utils/RoleGuard';
 
 const OrderConfirmation = () => {
+    RoleGuard('User');
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const location = useLocation();
@@ -14,6 +16,7 @@ const OrderConfirmation = () => {
     useEffect(() => {
         if (orderId) {
             getOrderByID(orderId);
+
         }
     }, [orderId]);
 
@@ -23,7 +26,7 @@ const OrderConfirmation = () => {
             orderId: orderId,
             status: "New"
         }
-        http.put("/order/UpdateStatus")
+        http.put("/order/UpdateStatus", updateData)
             .then((res) => {
                 console.log("Update API Response:", res.data);
             })

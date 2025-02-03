@@ -28,9 +28,10 @@ namespace vegeatery.Controllers
                         FullName = request.FullName,
                         Email = request.Email,
                         Address = request.Address,
-                        OrderDate = DateTime.Now,
+                        OrderDate = request.OrderDate,
                         TotalPrice = cart.CartItems.Sum(item => item.Price * item.Quantity),
                         TotalPoints = request.TotalPoints,
+                        TimeSlot = request.TimeSlot,
                         Status = request.Status,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
@@ -47,7 +48,8 @@ namespace vegeatery.Controllers
                         var orderItem = new OrderItem
                         {
                             OrderId = order.OrderId,
-                            ProductId = cartItem.ProductId,
+							ProductName = cartItem.ProductName,
+							ProductId = cartItem.ProductId,
                             Price = cartItem.Price,
                             Quantity = cartItem.Quantity,
                             PointsEarned = cartItem.Points,
@@ -94,10 +96,12 @@ namespace vegeatery.Controllers
                     Email = order.Email,
                     Address = order.Address,
                     OrderDate = order.OrderDate,
+                    TimeSlot = order.TimeSlot,
                     TotalPrice = order.TotalPrice,
-                    OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
+					TotalPoints = order.TotalPoints,
+					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
                     {
-                        ProductName = oi.Product.ProductName, // Assuming ProductName is a property of Product
+                        ProductName = oi.ProductName, // Assuming ProductName is a property of Product
                         Quantity = oi.Quantity,
                         Price = oi.Price
                     }).ToList()
@@ -134,7 +138,7 @@ namespace vegeatery.Controllers
                         Order.CreatedAt,
                         Items = Order.OrderItems.Select(item => new
                         {
-                            ProductName = item.Product != null ? item.Product.ProductName : "Unknown",
+							item.ProductName,
                             item.Price,
                             item.Quantity,
                             item.PointsEarned
@@ -169,10 +173,11 @@ namespace vegeatery.Controllers
                         Order.OrderId,
                         Order.FullName,
                         Order.OrderDate,
+                        Order.TimeSlot,
                         Order.Status,
                         Items = Order.OrderItems.Select(item => new
                         {
-                            ProductName = item.Product != null ? item.Product.ProductName : "Unknown",
+                            item.ProductName,
                             item.Price,
                             item.Quantity,
                             item.PointsEarned
@@ -218,7 +223,7 @@ namespace vegeatery.Controllers
         }
 
         // Get order by customer id (for customer)
-        [HttpGet("getByCustId")]
+        [HttpGet("customerId")]
         public IActionResult GetOrderByCustId(int custId)
         {
             try
@@ -235,8 +240,8 @@ namespace vegeatery.Controllers
                     Order.TotalPrice,
                     OrderItems = Order.OrderItems.Select(item => new
                     {
-                        ProductName = item.Product != null ? item.Product.ProductName : "Unknown",
-                        item.Price,
+						item.ProductName,
+						item.Price,
                         item.Quantity,
                         item.PointsEarned
                     }).ToList()
@@ -245,8 +250,8 @@ namespace vegeatery.Controllers
 
                 if (!result.Any())
                 {
-                    return NotFound(new { Message = "No orders found for the given customer ID." });
-                }
+					return Ok(new Order[] {});
+				}
 
                 return Ok(result);
             }

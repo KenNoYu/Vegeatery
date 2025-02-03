@@ -40,7 +40,7 @@ function UserOverview() {
       .then((res) => {
         console.log(res);
         setUser(res);
-        getCustOrders(user.id)
+        getCustOrders(res.data.id)
         setLoading(false);
       })
       .catch((err) => {
@@ -51,7 +51,7 @@ function UserOverview() {
   }, []);
 
   const getCustOrders = (userId) => {
-    http.get(`/order/getByCustId/custId=${userId}`)
+    http.get(`/order/customerId?custId=${userId}`)
       .then((res) => {
         setLoading(false);
         setOrders(res.data || []);
@@ -270,9 +270,9 @@ function UserOverview() {
                         alignItems: "center",
                       }}
                     >
-                      <Box key={item.productName || i} sx={{ display: "flex", gap: 2 }}>
+                      <Box key={order.orderId || i} sx={{ display: "flex", gap: 2 }}>
                       <Typography variant="body1">{order.date}</Typography>
-                        {order.items.map((item, i) => {
+                        {order.orderItems.map((item, i) => {
                           return (
                             <>
                               <img
