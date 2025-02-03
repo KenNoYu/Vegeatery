@@ -8,6 +8,7 @@ import http from '../../http';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { parse, isBefore, isDate } from 'date-fns';
+import emailjs from "@emailjs/browser";
 
 const DetailsTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputLabel-root.Mui-focused": {
@@ -47,15 +48,24 @@ const ReservationPage = () => {
   useEffect(() => {
     const fetchTables = async () => {
       try {
-        const response = await http.get("/Reservation/GetTables"); // Update with your actual API endpoint
-        setTables(response.data);
+          let url = "/Reservation/GetTables";
+
+          if (selectedDate && selectedTime) {
+              url += `?date=${selectedDate}&timeSlot=${selectedTime}`;
+          }
+
+          const response = await http.get(url);
+          setTables(response.data);
       } catch (error) {
-        console.error("Error fetching tables:", error);
-        toast.error("Failed to load tables.");
+          console.error("Error fetching tables:", error);
+          toast.error("Failed to load tables.");
       }
-    };
+  };
+
     fetchTables();
-  }, []);
+
+  }, [selectedDate, selectedTime]);
+
 
   // Mock data for times
   const times = [
@@ -73,6 +83,7 @@ const ReservationPage = () => {
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
+    setSelectedTables([]);
     if (selectedTime) {
       if (isDateTimeBeforeNow(date, selectedTime)) {
         setSelectedTime(null)
@@ -81,6 +92,7 @@ const ReservationPage = () => {
   };
 
   const handleTimeSelect = (time) => {
+    setSelectedTables([]);
     setSelectedTime(time);
   };
 
@@ -152,7 +164,7 @@ const ReservationPage = () => {
     } else if (!/^\+?[\d\s-]+$/.test(formData.mobileNumber)) {
       toast.error("Mobile Number must be valid.");
       return;
-    } else if (!selectedTables || selectedTables.trim() === "") {
+    } else if (!selectedTables || selectedTables.length == 0) {
       toast.error("Please select at least one table.");
       return;
     }
@@ -166,7 +178,7 @@ const ReservationPage = () => {
       "customerPhone": formData.mobileNumber,
       "timeSlot": selectedTime,
       "status": "Pending",
-      "tables": selectedTables
+      "tableIds": selectedTables
     };
 
     console.log(reservationData)
@@ -181,11 +193,27 @@ const ReservationPage = () => {
         "action": "created",
         "reservationDate": selectedDate,
         "timeSlot": selectedTime,
-        "tables": selectedTables
+        "tables": selectedTables.join(", "),
+        "doneBy": "user"
       }
 
       const logResponse = await http.post("/Reservation/CreateReservationLog", logData);
       console.log("Reservation log created:", logResponse.data);
+
+      const emailParams = {
+        customer_name: reservationData.customerName,
+        customer_email: reservationData.customerEmail,
+        reservation_date: reservationData.reservationDate,
+        reservation_time: reservationData.timeSlot,
+        table_numbers: selectedTables.join(", ") // Convert array to string
+    };
+
+    await emailjs.send(
+        "service_1yw1hkh", 
+        "template_5lv58es", 
+        emailParams,
+        "HpadWHSOZyo_0NyHD" 
+    );
 
       navigate("/reserve/confirmed"); // Redirect after success
     } catch (error) {
