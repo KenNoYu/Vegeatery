@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Grid2 as Grid, Button, TextField, Paper, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
 import http from '../../http';
 import * as yup from "yup";
 import { useFormik } from "formik";
 import DateSelector from "../Reservation/Components/DateSelector";
 import { parse, isBefore, isDate } from 'date-fns';
+import { ToastContainer, toast } from 'react-toastify';
 import theme from '../../themes/MyTheme';
+import RoleGuard from '../../utils/RoleGuard';
 
 const Orders = () => {
+    RoleGuard('User');
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [points, setPoints] = useState(0);
@@ -64,6 +66,7 @@ const Orders = () => {
             console.log("API Response:", res.data);
             setCartItems(res.data);
             calculateTotal(res.data);
+            calculateTotalPoints(res.data);
         })
             .catch((error) => {
                 console.error("Error fetching cart items:", error);
@@ -93,30 +96,43 @@ const Orders = () => {
 
     // create new order & set status as Pending
     const addOrder = () => {
-        const orderData = {
-            // auto fill id next time
-            cartId: 1,
-            fullname: fullName,
-            email: email,
-            address: address,
-            totalPoints: 0,
-            status: "Pending",
-            voucherId: null,
-            // autofill session and customer id next time
-            customerId: null,
-            sessionId: null
-        };
-
-        http.post("/order/newOrder", orderData)
-            .then((res) => {
-                const orderId = res.data.orderId;
-                toast.success("Order added!");
-                navigate('/checkout', { state: { orderId } });
-            })
-            .catch((error) => {
-                console.error("Error adding order", error);
-                toast.error("Error adding order");
+        if (!selectedDate || !selectedTime) {
+            toast.error("Please select a pick-up date and time before proceeding to checkout.", {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 5000,
+                hideProgressBar: false,
+                theme: "colored",
             });
+            return;
+        }
+        else {
+            const orderData = {
+                // auto fill id next time
+                cartId: 1,
+                fullname: fullName,
+                email: email,
+                address: address,
+                totalPoints: points,
+                orderDate: convertToISODateTime(selectedDate, selectedTime),
+                timeSlot: convertToTimeOnly(selectedTime),
+                status: "Pending",
+                voucherId: null,
+                // autofill session and customer id next time
+                customerId: null,
+                sessionId: null
+            };
+
+            http.post("/order/newOrder", orderData)
+                .then((res) => {
+                    const orderId = res.data.orderId;
+                    toast.success("Order added!");
+                    navigate('/checkout', { state: { orderId } });
+                })
+                .catch((error) => {
+                    console.error("Error adding order", error);
+                    toast.error("Error adding order");
+                });
+        }
     };
 
     // Mock data for pick up times
@@ -154,14 +170,6 @@ const Orders = () => {
         setSelectedTime(time);
     };
 
-    const handleDateChange = (event) => {
-        setSelectedDate(event.target.value);
-    };
-
-    const handleTimeChange = (event) => {
-        setSelectedTime(event.target.value);
-    };
-
     const handleDialogOpen = () => {
         setOpenDialog(true);
     };
@@ -177,9 +185,43 @@ const Orders = () => {
         handleDialogClose();
     };
 
+    // handling time conversion for request to api
+    const convertToISODateTime = (selectedDate, selectedTime) => {
+        if (!selectedDate || !selectedTime) return null; // Handle cases where inputs are missing
+
+        const [startTime] = selectedTime.split(" - "); // Extract the start time (e.g., "11:00AM")
+
+        // Convert time string to 24-hour format
+        const [time, period] = startTime.split(/(AM|PM)/);
+        let [hours, minutes] = time.split(":").map(Number);
+
+        if (period === "PM" && hours !== 12) hours += 12;
+        if (period === "AM" && hours === 12) hours = 0;
+
+        // Create a Date object for the selected date
+        const dateTime = new Date(selectedDate);
+        dateTime.setHours(hours, minutes, 0, 0); // Set extracted hours & minutes
+
+        return dateTime.toISOString(); // Format as ISO string (UTC)
+    };
+
+    const convertToTimeOnly = (timeStr) => {
+        if (!timeStr) return null;
+
+        const [time, period] = timeStr.split(/(AM|PM)/); // Extract time and AM/PM
+        let [hours, minutes] = time.trim().split(":").map(Number);
+
+        if (period === "PM" && hours !== 12) hours += 12; // Convert PM hours
+        if (period === "AM" && hours === 12) hours = 0;   // Handle 12 AM case
+
+        return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
+    };
+
     return (
         <Box>
             <Box sx={{ padding: 4 }}>
+                {/* Error message for missing date/time */}
+                {ToastContainer}
                 <Grid container spacing={2}>
                     {/* Customer Details */}
                     <Grid size={{ xs: 12, md: 6, lg: 8 }} container spacing={2}>
@@ -295,7 +337,7 @@ const Orders = () => {
                                             Pick-Up Timing
                                         </Typography>
                                         <Typography variant="body1" sx={{ color: '#292827' }}>
-                                            {`${new Date(selectedDate).toLocaleDateString('en-GB', {
+                                            {`${new Date(selectedDate).toLocaleDateString('en-CA', {
                                                 day: '2-digit',
                                                 month: 'short',
                                                 year: 'numeric',
@@ -336,6 +378,9 @@ const Orders = () => {
                                     {points} Points
                                 </Typography>
                             </Box>
+                            <Typography variant="h6" gutterBottom>
+                                Vouchers
+                            </Typography>
                         </Paper>
                     </Grid>
 
@@ -432,6 +477,15 @@ const Orders = () => {
                     <Button onClick={handleDialogClose} color="Accent">Confirm</Button>
                 </DialogActions>
             </Dialog>
+
+            {/* ToastContainer for showing toasts */}
+            <ToastContainer
+                position="top-right"  // Position set to top-right
+                autoClose={5000}
+                hideProgressBar={false}
+                closeOnClick
+                rtl={false}
+            />
         </Box>
     );
 
