@@ -73,6 +73,7 @@ import Unauthorized from "./pages/Accounts/User/Unauthorized";
 import Accounts from "./pages/Accounts/Admin/Accounts";
 import RequestPasswordReset from "./pages/Accounts/User/RequestPasswordReset";
 import ResetPassword from "./pages/Accounts/User/ResetPassword";
+import MyOrdersPage from "./pages/Accounts/User/OrderHistory";
 
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
@@ -313,17 +314,19 @@ function App() {
               <Route path="/tutorials" element={<Tutorials />} />
               <Route path="/addtutorial" element={<AddTutorial />} />
               <Route path="/edittutorial/:id" element={<EditTutorial />} />
-              
+
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/form" element={<MyForm />} />
               <Route path="/overview" element={<UserOverview />} />
               <Route path="/user/profile" element={<Profile />} />
+              <Route path="/user/orders" element={<MyOrdersPage />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/admin/accounts" element={<Accounts />} />
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />
+
 
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />
@@ -332,25 +335,16 @@ function App() {
               <Route path={"/viewcategories/:id"} element={<CategoryList />} />
               <Route path="/product/:productId" element={<ProductDetails />} />
               <Route path="/editproduct/:productId" element={<EditProduct />} />
-              <Route path="/Store" element={<UserMenu/>} />
+              <Route path="/Store" element={<UserMenu />} />
               <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
               <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
 
               {/* RESERVATION */}
               <Route path="/reserve" element={<ReservationPage />} />
               <Route path="/reserve/confirmed" element={<ConfirmationPage />} />
-              <Route
-                path="/staff/viewreservations"
-                element={<StaffReservations />}
-              />
-              <Route
-                path="/staff/reservationlogs"
-                element={<StaffReserveLogs />}
-              />
-              <Route
-                path="/staff/viewreservations/:id"
-                element={<StaffFocusedReservation />}
-              />
+              <Route path="/staff/viewreservations" element={<StaffReservations />} />
+              <Route path="/staff/reservationlogs" element={<StaffReserveLogs />} />
+              <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation />} />
 
               {/* REWARDS */}
               <Route path="/rewards" element={<PointsSystem />} />
@@ -367,10 +361,7 @@ function App() {
               <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
-              <Route
-                path={"/orderconfirmation"}
-                element={<OrderConfirmation />}
-              />
+              <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
               <Route path={"/stafforders"} element={<StaffOrders />} />
             </Routes>
           </Container>

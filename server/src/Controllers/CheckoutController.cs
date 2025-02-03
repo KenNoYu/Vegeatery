@@ -48,7 +48,7 @@ namespace vegeatery.Controllers
                         Currency = "sgd",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
-                            Name = item.Product != null ? item.Product.ProductName : "Unknown",
+                            Name = item.ProductName != null ? item.ProductName : "Unknown",
                         },
                         UnitAmount = (long)(item.Price * 100), // Stripe expects the amount in cents
                     },

@@ -8,7 +8,9 @@ namespace vegeatery.Models
         [Key]
         public int OrderItemId { get; set; }
 
-        [Required]
+		public string ProductName { get; set; }
+
+		[Required]
         [Range(0, double.MaxValue, ErrorMessage = "Price must be a positive value.")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }

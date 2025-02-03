@@ -24,6 +24,6 @@ namespace vegeatery.Dtos
         public int TierId { get; set; }
         public string TierName { get; set; }
         public string RoleName { get; set; }
-		public Guid CartId { get; set; }
+		public int CartId { get; set; }
 	}
 }

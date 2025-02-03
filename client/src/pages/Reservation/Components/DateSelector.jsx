@@ -35,7 +35,7 @@ const DateSelector = ({ selectedDate, onDateChange}) => {
   };
 
   const handleDateClick = (date) => {
-    const formattedDate = date.toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
+    const formattedDate = date.toLocaleDateString("en-CA"); // Convert to YYYY-MM-DD format
     console.log(formattedDate);
     onDateChange(formattedDate);
   };
