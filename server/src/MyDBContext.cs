@@ -40,6 +40,7 @@ namespace vegeatery
         public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
 		public required DbSet<User> Users { get; set; }
 		public required DbSet<Role> Role { get; set; }
+		public required DbSet<PasswordResetToken> PasswordResetToken { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

@@ -9,6 +9,13 @@ import {
   Typography,
   Avatar,
   Input,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import http from "../../../http";
@@ -215,27 +222,28 @@ export default function ProfilePage() {
 
     try {
       const response = await http.delete(`/Account/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming you store the JWT token in localStorage
-        },
+        withCredentials: true,
       });
 
       console.log("Account deleted successfully:", response.data.message);
-      window.location = "/login";
+
+      // Logout the user after deleting the account
+      http
+        .post("/auth/logout", {}, { withCredentials: true })
+        .then((res) => {
+          console.log(res.data.message);
+          window.location = "/";
+        })
+        .catch((err) => {
+          console.error("Error during logout", err);
+        });
+
       // Handle successful deletion (e.g., redirect to login page)
       alert("Your account has been deleted successfully.");
     } catch (error) {
       console.error("Error deleting account:", error);
       alert("Error deleting your account, please try again.");
     }
-  };
-
-  const DeleteAccountButton = ({ userId }) => {
-    return (
-      <Button variant="contained" color="error" onClick={handleDeleteAccount}>
-        Delete Account
-      </Button>
-    );
   };
 
   return (
@@ -371,6 +379,7 @@ export default function ProfilePage() {
                 </EditButton>
 
                 <Button
+                  onClick={handleDeleteAccount}
                   variant="outlined"
                   color="error"
                   sx={{
@@ -649,7 +658,6 @@ export default function ProfilePage() {
                   <EditButton onClick={handleSaveProfile}>
                     Save Profile
                   </EditButton>
-                  <DeleteAccountButton userId={userId} />
                 </Box>
               )}
             </ProfileDetailsBox>
