@@ -22,6 +22,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import http from "../../../http";
 import RoleGuard from "../../../utils/RoleGuard";
 import AdminSidebar from "./AdminSidebar";
+import UserRegistrationsGraph from "./UserRegistrationsGraph";
 
 export default function Accounts() {
   RoleGuard("Admin");
@@ -207,6 +208,9 @@ export default function Accounts() {
           width: "60%",
         }}
       >
+        <Box>
+            <UserRegistrationsGraph />
+        </Box>
         <Box>
           <Typography variant="h4" gutterBottom>
             Accounts
