@@ -70,6 +70,7 @@ import Unauthorized from "./pages/Accounts/User/Unauthorized";
 import Accounts from "./pages/Accounts/Admin/Accounts";
 import RequestPasswordReset from "./pages/Accounts/User/RequestPasswordReset";
 import ResetPassword from "./pages/Accounts/User/ResetPassword";
+import MyOrdersPage from "./pages/Accounts/User/OrderHistory";
 
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
@@ -317,10 +318,12 @@ function App() {
               <Route path="/form" element={<MyForm />} />
               <Route path="/overview" element={<UserOverview />} />
               <Route path="/user/profile" element={<Profile />} />
+              <Route path="/user/orders" element={<MyOrdersPage />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/admin/accounts" element={<Accounts />} />
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />
+
 
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />

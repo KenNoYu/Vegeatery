@@ -272,7 +272,7 @@ function UserOverview() {
                     >
                       <Box key={order.orderId || i} sx={{ display: "flex", gap: 2 }}>
                       <Typography variant="body1">{order.date}</Typography>
-                        {order.items.map((item, i) => {
+                        {order.orderItems.map((item, i) => {
                           return (
                             <>
                               <img
