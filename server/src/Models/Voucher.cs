@@ -3,7 +3,7 @@
     public class Voucher
     {
         public int VoucherId { get; set; }
-        public string VoucherName { get; set; } //= string.Empty;
+        public string VoucherName { get; set; } 
         public Double DiscountPercentage { get; set; }
         public DateTime ExpiryDate { get; set; }
 
