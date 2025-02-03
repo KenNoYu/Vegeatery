@@ -19,6 +19,7 @@ const Cart = () => {
             .then((res) => {
                 console.log(res);
                 setUser(res);
+                GetCartItems(res.data.cartId);
                 setLoading(false);
             })
             .catch((err) => {
@@ -42,10 +43,6 @@ const Cart = () => {
                 setLoading(false);
             })
     };
-
-    useEffect(() => {
-        GetCartItems();
-    }, []);
 
     // Update cart item
     const UpdateCartItems = (cartId, productId, quantity) => {
@@ -117,7 +114,7 @@ const Cart = () => {
                 <Typography variant="h5" sx={{ my: 2 }}>
                     Your Cart
                 </Typography>
-                <Grid container spacing={2}><CircularProgress />;</Grid>
+                <Grid container spacing={2}><CircularProgress /></Grid>
             </Box>
         )
     }
