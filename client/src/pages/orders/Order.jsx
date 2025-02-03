@@ -23,6 +23,7 @@ const Orders = () => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     // get user info
@@ -36,7 +37,6 @@ const Orders = () => {
             })
             .catch((err) => {
                 console.error("Failed to fetch user data", err);
-                setError("Failed to fetch user data");
                 setLoading(false);
             });
     }, []);
@@ -166,10 +166,14 @@ const Orders = () => {
         "8:00PM - 8:15PM", "8:15PM - 8:30PM", "8:30PM - 8:45PM", "8:45PM - 9:00PM",
     ];
 
+    const getStartTimeFromRange = (timeRange) => {
+        return timeRange.split(' - ')[0]; // Get the first time (before the '-')
+    };
+
     // Dialog for Pick up Time
     const isDateTimeBeforeNow = (date, time) => {
         const formattedDate = parse(time, 'h:mma', new Date(date)); // Parse the time into a date object
-        return isBefore(formattedDate, new Date()); // Compare it with the current date and time
+        return isBefore(formattedDate, new Date());
     };
 
     const handleDateSelect = (date) => {
@@ -211,16 +215,25 @@ const Orders = () => {
         // Convert time string to 24-hour format
         const [time, period] = startTime.split(/(AM|PM)/);
         let [hours, minutes] = time.split(":").map(Number);
+        console.log(hours);
+        console.log(minutes);
 
         if (period === "PM" && hours !== 12) hours += 12;
         if (period === "AM" && hours === 12) hours = 0;
+        console.log(hours);
+        console.log(minutes);
 
         // Create a Date object for the selected date
-        const dateTime = new Date(selectedDate);
-        dateTime.setHours(hours, minutes, 0, 0); // Set extracted hours & minutes
+        const tzoffset = (new Date()).getTimezoneOffset();
 
-        return dateTime.toISOString(); // Format as ISO string (UTC)
+        const adjustedHours = hours - Math.floor(tzoffset / 60);
+        const adjustedMinutes = minutes - (tzoffset % 60);
+        const dateTime = new Date(`${selectedDate} ${adjustedHours}:${adjustedMinutes}`)
+        const localISOTime = (dateTime).toISOString()
+
+        return localISOTime; // Format as ISO string (UTC)
     };
+
 
     const convertToTimeOnly = (timeStr) => {
         if (!timeStr) return null;
@@ -463,7 +476,9 @@ const Orders = () => {
                                 }}
                             >
                                 {times.map((time) => {
-                                    const isPast = isDateTimeBeforeNow(selectedDate, time); // Add your isDateTimeBeforeNow logic
+                                    const startTime = getStartTimeFromRange(time);
+                                    const isPast = isDateTimeBeforeNow(selectedDate, startTime);
+                                    { console.log(convertToISODateTime(selectedDate, selectedTime)); }
                                     return (
                                         <Button
                                             key={time}
