@@ -25,10 +25,11 @@ import { WindowSharp } from "@mui/icons-material";
 import * as yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { useParams } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
+import { useNavigate } from "react-router-dom";
 
 // Styling for the custom components
 const ProfileBox = styled(Box)(({ theme }) => ({
@@ -109,6 +110,7 @@ const updateProfileSchema = yup.object().shape({
 });
 
 export default function UserProfileView() {
+  const navigate = useNavigate();
   const { userId } = useParams();
   console.log(userId);
   const [user, setUser] = useState({
@@ -127,7 +129,6 @@ export default function UserProfileView() {
   // Function to fetch the user info from the API
   const fetchUserInfo = async () => {
     try {
-        console.log("Running get request");
       const response = await http.get(`/Account/${userId}`, {
         withCredentials: true,
       });
@@ -223,6 +224,7 @@ export default function UserProfileView() {
 
       // Handle successful deletion (e.g., redirect to login page)
       alert("Account has been deleted successfully.");
+      navigate("/admin/accounts");
     } catch (error) {
       console.error("Error deleting account:", error);
       alert("Error deleting your account, please try again.");
