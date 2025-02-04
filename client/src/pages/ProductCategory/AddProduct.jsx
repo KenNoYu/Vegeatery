@@ -65,7 +65,7 @@ function AddProduct() {
             http.post('/Product/add-product', data) // Send the product data including categoryId to the backend
                 .then(() => {
                     toast.success('Product added successfully!');
-                    navigate('/viewcategories'); // Redirect after successful addition
+                    navigate('/admin/store'); // Redirect after successful addition
                 })
                 .catch((err) => {
                     console.error("Error:", err); // Log the error to the console for debugging

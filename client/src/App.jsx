@@ -181,7 +181,7 @@ function App() {
                   ) : (
                     // Show default navigation for unauthenticated users
                     <>
-                      <Link to="/store">
+                      <Link to="/user/store">
                         <Typography>Store</Typography>
                       </Link>
                       <Link to="/rewards">
@@ -202,7 +202,7 @@ function App() {
                     justifyContent: "center",
                   }}
                 >
-                  <Link to="/home">
+                  <Link to="/">
                     <img
                       src={logo}
                       alt="Vegeatery Logo"
@@ -322,12 +322,12 @@ function App() {
 
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />
-              <Route path={"/viewcategories"} element={<CategoryList />} />
+              <Route path={"/admin/store"} element={<CategoryList />} />
               <Route path={"/addproduct"} element={<AddProduct />} />
               <Route path={"/viewcategories/:id"} element={<CategoryList />} />
               <Route path="/product/:productId" element={<ProductDetails />} />
               <Route path="/editproduct/:productId" element={<EditProduct />} />
-              <Route path="/Store" element={<UserMenu />} />
+              <Route path="/user/store" element={<UserMenu />} />
               <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
               <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
 
@@ -354,7 +354,7 @@ function App() {
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
               <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
-              <Route path={"/stafforders"} element={<StaffOrders />} />
+              <Route path={"/staff/vieworders"} element={<StaffOrders />} />
             </Routes>
           </Container>
         </ThemeProvider>

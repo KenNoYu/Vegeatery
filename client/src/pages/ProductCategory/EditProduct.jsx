@@ -98,7 +98,7 @@ const EditProduct = () => {
         http.delete(`/Product/${productId}`)
             .then((res) => {
                 console.log(res.data);
-                navigate("/viewcategories");
+                navigate("/admin/store");
             });
     }
 
