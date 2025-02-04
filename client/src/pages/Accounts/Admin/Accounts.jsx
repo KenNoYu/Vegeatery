@@ -23,6 +23,7 @@ import http from "../../../http";
 import RoleGuard from "../../../utils/RoleGuard";
 import AdminSidebar from "./AdminSidebar";
 import UserRegistrationsGraph from "./UserRegistrationsGraph";
+import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
 
 export default function Accounts() {
   RoleGuard("Admin");
@@ -41,9 +42,7 @@ export default function Accounts() {
 
       const response = await http
         .get("/Account", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // Assuming JWT token storage in localStorage
-          },
+          withCredentials: true,
         })
         .then((res) => {
           return res;
@@ -96,9 +95,10 @@ export default function Accounts() {
         user.username.toLowerCase().includes(searchTerm) || // Search by username
         user.roleName.toLowerCase().includes(searchTerm); // Search by roleName
 
-        const matchesRole = selectedRole && selectedRole !== "All Roles"
-      ? user.roleName === selectedRole
-      : true;
+      const matchesRole =
+        selectedRole && selectedRole !== "All Roles"
+          ? user.roleName === selectedRole
+          : true;
 
       return matchesSearchTerm && matchesRole;
     })
@@ -210,8 +210,8 @@ export default function Accounts() {
           width: "60%",
         }}
       >
-        <Box sx={{ marginBottom: "2em" }}>
-            <UserRegistrationsGraph />
+        <Box sx={{ marginBottom: "7em" }}>
+          <UserRegistrationsGraph />
         </Box>
         <Box>
           <Typography variant="h4" gutterBottom>
@@ -225,7 +225,7 @@ export default function Accounts() {
               value={searchTerm}
               onChange={handleSearchChange}
               sx={{
-                mr : 2,
+                mr: 2,
                 "& .MuiOutlinedInput-root": {
                   "&.Mui-focused": {
                     fieldset: {
@@ -243,31 +243,32 @@ export default function Accounts() {
                 },
               }}
             />
-            <FormControl sx={{
+            <FormControl
+              sx={{
                 minWidth: 120,
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused": {
-                        fieldset: {
-                          borderColor: "#C6487E !important", // Keep your border color
-                        },
-                      },
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused": {
+                    fieldset: {
+                      borderColor: "#C6487E !important", // Keep your border color
                     },
-                    "& .MuiInputLabel-root": {
-                      // Target the label specifically
-                      color: "black", // Default label color
-                      "&.Mui-focused": {
-                        // Label styles when focused
-                        color: "black !important", // Black on focus
-                      },
-                    },
-                  }}>
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  // Target the label specifically
+                  color: "black", // Default label color
+                  "&.Mui-focused": {
+                    // Label styles when focused
+                    color: "black !important", // Black on focus
+                  },
+                },
+              }}
+            >
               {/* <InputLabel id="role-label">Role</InputLabel> */}
               <Select
                 labelId="role-label"
                 id="role-select"
                 value={selectedRole || "All Roles"}
                 onChange={(e) => setSelectedRole(e.target.value)} // Set selected role
-                
               >
                 <MenuItem value="All Roles">All Roles</MenuItem>
                 <MenuItem value="Admin">Admin</MenuItem>
@@ -289,9 +290,20 @@ export default function Accounts() {
               <Typography variant="h5" fontWeight="bold">
                 Platform Users
               </Typography>
-              {filteredUsers.map((user) => (
-                <UserProfileCard key={user.id} user={user} />
-              ))}
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((user) => (
+                  <UserProfileCard key={user.id} user={user} />
+                ))
+              ) : (
+                <Box textAlign="center" mt={5}>
+                  <PersonOffOutlinedIcon
+                    style={{ fontSize: 60, color: "grey" }}
+                  />
+                  <Typography variant="h6" mt={2} color="textSecondary">
+                    Account does not exist
+                  </Typography>
+                </Box>
+              )}
             </Box>
           ) : error ? (
             <p>Error fetching users: {error.message}</p>
