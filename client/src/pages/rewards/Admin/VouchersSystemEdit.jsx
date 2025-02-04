@@ -83,7 +83,7 @@ const AdminVouchersSystemEdit = () => {
 
         try {
             await http.put(`/vouchers/${id}`, voucher);
-            navigate('/rewards/admin/voucherssystem');
+            navigate('/admin/rewards');
         } catch (error) {
             console.error('Error updating voucher:', error);
             setErrorMessage("Failed to update voucher. Please try again later.");

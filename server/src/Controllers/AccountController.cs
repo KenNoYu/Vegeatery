@@ -21,14 +21,19 @@ public class AccountController : ControllerBase
 	[Authorize(Policy = "Admin")]
 	public async Task<IActionResult> GetUserById(int id)
 	{
-		var user = await _context.Users.Include(u => u.Role).SingleOrDefaultAsync(u => u.Id == id);
+		var user = await _context.Users.Include(u => u.Role).Include(u => u.Tier).SingleOrDefaultAsync(u => u.Id == id);
 
 		if (user == null)
 		{
 			return NotFound(new { message = "User not found" });
 		}
 
-		var userDto = new UserDto
+        var nextTier = await _context.Tiers
+        .Where(t => t.MinPoints > user.Tier.MinPoints)
+        .OrderBy(t => t.MinPoints)
+        .FirstOrDefaultAsync();
+
+        var userDto = new UserDto
 		{
 			Id = user.Id,
 			Username = user.Username,
@@ -45,7 +50,9 @@ public class AccountController : ControllerBase
 			TotalPoints = user.TotalPoints,
 			JwtToken = user.JwtToken,
 			CreatedAt = user.CreatedAt,
-			RoleId = user.RoleId,
+            TierId = user.TierId,
+            TierName = user.Tier.TierName,
+            RoleId = user.RoleId,
 			RoleName = user.Role.Name,
 			CartId = user.CartId
 		};
@@ -78,6 +85,8 @@ public class AccountController : ControllerBase
 			TotalPoints = user.TotalPoints,
 			JwtToken = user.JwtToken ?? string.Empty,
 			CreatedAt = user.CreatedAt,
+			TierId = user.TierId,
+			TierName = user.Tier?.TierName ?? string.Empty,
 			RoleId = user.RoleId,
 			TierId = user.TierId,
 			TierName = user.Tier.TierName,
@@ -149,7 +158,66 @@ public class AccountController : ControllerBase
 
 		return Ok(new { message = "User role updated successfully" });
 	}
+
+    [HttpGet("user/{userId}/email")]
+    [Authorize(Policy = "Admin")]
+    public async Task<IActionResult> GetUserEmail(int userId)
+    {
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found" });
+        }
+
+        return Ok(new { email = user.Email });
+    }
+
+    [HttpPut("{userId}/points")]
+    public async Task<IActionResult> UpdateUserPoints(int userId, [FromBody] PointsUpdateDto request)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found" });
+        }
+
+        // Update total points
+        user.TotalPoints += request.Points;
+
+        // Determine new tier based on updated points
+        var newTier = await _context.Tiers
+            .Where(t => user.TotalPoints >= t.MinPoints)
+            .OrderByDescending(t => t.MinPoints)
+            .FirstOrDefaultAsync();
+
+        if (newTier != null && user.TierId != newTier.TierId)  // Ensure it updates only when necessary
+        {
+            user.TierId = newTier.TierId;
+            user.Tier = newTier; // Explicitly updating the navigation property
+        }
+
+        // Explicitly update the user entity
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = "User points updated successfully",
+            newTotalPoints = user.TotalPoints,
+            newTierId = user.TierId,
+            newTier = newTier?.TierName
+        });
+    }
+
+
 }
+
+public class PointsUpdateDto
+{
+    public int Points { get; set; }
+}
+
 
 public class UpdateUserDto
 {

@@ -392,32 +392,6 @@ public class AuthController : ControllerBase
 		return token;
 	}
 
-    [HttpPost("user/{userId}/add-points")]
-    public async Task<IActionResult> UpdateUserPoints(int userId, int pointsToAdd)
-{
-    var user = await _context.Users.FindAsync(userId);
-    if (user == null)
-    {
-        return NotFound("User not found");
-    }
-
-    user.TotalPoints += pointsToAdd;
-
-    // Update tier based on points
-    var newTier = await _context.Tiers
-        .Where(t => t.MinPoints <= user.TotalPoints)
-        .OrderByDescending(t => t.MinPoints)
-        .FirstOrDefaultAsync();
-
-    if (newTier != null && newTier.TierId != user.TierId)
-    {
-        user.TierId = newTier.TierId;
-    }
-
-    await _context.SaveChangesAsync();
-    return Ok(user);
-}
-
     
 }
 
