@@ -119,7 +119,8 @@ namespace vegeatery
 			Agreement = true,
 			TotalPoints = 0,
 			RoleId = 3, // Admin role
-			CartId = adminCart.CartId,
+			TierId = 3,
+            CartId = adminCart.CartId,
 			JwtToken = GenerateJwtToken("masteradmin", "Admin")
 		},
 		new User
@@ -138,6 +139,7 @@ namespace vegeatery
             Agreement = true,
 			TotalPoints = 0,
 			RoleId = 2, // Staff role
+			TierId = 3,
 			CartId = staffCart.CartId,
 			JwtToken = GenerateJwtToken("staffuser", "Staff")
 		}
