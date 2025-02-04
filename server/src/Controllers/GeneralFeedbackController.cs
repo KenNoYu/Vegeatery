@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using vegeatery.Models;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace vegeatery.Controllers
 {
@@ -21,10 +22,13 @@ namespace vegeatery.Controllers
 
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
-            var feedbacks = _context.GeneralFeedbacks.Select(f => new
+            var feedbacks = _context.GeneralFeedbacks
+                .Include(f => f.User)
+                .Select(f => new
             {
                 f.FeedbackId,
                 f.UserId,
+                f.User.Email,
                 f.FeedbackTitle,
                 ImagePath = string.IsNullOrEmpty(f.ImagePath) ? null : $"{baseUrl}{f.ImagePath}",
                 f.Rating,
@@ -40,11 +44,13 @@ namespace vegeatery.Controllers
         {
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
             var feedbacks = _context.GeneralFeedbacks
+                .Include(f => f.User)
                 .Where(f => f.UserId == userId)
                 .Select(f => new
                 {
                     f.FeedbackId,
                     f.UserId,
+                    f.User.Email,
                     f.FeedbackTitle,
                     ImagePath = string.IsNullOrEmpty(f.ImagePath) ? null : $"{baseUrl}{f.ImagePath}",
                     f.Rating,
@@ -63,10 +69,13 @@ namespace vegeatery.Controllers
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
 
 
-            var feedback = _context.GeneralFeedbacks.Select(f => new
+            var feedback = _context.GeneralFeedbacks
+                .Include(f => f.User)
+                .Select(f => new
             {
                 f.FeedbackId,
                 f.UserId,
+                f.User.Email,
                 f.FeedbackTitle,
                 ImagePath = string.IsNullOrEmpty(f.ImagePath) ? null : $"{baseUrl}{f.ImagePath}",
                 f.Rating,

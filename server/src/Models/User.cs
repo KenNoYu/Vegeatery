@@ -11,7 +11,7 @@ public class User
 	[MaxLength(50)]
 	public string? Username { get; set; }
 
-	[Required]
+	[Required, EmailAddress]
 	[MaxLength(100)]
 	public string? Email { get; set; }
 
@@ -54,7 +54,7 @@ public class User
 	public int RoleId { get; set; }
     public int TierId { get; set; }
 
-    public Role? Role { get; set; }
+	public Role? Role { get; set; }
 
     public Tier Tier { get; set; }
 
@@ -64,5 +64,8 @@ public class User
 
 	// Navigation property
 	public Cart Cart { get; set; }
+
+    // 🔹 Relationship: A User can have multiple feedbacks
+    public virtual ICollection<GeneralFeedback>? Feedbacks { get; set; }
 }
 
