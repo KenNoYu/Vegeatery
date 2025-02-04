@@ -45,7 +45,7 @@ function EditCategory() {
             http.put(`/Category/${categoryId}`, data)
                 .then(() => {
                     toast.success('Category updated successfully!');
-                    navigate('/viewcategories');
+                    navigate('/admin/store');
                 })
                 .catch((err) => {
                     console.error(err.response);
@@ -94,7 +94,7 @@ function EditCategory() {
                     </Button>
                     <Button
                         variant="outlined"
-                        onClick={() => navigate('/viewcategories')}
+                        onClick={() => navigate('/admin/store')}
                     >
                         Cancel
                     </Button>
