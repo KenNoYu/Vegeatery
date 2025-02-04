@@ -23,7 +23,7 @@ const AdminOrders = () => {
     const end = `${endDate}T23:59:59`;
 
     // Get Orders by status and date
-    const GetOrderByStatusAndDate = (start, end, status) => {
+    const GetOrderByStatusAndDate = async (start, end, status) => {
         setLoading(true);
 
         http.get(`/order/dateAndStatus?startDate=${start}&endDate=${end}&status=${status}`)
@@ -38,8 +38,8 @@ const AdminOrders = () => {
             })
     }
 
-    const GetAllOrders = () => {
-        http.get(`/order/all`)
+    const GetAllOrders = async () => {
+        http.get(`/order/allByDate?startDate=${start}&endDate=${end}`)
             .then((res) => {
                 setLoading(false);
                 setOrders(res.data || []);
@@ -99,12 +99,42 @@ const AdminOrders = () => {
         setStartDateDialog(false);
     };
 
+    const handleStartDialogConfirm = (date) => {
+        setStartDateDialog(false);
+        setLoading(true);
+        setStartDate(date);
+        if (currentTab === 0) {
+            GetAllOrders().then(() => {
+                setLoading(false); // Set loading false once the data has been fetched
+            });
+        } else {
+            GetOrderByStatusAndDate(startDate, endDate, currentTabToStatus(currentTab)).then(() => {
+                setLoading(false); // Set loading false after fetching the data
+            });
+        }
+    };
+
     const handleEndDialogOpen = () => {
         setEndDateDialog(true);
     };
 
     const handleEndDialogClose = () => {
         setEndDateDialog(false);
+    };
+
+    const handleEndDialogConfirm = (date) => {
+        setEndDateDialog(false);
+        setLoading(true);
+        setEndDate(date);
+        if (currentTab === 0) {
+            GetAllOrders().then(() => {
+                setLoading(false); // Set loading false once the data has been fetched
+            });
+        } else {
+            GetOrderByStatusAndDate(startDate, endDate, currentTabToStatus(currentTab)).then(() => {
+                setLoading(false); // Set loading false after fetching the data
+            });
+        }
     };
 
     // handle row expanded
@@ -165,6 +195,12 @@ const AdminOrders = () => {
                 "An error occurred while exporting the CSV. Please try again."
             );
         }
+    };
+
+    // row toggling
+    const toggleRow = (id) => {
+        // If the clicked row is already expanded, collapse it. Otherwise, expand it.
+        setExpandedRow(prevExpandedRow => (prevExpandedRow === id ? null : id));
     };
     
 
@@ -230,7 +266,7 @@ const AdminOrders = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            <Box sx={{ mt: 2 }}><CircularProgress />;</Box>
+                            <Box sx={{color: "Primary" }}><CircularProgress />;</Box>
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -293,6 +329,7 @@ const AdminOrders = () => {
                             <TableCell>Id</TableCell>
                             <TableCell>Name</TableCell>
                             <TableCell>Address</TableCell>
+                            <TableCell>Order Date</TableCell>
                             <TableCell>Pick-Up Time</TableCell>
                             <TableCell>Status</TableCell>
                             <TableCell>Action</TableCell>
@@ -315,6 +352,7 @@ const AdminOrders = () => {
                                         <TableCell sx={{ flex: 1 }}>{order.orderId}</TableCell>
                                         <TableCell sx={{ flex: 1 }}>{order.fullName}</TableCell>
                                         <TableCell sx={{ flex: 1 }}>{order.address}</TableCell>
+                                        <TableCell sx={{ flex: 1 }}>{order.orderDate}</TableCell>
                                         <TableCell sx={{ flex: 1 }}>{order.timeSlot}</TableCell>
                                         <TableCell sx={{ flex: 1 }}>{order.status}</TableCell>
                                         <TableCell sx={{ flex: 1 }}>
@@ -322,13 +360,13 @@ const AdminOrders = () => {
                                                 variant="outlined"
                                                 size="small"
                                                 color="Primary"
-                                                onClick={() => toggleRow(order.id)}
+                                                onClick={() => toggleRow(order.orderId)}
                                             >
-                                                {expandedRow === order.id ? "Collapse" : "Expand"}
+                                                {expandedRow === order.orderId ? "Collapse" : "Expand"}
                                             </Button>
                                         </TableCell>
                                     </TableRow>
-                                    {expandedRow === order.id && (
+                                    {expandedRow === order.orderId && (
                                         <TableRow
                                             sx={{
                                                 border: '1px solid black',
@@ -381,7 +419,7 @@ const AdminOrders = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleStartDialogClose} color="Accent">Cancel</Button>
-                    <Button onClick={handleStartDialogClose} color="Accent">Confirm</Button>
+                    <Button onClick={() => handleStartDialogConfirm(startDate)} color="Accent">Confirm</Button>
                 </DialogActions>
             </Dialog>
             {/* Dialog for end Date */}
@@ -406,7 +444,7 @@ const AdminOrders = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleEndDialogClose} color="Accent">Cancel</Button>
-                    <Button onClick={handleEndDialogClose} color="Accent">Confirm</Button>
+                    <Button onClick={() => handleEndDialogConfirm(endDate)} color="Accent">Confirm</Button>
                 </DialogActions>
             </Dialog>
 

@@ -119,8 +119,48 @@ namespace vegeatery.Controllers
             }
         }
 
-        // Get all orders (for admin)
-        [HttpGet("all")]
+        // Get all orders by date (for admin)
+        [HttpGet("allByDate")]
+        public IActionResult GetAllOrdersByDate(DateTime startDate, DateTime endDate)
+        {
+			try
+			{
+				// Get all orders in order table
+				var result = _context.Order
+					.Include(order => order.OrderItems)
+					.Where(order => order.OrderDate >= startDate && order.OrderDate <= endDate)
+					.Select(Order => new
+					{
+						Order.OrderId,
+						Order.FullName,
+                        Order.Address,
+						Order.OrderDate,
+						Order.TimeSlot,
+						Order.Status,
+						Items = Order.OrderItems.Select(item => new
+						{
+							item.ProductName,
+							item.Price,
+							item.Quantity,
+							item.PointsEarned
+						}).ToList()
+					})
+					.ToList();
+				// Return an empty list if no products are found
+				if (!result.Any())
+				{
+					return Ok(new { Message = "You don't have any orders", Orders = result });
+				}
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { Message = "An error occurred while getting orders.", Details = ex.Message });
+			}
+		}
+
+			// Get all orders (for admin)
+			[HttpGet("all")]
         public IActionResult GetAll()
         {
             try
@@ -137,6 +177,7 @@ namespace vegeatery.Controllers
                         Order.OrderDate,
                         Order.TotalPrice,
                         Order.TotalPoints,
+                        Order.TimeSlot,
                         Order.Status,
                         Order.CreatedAt,
                         Items = Order.OrderItems.Select(item => new
@@ -175,7 +216,8 @@ namespace vegeatery.Controllers
                     {
                         Order.OrderId,
                         Order.FullName,
-                        Order.OrderDate,
+						Order.Address,
+						Order.OrderDate,
                         Order.TimeSlot,
                         Order.Status,
                         Items = Order.OrderItems.Select(item => new
