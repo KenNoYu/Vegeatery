@@ -172,7 +172,7 @@ const StaffReservations = () => {
             backgroundColor: theme.palette.Accent.main,
             height: "35px",
             width: "152px",
-          }}>
+          }} onClick={() => navigate("/staff/addreservation")}>
             Add
           </Button>
         </Box>
