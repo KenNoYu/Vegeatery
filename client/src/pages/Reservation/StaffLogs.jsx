@@ -5,8 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import http from '../../http';
 import { useTheme } from '@mui/material/styles';
 
+import RoleGuard from '../../utils/RoleGuard';
+
 
 const StaffReserveLogs = () => {
+  RoleGuard('Staff');
   const navigate = useNavigate();
   const theme = useTheme();
   const [logs, setLogs] = useState([]);

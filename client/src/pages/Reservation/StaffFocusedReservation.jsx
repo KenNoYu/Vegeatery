@@ -7,7 +7,10 @@ import { ToastContainer, toast } from "react-toastify";
 import DateSelector from "./Components/DateSelector";
 import isDateTimeBeforeNow from "./AddReservation";
 
+import RoleGuard from '../../utils/RoleGuard';
+
 const StaffFocusedReservation = () => {
+  RoleGuard('Staff');
   const navigate = useNavigate();
   const theme = useTheme();
   const { id } = useParams();
@@ -144,6 +147,8 @@ const StaffFocusedReservation = () => {
       sx={{
         textTransform: 'none',
         color: 'black',
+        marginTop: '-50px',
+        marginBottom: '50px',
         '&:hover': {
           color: 'grey',
         },
@@ -173,10 +178,10 @@ const StaffFocusedReservation = () => {
                 <Button
                   key={time}
                   variant="outlined"
-                  color={reservation.timeSlot === time ? "primary" : "default"}
                   sx={{
-                    backgroundColor: reservation.timeSlot === time ? theme.palette.Accent.main : "primary",
+                    backgroundColor: reservation.timeSlot === time ? '#C6487E' : "primary",
                     width: "90px",
+                    color: reservation.timeSlot === time ? "white" : "black",
                     "&:hover": {
                       backgroundColor: reservation.timeSlot === time ? "none" : "#E7ABC5",
                     },
@@ -217,9 +222,9 @@ const StaffFocusedReservation = () => {
                     sx={{
                       padding: "20px",
                       backgroundColor: 
-              isSelected ? theme.palette.Accent.main : 
-              table.status === "available" ? theme.palette.primary.main :
-              theme.palette.secondaryText.main,
+              isSelected ? '#C6487E' : 
+              table.status === "available" ? "white" :
+              '#585858',
             color: isSelected || table.status === "unavailable" ? "#fff" : "#000",
             cursor: table.status !== "unavailable" ? "pointer" : "not-allowed",
                     }}
@@ -248,8 +253,8 @@ const StaffFocusedReservation = () => {
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: theme.palette.Accent.main,
-                  color: theme.palette.primary.main,
+                  backgroundColor: '#C6487E',
+                  color: "white",
                   "&:hover": {
                     backgroundColor: "#E7ABC5"
                   }
@@ -290,7 +295,7 @@ const StaffFocusedReservation = () => {
             onClick={handleUnreserveConfirm}
             sx={{
               color: 'white',
-              backgroundColor: theme.palette.Accent.main,
+              backgroundColor: '#C6487E',
               '&:hover': {
                 backgroundColor: '#E7ABC5',
               },
