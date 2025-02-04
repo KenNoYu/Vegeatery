@@ -107,7 +107,7 @@ namespace vegeatery.Controllers
     }
 
     [HttpGet("GetTables")]
-    public async Task<ActionResult<IEnumerable<Table>>> GetTables([FromQuery] DateOnly? date, [FromQuery] string? timeSlot)
+    public async Task<ActionResult<IEnumerable<Table>>> GetTables([FromQuery] DateOnly? date, [FromQuery] string? timeSlot, [FromQuery] int? reservationId)
     {
 
       if (date == null || string.IsNullOrEmpty(timeSlot))
@@ -136,7 +136,7 @@ namespace vegeatery.Controllers
       if (index < allTimeSlots.Count - 1) blockedTimeSlots.Add(allTimeSlots[index + 1]); // Next timeslot
 
       var reservedTables = await _dbContext.Reservations
-          .Where(r => r.ReservationDate == date && blockedTimeSlots.Contains(r.TimeSlot))
+        .Where(r => r.ReservationDate == date && blockedTimeSlots.Contains(r.TimeSlot) && r.Id != reservationId)
           .SelectMany(r => r.Tables)
           .ToListAsync();
 
@@ -228,6 +228,7 @@ namespace vegeatery.Controllers
       try
       {
         var reservation = await _dbContext.Reservations
+            .Include(r => r.Tables)
             .FirstOrDefaultAsync(r => r.Id == id);
 
         if (reservation == null)
