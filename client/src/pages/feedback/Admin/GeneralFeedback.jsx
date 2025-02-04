@@ -137,9 +137,25 @@ const AdminGeneralFeedback = () => {
               >
                 <ListItem disablePadding>
                   <ListItemText
-                    primary={`Title: ${feedback.feedbackTitle}`}
+                    primary ={`Title: ${feedback.feedbackTitle}`}
                     secondary={
                       <>
+                        <Box marginBottom={2} marginTop={2}>
+                          {feedback.imagePath ? (
+                            <img
+                              src={feedback.imagePath}
+                              alt="Feedback Image"
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                objectFit: "cover",
+                              }}
+                            />
+                          ) : (
+                            <Typography>No image provided</Typography>
+                          )}
+                        </Box>
+
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Rating:</Typography>
                           <Box>{renderStars(feedback.rating)}</Box>
