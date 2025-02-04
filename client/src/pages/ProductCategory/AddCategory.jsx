@@ -34,7 +34,7 @@ function AddCategory() {
             http.post('/Category/add-category', data)
                 .then((res) => {
                     toast.success('Category added successfully!');
-                    navigate('/viewcategories');
+                    navigate('/admin/store');
                 })
                 .catch((err) => {
                     console.error(err.response);
@@ -83,7 +83,7 @@ function AddCategory() {
                     </Button>
                     <Button
                         variant="outlined"
-                        onClick={() => navigate('/viewcategories')}
+                        onClick={() => navigate('/admin/store')}
                     >
                         Cancel
                     </Button>

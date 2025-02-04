@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace vegeatery.Models
 {
@@ -24,5 +25,9 @@ namespace vegeatery.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+        // 🔹 Add navigation property for User
+        [ForeignKey("UserId")]
+        public virtual User? User { get; set; }
     }
 }

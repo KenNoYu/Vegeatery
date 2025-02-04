@@ -88,16 +88,25 @@ const CategoryList = () => {
               <Tab
                 key={category.categoryId}
                 label={
-                  <Box display="flex" alignItems="center">
-                    {`${category.categoryName} (${category.totalProduct} Items)`}
-                    
-                    <IconButton size="small" color="error" onClick={() => handleDeleteCategory(category.categoryId)}><DeleteIcon /></IconButton>
-                    <IconButton size="small" color="error" onClick={(event) => handleEditCategory(event,category.categoryId)}><EditIcon /></IconButton>
+                  <Box>
+                    <Box display="flex" alignItems="center">
+                      {`${category.categoryName} (${category.totalProduct} Items)`}
+                    </Box>
+
+                    {/* Icons in a new row */}
+                    <Box display="flex" alignItems="flex-start" marginTop={1}>
+                      <IconButton size="small" color="error" onClick={() => handleDeleteCategory(category.categoryId)}>
+                        <DeleteIcon />
+                      </IconButton>
+                      <IconButton size="small" color="error" onClick={(event) => handleEditCategory(event, category.categoryId)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
                 }
                 onClick={(event) => handleCategoryClick(event, category.categoryId)}
                 value={`/viewcategories/${category.categoryId}`}
-                sx={{ border: '2px solid #ccc', borderRadius: '8px', margin: '10px', padding: '40px', '&.Mui-selected': { color: '#1976d2' }, '&:hover': { backgroundColor: '#e0e0e0' } }}
+                sx={{ border: '2px solid #ccc', borderRadius: '8px', margin: '10px', padding: '10px 30px', '&.Mui-selected': { color: '#1976d2' }, '&:hover': { backgroundColor: '#e0e0e0' } }}
               />
             ))}
           </Tabs>
@@ -106,19 +115,25 @@ const CategoryList = () => {
 
       {currentCategoryId && loadingProducts ? <CircularProgress /> : currentCategoryId ? (
         <Box mt={4}>
-          <Typography variant="h5" gutterBottom>Products in this Category</Typography>
-          <Grid container spacing={2} justifyContent="flex-start">
+          <Grid container spacing={3} justifyContent="flex-start" sx={{ padding: '16px' }} >
             {products.length > 0 ? products.map((product) => (
               <Grid item xs={12} sm={6} md={3} key={product.productId} sx={{ padding: '0' }}>
-                <Card sx={{ border: '1px solid #ccc', borderRadius: '16px', boxShadow: 2, overflow: 'hidden', height: '90%', width: '100%', margin: '0' }}>
+                <Card sx={{ border: '1px solid #ccc', borderRadius: '16px', boxShadow: 2, overflow: 'hidden', height: '95%', width: '100%', margin: '0' }}>
                   <Box sx={{ padding: '8px', overflow: 'hidden' }}>
-                    <CardMedia component="img" image={`${import.meta.env.VITE_FILE_BASE_URL}${product.imageFile}`} alt={product.productPrice} onClick={() => navigate(`/product/${product.productId}`)} sx={{ objectFit: 'cover', height: '200px', width: '100%', borderRadius: '16px' }} />
+                    <CardMedia component="img" image={`${import.meta.env.VITE_FILE_BASE_URL}${product.imageFile}`} alt={product.productPrice} onClick={() => navigate(`/product/${product.productId}`)} sx={{ objectFit: 'cover', height: '200px', width: '100%', borderRadius: '26px' }} />
                   </Box>
                   <CardContent>
                     <Typography variant="h6">{product.productName}</Typography>
                     <Typography variant="body2">Price: ${product.productPrice}</Typography>
                     <Typography variant="body2">{product.productPoints} Sustainable Points</Typography>
-                    <Button onClick={() => navigate(`/editproduct/${product.productId}`)} sx={{ cursor: 'pointer', marginTop: '10px' }}>Edit</Button>
+                    <Button
+                      variant="outlined"  // This makes the button more visible
+                      onClick={() => navigate(`/editproduct/${product.productId}`)}
+                      sx={{ cursor: 'pointer', marginTop: '10px', paddingLeft: '10px', paddingRight: '10px' }}
+                      color="Accent"
+                    >
+                      Edit
+                    </Button>
                   </CardContent>
                 </Card>
               </Grid>

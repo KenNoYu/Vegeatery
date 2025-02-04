@@ -31,7 +31,22 @@ const PointsSystem = () => {
       console.error('Error fetching user data:', error);
     }
   };
-  console.log(userId);
+
+
+  const updateUserData = async () => {
+    try {
+      const { data } = await http.put(`/users/${userId.id}/points`, { points: 0 }); // Dummy update
+      setUserId((prev) => ({ ...prev, totalPoints: data.newTotalPoints, tierName: data.newTier }));
+    } catch (error) {
+      console.error('Error updating user data:', error);
+    }
+  };
+  
+  useEffect(() => {
+    if (userId) {
+      updateUserData();
+    }
+  }, [userId?.totalPoints]);
 
   const fetchVouchers = async () => {
     try {
@@ -43,6 +58,9 @@ const PointsSystem = () => {
   };
 
   if (!userId) return <Typography>Loading...</Typography>;
+
+  // Calculate progress capped at 100% when points are 777 or more
+  const progress = userId.totalPoints >= 777 ? 100 : (userId.totalPoints / 777) * 100;
 
 
 
@@ -60,7 +78,7 @@ const PointsSystem = () => {
         <Typography variant="h6" fontWeight="bold">
           {userId.totalPoints} pts
         </Typography>
-        <LinearProgress variant="determinate" value={(userId.totalPoints / 777) * 100} sx={{ flexGrow: 1, height: '10px', borderRadius: '5px', backgroundColor: '#E0E0E0', '& .MuiLinearProgress-bar': { backgroundColor: '#C2185B' } }} />
+        <LinearProgress variant="determinate" value={progress} sx={{ flexGrow: 1, height: '10px', borderRadius: '5px', backgroundColor: '#E0E0E0', '& .MuiLinearProgress-bar': { backgroundColor: '#C2185B' } }} />
         <Typography>777 pts</Typography>
       </Box>
 

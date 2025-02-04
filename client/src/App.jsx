@@ -15,9 +15,11 @@ import {
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import MyTheme from "./themes/MyTheme";
+import DarkTheme from "./themes/DarkTheme"
 import http from "./http";
 import UserContext from "./contexts/UserContext";
-import logo from "./assets/logo/vegeateryMain.png";
+import logoLight from "./assets/logo/vegeateryMain.png";
+import logoDark from "./assets/logo/vegeateryWhite.png"
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 // PRODUCTS
@@ -117,11 +119,15 @@ function App() {
       });
   };
 
+  // track if app bar is dark
+  const currentThemeIsDark = user?.role === "Admin" || user?.role === "Staff";
+  const currentLogo = currentThemeIsDark && user?.role === "Admin" ? logoDark : (currentThemeIsDark ? logoDark : logoLight);
+
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <Router>
-        <ThemeProvider theme={MyTheme}>
-          <AppBar position="static" className="AppBar">
+        <ThemeProvider theme={user?.role === "Admin" || user?.role === "Staff" ? DarkTheme : MyTheme}>
+          <AppBar position="static" className="AppBar" >
             <Container>
               <Toolbar
                 disableGutters={true}
@@ -182,7 +188,7 @@ function App() {
                   ) : (
                     // Show default navigation for unauthenticated users
                     <>
-                      <Link to="/store">
+                      <Link to="/user/store">
                         <Typography>Store</Typography>
                       </Link>
                       <Link to="/rewards">
@@ -203,9 +209,9 @@ function App() {
                     justifyContent: "center",
                   }}
                 >
-                  <Link to="/home">
+                  <Link to="/">
                     <img
-                      src={logo}
+                      src={currentLogo}
                       alt="Vegeatery Logo"
                       style={{ height: "50px", width: "auto" }}
                     />
@@ -323,12 +329,12 @@ function App() {
 
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />
-              <Route path={"/viewcategories"} element={<CategoryList />} />
+              <Route path={"/admin/store"} element={<CategoryList />} />
               <Route path={"/addproduct"} element={<AddProduct />} />
               <Route path={"/viewcategories/:id"} element={<CategoryList />} />
               <Route path="/product/:productId" element={<ProductDetails />} />
               <Route path="/editproduct/:productId" element={<EditProduct />} />
-              <Route path="/Store" element={<UserMenu />} />
+              <Route path="/user/store" element={<UserMenu />} />
               <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
               <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
 
@@ -343,7 +349,7 @@ function App() {
               {/* REWARDS */}
               <Route path="/user/rewards" element={<PointsSystem />} />
               <Route path="/user/pointshistory" element={<PointsHistory />} />
-              <Route path="/admin/rewards"element={<AdminVouchersSystem />}/>
+              <Route path="/admin/rewards" element={<AdminVouchersSystem />} />
               <Route path="/rewards/admin/voucherssystem/edit/:id" element={<AdminVouchersSystemEdit />} />
               <Route path="/admin/voucherssystemadd" element={<VouchersSystemAdd />} />
               <Route path="/admin/pointsrange" element={<PointsRange />} />
@@ -356,7 +362,7 @@ function App() {
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
               <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
-              <Route path={"/stafforders"} element={<StaffOrders />} />
+              <Route path={"/staff/vieworders"} element={<StaffOrders />} />
             </Routes>
           </Container>
         </ThemeProvider>
