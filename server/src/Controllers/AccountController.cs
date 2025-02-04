@@ -57,7 +57,7 @@ public class AccountController : ControllerBase
 	public async Task<IActionResult> GetAllUsers()
 	{
 		// Directly access the database to get users
-		var users = await _context.Users.Include(u => u.Role).ToListAsync();
+		var users = await _context.Users.Include(u => u.Role).Include(u => u.Tier).ToListAsync();
 
 		// Map users to UserDto
 		var userDtos = users.Select(user => new UserDto
@@ -78,6 +78,8 @@ public class AccountController : ControllerBase
 			JwtToken = user.JwtToken ?? string.Empty,
 			CreatedAt = user.CreatedAt,
 			RoleId = user.RoleId,
+			TierId = user.TierId,
+			TierName = user.Tier.TierName,
 			RoleName = user.Role?.Name ?? string.Empty,
 			CartId = user.CartId
 		}).ToList();
