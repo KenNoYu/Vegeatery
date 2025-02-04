@@ -29,13 +29,14 @@ namespace vegeatery.Controllers
                         Email = request.Email,
                         Address = request.Address,
                         OrderDate = request.OrderDate,
-                        TotalPrice = cart.CartItems.Sum(item => item.Price * item.Quantity),
+                        TotalPrice = request.TotalPrice,
                         TotalPoints = request.TotalPoints,
                         TimeSlot = request.TimeSlot,
                         Status = request.Status,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         VoucherId = request?.VoucherId,
+                        discountPercent = request?.discountPercent,
                         CustomerId = request?.CustomerId,
                         SessionId = request?.SessionId
                     };
@@ -99,6 +100,8 @@ namespace vegeatery.Controllers
                     TimeSlot = order.TimeSlot,
                     TotalPrice = order.TotalPrice,
 					TotalPoints = order.TotalPoints,
+                    discountPercent = order?.discountPercent,
+                    VoucherId = order?.VoucherId,
 					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
                     {
                         ProductName = oi.ProductName, // Assuming ProductName is a property of Product
