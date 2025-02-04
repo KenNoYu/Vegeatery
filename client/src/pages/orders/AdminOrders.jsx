@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import http from '../../http';
-import { Box, Typography, CircularProgress, Tabs, Tab, Button, Grid2 as Grid } from '@mui/material';
+import {
+    Box, Typography, CircularProgress, Tabs, Tab, Button, Grid2 as Grid, TableContainer, Paper, Table, TableHead, TableBody, TableCell, TableRow, Dialog,
+    DialogTitle, DialogContent, DialogActions
+} from '@mui/material';
 import dayjs from 'dayjs';
 import DateSelector from "../Reservation/Components/DateSelector";
+import AdminDateSelector from './AdminDateSelector';
+import { ToastContainer, toast } from 'react-toastify';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -33,6 +38,19 @@ const AdminOrders = () => {
             })
     }
 
+    const GetAllOrders = () => {
+        http.get(`/order/all`)
+            .then((res) => {
+                setLoading(false);
+                setOrders(res.data || []);
+                console.log("API response:", res.data);
+            })
+            .catch((error) => {
+                setLoading(false);
+                console.error("Error fetching orders:", error);
+            })
+    }
+
     // Convert tab index to status string
     const currentTabToStatus = (tabIndex) => {
         switch (tabIndex) {
@@ -50,19 +68,18 @@ const AdminOrders = () => {
     // Handle Tab Change
     const handleTabChange = (event, newValue) => {
         setCurrentTab(newValue);
-        GetOrderByStatusAndDate(start, end, currentTabToStatus(newValue));
+
+        if (newValue === 0) {
+            GetAllOrders();
+        } else {
+            GetOrderByStatusAndDate(start, end, currentTabToStatus(newValue));
+        }
     };
 
     // Fetch orders on initial render
     useEffect(() => {
-        GetOrderByStatusAndDate(start, end, currentTabToStatus(currentTab));
+        GetAllOrders();
     }, []);
-
-    // Dialog for Pick up Time
-    const isDateTimeBeforeNow = (date, time) => {
-        const formattedDate = parse(time, 'h:mma', new Date(date)); // Parse the time into a date object
-        return isBefore(formattedDate, new Date()); // Compare it with the current date and time
-    };
 
     // Handling the date range
     const handleStartDateSelect = (date) => {
@@ -91,64 +108,65 @@ const AdminOrders = () => {
     };
 
     // handle row expanded
-    const toggleRow = (id) => {
-        setExpandedRow(expandedRow === id ? null : id);
-    };
-
-    // handle export to csv
     const exportToCSV = () => {
         try {
-          // Check if there are any orders to export
-          if (!orders || orders.length === 0) {
-            alert("No orders available to export.");
-            return;
-          }
-      
-          // Construct CSV headers
-          const headers = [
-            "Id,Name,Service,Address,Pick-Up Time,Status,Products",
-          ];
-      
-          // Generate CSV rows
-          const rows = orders.map((order) => {
-            try {
-              const products = order.items
-                .map((item) => {
-                  // Check for missing or undefined fields
-                  const itemName = item.productName || "Unknown Item";
-                  const quantity = item.quantity || 0;
-                  const price = item.price != null ? `$${detail.price.toFixed(2)}` : "$0.00";
-      
-                  return `${itemName} x${quantity} @ ${price}`;
-                })
-                .join(" | ");
-      
-              return `"${order.id || "Unknown ID"}","${order.name || "Unknown Name"}","${order.service || "Unknown Service"}","${order.address || "Unknown Address"}","${order.pickUpTime || "Unknown Time"}","${order.status || "Unknown Status"}","${products}"`;
-            } catch (error) {
-              console.error("Error processing order details:", order, error);
-              return `"Error processing order details"`;
+            // Check if there are any orders to export
+            if (!orders || orders.length === 0) {
+                alert("No orders available to export.");
+                return;
             }
-          });
-      
-          // Combine headers and rows into the final CSV content
-          const csvContent = [headers, ...rows].join("\n");
-          const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      
-          // Create and trigger download
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", "orders.csv");
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-      
-          console.log("CSV export successful.");
+    
+            // Construct CSV headers
+            const headers = [
+                "Id,Name,Address,Pick-Up Time,Status,Products",
+            ];
+    
+            // Generate CSV rows
+            const rows = orders.map((order) => {
+                // Safely retrieve product details and format them
+                const products = order.items
+                    .map((item) => {
+                        const itemName = item.productName || "Unknown Item";
+                        const quantity = item.quantity || 0;
+                        const price =
+                            item.price != null ? `$${item.price.toFixed(2)}` : "$0.00";
+    
+                        return `${itemName} x${quantity} @ ${price}`;
+                    })
+                    .join(" | ");
+    
+                // Safely format order details
+                const id = order.orderId || "Unknown ID";
+                const name = order.fullName || "Unknown Name";
+                const address = order.address || "Unknown Address";
+                const pickUpTime = order.timeSlot || "Unknown Time";
+                const status = order.status || "Unknown Status";
+    
+                return `"${id}","${name}","${address}","${pickUpTime}","${status}","${products}"`;
+            });
+    
+            // Combine headers and rows into the final CSV content
+            const csvContent = [headers, ...rows].join("\n");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    
+            // Create and trigger download
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "orders.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+    
+            console.log("CSV export successful.");
         } catch (error) {
-          console.error("Error exporting CSV:", error);
-          alert("An error occurred while exporting the CSV. Please try again.");
+            console.error("Error exporting CSV:", error);
+            toast.error(
+                "An error occurred while exporting the CSV. Please try again."
+            );
         }
-      };
+    };
+    
 
     if (loading) {
         return (
@@ -156,16 +174,16 @@ const AdminOrders = () => {
                 <Typography variant="h5" sx={{ my: 2 }}>
                     Orders
                 </Typography>
-                <Tabs value={currentTab} onChange={handleTabChange}>
+                <Tabs value={currentTab} onChange={handleTabChange} color="Accent">
                     <Tab label="All Orders" />
                     <Tab label="In-Progress" />
                     <Tab label="Completed" />
                 </Tabs>
 
-                <Box sx={{ display: "flex", justifyContent: 'space-between', gap: 2, mb: 2 }}>
+                <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
                     <Button
                         variant="outlined"
-                        color="secondary"
+                        color="primaryText"
                         onClick={handleStartDialogOpen}
                     >
                         {`${new Date(startDate).toLocaleDateString('en-GB', {
@@ -179,7 +197,7 @@ const AdminOrders = () => {
                     </Typography>
                     <Button
                         variant="outlined"
-                        color="secondary"
+                        color="primaryText"
                         onClick={handleEndDialogOpen}
                     >
                         {`${new Date(endDate).toLocaleDateString('en-GB', {
@@ -188,9 +206,11 @@ const AdminOrders = () => {
                             year: 'numeric',
                         })}`}
                     </Button>
+                </Box>
+                <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
                     <Button
                         variant="outlined"
-                        color="secondary"
+                        color="primaryText"
                         onClick={exportToCSV}
                     >
                         Export as CSV
@@ -223,16 +243,16 @@ const AdminOrders = () => {
             <Typography variant="h5" gutterBottom>
                 Orders
             </Typography>
-            <Tabs value={currentTab} onChange={handleTabChange} sx={{ mb: 2 }}>
+            <Tabs value={currentTab} onChange={handleTabChange} sx={{ mb: 2 }} color="Accent">
                 <Tab label="All Orders" />
                 <Tab label="In-Progress" />
                 <Tab label="Completed" />
             </Tabs>
 
-            <Box sx={{ display: "flex", justifyContent: 'space-between', gap: 2, mb: 2 }}>
+            <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
                 <Button
                     variant="outlined"
-                    color="secondary"
+                    color="primaryText"
                     onClick={handleStartDialogOpen}
                 >
                     {`${new Date(startDate).toLocaleDateString('en-GB', {
@@ -246,7 +266,7 @@ const AdminOrders = () => {
                 </Typography>
                 <Button
                     variant="outlined"
-                    color="secondary"
+                    color="primaryText"
                     onClick={handleEndDialogOpen}
                 >
                     {`${new Date(endDate).toLocaleDateString('en-GB', {
@@ -255,9 +275,11 @@ const AdminOrders = () => {
                         year: 'numeric',
                     })}`}
                 </Button>
+            </Box>
+            <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
                 <Button
                     variant="outlined"
-                    color="secondary"
+                    color="primaryText"
                     onClick={exportToCSV}
                 >
                     Export as CSV
@@ -276,41 +298,63 @@ const AdminOrders = () => {
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
-                    <TableBody>
-                        {/* TODO: This thing here
-                        {orders.map((order) => (
-                            <React.Fragment key={order.id}>
-                            <TableRow>
-                                <TableCell>{order.id}</TableCell>
-                                <TableCell>{order.name}</TableCell>
-                                <TableCell>{order.address}</TableCell>
-                                <TableCell>{order.pickUpTime}</TableCell>
-                                <TableCell>{order.status}</TableCell>
-                                <TableCell>
-                                    <Button 
-                                    variant="outlined" 
-                                    size="small"
-                                    onClick={() => toggleRow(order.id)}
-                                    >
-                                        {expandedRow === order.id ? "Collapse" : "Expand"}
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                            {expandedRow === order.id && (
-                            <TableRow>
-                                <TableCell colSpan={7}>
-                                    {order.items.map((item, index) => (
-                                        <Box key={index} sx={{ ml: 2, my: 1 }}>
-                                            <Typography variant="body1">
-                                            x{item.quantity} {item.productName}
-                                            </Typography>
-                                        </Box>
-                                    ))}
-                                </TableCell>
-                            </TableRow>
-                            )}
-                            </React.Fragment>
-                        ))}*/}
+                    <TableBody sx={{
+                        backgroundColor: 'transparent',
+                    }}>
+                        {orders.length > 0 ? (
+                            orders.map((order, i) => (
+                                <React.Fragment key={order.id || i}>
+                                    <TableRow sx={{
+                                        width: '100%',
+                                        border: '1px solid black',
+                                        borderRadius: '8px',
+                                        marginTop: 2,
+                                        marginBottom: 2, // Space between rows
+                                        overflow: 'hidden', // Ensure border radius applies
+                                    }}>
+                                        <TableCell sx={{ flex: 1 }}>{order.orderId}</TableCell>
+                                        <TableCell sx={{ flex: 1 }}>{order.fullName}</TableCell>
+                                        <TableCell sx={{ flex: 1 }}>{order.address}</TableCell>
+                                        <TableCell sx={{ flex: 1 }}>{order.timeSlot}</TableCell>
+                                        <TableCell sx={{ flex: 1 }}>{order.status}</TableCell>
+                                        <TableCell sx={{ flex: 1 }}>
+                                            <Button
+                                                variant="outlined"
+                                                size="small"
+                                                color="Primary"
+                                                onClick={() => toggleRow(order.id)}
+                                            >
+                                                {expandedRow === order.id ? "Collapse" : "Expand"}
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                    {expandedRow === order.id && (
+                                        <TableRow
+                                            sx={{
+                                                border: '1px solid black',
+                                                borderRadius: '8px',
+                                                marginBottom: 2,
+                                                overflow: 'hidden',
+                                                backgroundColor: '#f9f9f9', // Light background for expanded content
+                                            }}>
+                                            <TableCell colSpan={7}>
+                                                {order.items.map((item, index) => (
+                                                    <Box key={index} sx={{ ml: 2, my: 1 }}>
+                                                        <Typography variant="body1">
+                                                            x{item.quantity} {item.productName}
+                                                        </Typography>
+                                                    </Box>
+                                                ))}
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </React.Fragment>
+                            ))
+                        ) : (
+                            <Typography variant="body1">
+                                
+                            </Typography>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -331,7 +375,7 @@ const AdminOrders = () => {
                         {/* Left Half: Date Selector & Time Selector */}
                         <Box sx={{ flex: 1, p: 4 }}>
                             {/* Date Selector */}
-                            <DateSelector selectedDate={startDate} onDateChange={handleStartDateSelect} />
+                            <AdminDateSelector selectedDate={startDate} onDateChange={handleStartDateSelect} allowPastDates={true}/>
                         </Box>
                     </Box>
                 </DialogContent>
@@ -356,7 +400,7 @@ const AdminOrders = () => {
                         {/* Left Half: Date Selector & Time Selector */}
                         <Box sx={{ flex: 1, p: 4 }}>
                             {/* Date Selector */}
-                            <DateSelector selectedDate={endDate} onDateChange={handleEndDateSelect} />
+                            <AdminDateSelector selectedDate={endDate} onDateChange={handleEndDateSelect} allowPastDates={true} />
                         </Box>
                     </Box>
                 </DialogContent>
@@ -365,6 +409,15 @@ const AdminOrders = () => {
                     <Button onClick={handleEndDialogClose} color="Accent">Confirm</Button>
                 </DialogActions>
             </Dialog>
+
+            {/* ToastContainer for showing toasts */}
+            <ToastContainer
+                position="top-right"  // Position set to top-right
+                autoClose={5000}
+                hideProgressBar={false}
+                closeOnClick
+                rtl={false}
+            />
         </Box>
     )
 };
