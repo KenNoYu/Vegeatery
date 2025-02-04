@@ -199,7 +199,7 @@ const UserMenu = () => {
               <CircularProgress />
             ) : (
               <Box>
-                <Box display="flex" justifyContent="space-between" sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
+                <Box display="flex" gap={2} sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
                   {categories.length === 0 ? (
                     <Typography>No categories available</Typography>
                   ) : (
