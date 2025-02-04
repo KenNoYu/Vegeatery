@@ -4,6 +4,7 @@ import { Box, Drawer, Typography, ToggleButtonGroup, ToggleButton, Stack, Card, 
 import { useNavigate } from 'react-router-dom';
 import http from '../../http';
 import { useTheme } from '@mui/material/styles';
+import { formatDistanceToNowStrict  } from 'date-fns';
 
 import RoleGuard from '../../utils/RoleGuard';
 
@@ -118,7 +119,13 @@ const StaffReserveLogs = () => {
               >
                 <CardContent sx={{ flex: "1" }}>
                   <Typography variant="h6">
-                    {logs.reservation.customerName}
+                    {logs.reservation.customerName}, {
+                  new Intl.DateTimeFormat('en-GB', { 
+                    day: '2-digit', 
+                    month: 'short', 
+                    year: 'numeric' 
+                }).format(new Date(logs.reservation.reservationDate))
+                  }
                   </Typography>
                   <Typography variant="body2">
                     {logs.reservation.customerPhone} | {logs.reservation.customerEmail}
@@ -130,7 +137,8 @@ const StaffReserveLogs = () => {
                 <Typography variant="h6" sx={{ marginRight: "20px", textAlign: "center" }}>
                   {logs.reservation.timeSlot} <br />
                   <Typography variant="body2">
-                    {logs.action} by {logs.doneBy}
+                    {logs.action} by {logs.doneBy} <br/> 
+                    {formatDistanceToNowStrict (new Date(logs.logDate), { addSuffix: true })}
                   </Typography>
                 </Typography>
 
