@@ -96,7 +96,9 @@ export default function Accounts() {
         user.username.toLowerCase().includes(searchTerm) || // Search by username
         user.roleName.toLowerCase().includes(searchTerm); // Search by roleName
 
-        const matchesRole = selectedRole ? user.roleName === selectedRole : true;
+        const matchesRole = selectedRole && selectedRole !== "All Roles"
+      ? user.roleName === selectedRole
+      : true;
 
       return matchesSearchTerm && matchesRole;
     })
@@ -222,17 +224,52 @@ export default function Accounts() {
               variant="outlined"
               value={searchTerm}
               onChange={handleSearchChange}
-              sx={{ mr: 2 }}
+              sx={{
+                mr : 2,
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused": {
+                    fieldset: {
+                      borderColor: "#C6487E !important", // Keep your border color
+                    },
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  // Target the label specifically
+                  color: "black", // Default label color
+                  "&.Mui-focused": {
+                    // Label styles when focused
+                    color: "black !important", // Black on focus
+                  },
+                },
+              }}
             />
-            <FormControl sx={{ minWidth: 120 }}>
-              <InputLabel id="role-label">Role</InputLabel>
+            <FormControl sx={{
+                minWidth: 120,
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused": {
+                        fieldset: {
+                          borderColor: "#C6487E !important", // Keep your border color
+                        },
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      // Target the label specifically
+                      color: "black", // Default label color
+                      "&.Mui-focused": {
+                        // Label styles when focused
+                        color: "black !important", // Black on focus
+                      },
+                    },
+                  }}>
+              {/* <InputLabel id="role-label">Role</InputLabel> */}
               <Select
                 labelId="role-label"
                 id="role-select"
-                value={selectedRole}
+                value={selectedRole || "All Roles"}
                 onChange={(e) => setSelectedRole(e.target.value)} // Set selected role
+                
               >
-                <MenuItem value="">All Roles</MenuItem>
+                <MenuItem value="All Roles">All Roles</MenuItem>
                 <MenuItem value="Admin">Admin</MenuItem>
                 <MenuItem value="User">User</MenuItem>
                 <MenuItem value="Staff">Staff</MenuItem>
