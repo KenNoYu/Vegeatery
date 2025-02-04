@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, TextField, IconButton, Grid, CardContent, Card , Button} from "@mui/material";
+import { Box, Typography, TextField, IconButton, Grid, CardContent, Card, Button } from "@mui/material";
 import http from "../../../http"; // Adjust the path to your http.js
 import RoleGuard from '../../../utils/RoleGuard';
+import RewardsSidebar from "./RewardsSidebar.jsx";
+
+
 
 const PointsRange = () => {
   RoleGuard('Admin');
@@ -62,91 +65,102 @@ const PointsRange = () => {
   };
 
   return (
-    <Box sx={{
-      maxWidth: 1200,
-      minHeight: 500,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#FFFFFF',
-      padding: '2rem',
-      boxShadow: 3,
-      borderRadius: 2,
-      overflow: 'hidden',
-      marginTop: '2rem'
-    }}>
-      <Typography variant="h4" fontWeight="bold" mb={2}>
-        Manage Tier Points Range
-      </Typography>
-      {error && (
-        <Typography variant="body1" color="error" sx={{ mb: 2 }}>
-          {error}
-        </Typography>
-      )}
+    <Box
+      sx={{
+        marginBottom: 2
+      }}
+    >
 
-        <CardContent>
-          <Grid container spacing={2}>
-            {tiers.map((tier) => (
-              <Grid item xs={12} key={tier.tierId}>
-                <Card sx={{padding: '2rem', backgroundColor: '#E6F2FF', borderRadius: 2, width: '100%'}}>
-                  <CardContent>
-                    <Typography variant="h6">{tier.tierName} Tier</Typography>
-                    {editMode === tier.tierId ? (
-                      <>
-                        <TextField
-                          label="Min Points"
-                          variant="outlined"
-                          size="small"
-                          value={updatedTier?.minPoints || ""}
-                          onChange={(e) => handleInputChange("minPoints", e.target.value)}
-                          sx={{ mb: 2, width: "100%" }}
-                        />
-                        <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
-                          <Button onClick={handleSaveClick} variant="contained" sx={{
-                            textTransform: 'none',
-                            color: '#FFFFFF',
-                            backgroundColor: '#C6487E',
-                            '&:hover': { backgroundColor: '#E7ABC5' }
-                          }}>
-                            SAVE
-                          </Button>
-                          <Button onClick={handleCancelClick} variant="contained" sx={{
-                            textTransform: 'none',
-                            color: '#C6487E',
-                            backgroundColor: '#FFFFFF',
-                            borderColor: '#C6487E',
-                            '&:hover': {
+      <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden" }}>
+        {/* Sidebar */}
+        <Box sx={{ width: "20%" }}>
+          <RewardsSidebar />
+        </Box>
+
+        {/* Main Content */}
+        <Box
+          sx={{
+            width: "80%",
+            padding: 5,
+            backgroundColor: "#FFFFFF",
+            marginTop: "5px",
+            paddingLeft: "3em",
+            overflowX: "hidden",
+          }}
+        >
+          <Typography variant="h4" fontWeight="bold"  mt={5} ml={3} mb={2}>
+            Points System
+          </Typography>
+          {error && (
+            <Typography variant="body1" color="error" sx={{ mb: 2 }}>
+              {error}
+            </Typography>
+          )}
+
+          <CardContent>
+            <Grid container spacing={2}>
+              {tiers.map((tier) => (
+                <Grid item xs={12} key={tier.tierId}>
+                  <Card sx={{ padding: '1rem', backgroundColor: '#E6F2FF', borderRadius: 2, width: '100%' }}>
+                    <CardContent>
+                      <Typography variant="h6">{tier.tierName} Tier</Typography>
+                      {editMode === tier.tierId ? (
+                        <>
+                          <TextField
+                            label="Min Points"
+                            variant="outlined"
+                            size="small"
+                            value={updatedTier?.minPoints || ""}
+                            onChange={(e) => handleInputChange("minPoints", e.target.value)}
+                            sx={{ mb: 2, width: "100%" }}
+                          />
+                          <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
+                            <Button onClick={handleSaveClick} variant="contained" sx={{
+                              textTransform: 'none',
+                              color: '#FFFFFF',
+                              backgroundColor: '#C6487E',
+                              '&:hover': { backgroundColor: '#E7ABC5' }
+                            }}>
+                              SAVE
+                            </Button>
+                            <Button onClick={handleCancelClick} variant="contained" sx={{
+                              textTransform: 'none',
+                              color: '#C6487E',
+                              backgroundColor: '#FFFFFF',
+                              borderColor: '#C6487E',
+                              '&:hover': {
                                 backgroundColor: '#E7ABC5',
                                 color: '#FFFFFF'
-                            }
-                          }}>
-                            CANCEL
+                              }
+                            }}>
+                              CANCEL
+                            </Button>
+                          </Box>
+                        </>
+                      ) : (
+                        <>
+                          <Typography marginBottom={0}>Min Points: {tier.minPoints}</Typography>
+                          <Button
+                            onClick={() => handleEditClick(tier)}
+                            sx={{
+                              textTransform: 'none',
+                              color: '#FFFFFF',
+                              backgroundColor: '#C6487E',
+                              '&:hover': { backgroundColor: '#E7ABC5' }
+                            }}
+                          >
+                            EDIT
                           </Button>
-                        </Box>
-                      </>
-                    ) : (
-                      <>
-                        <Typography marginBottom={0}>Min Points: {tier.minPoints}</Typography>
-                        <Button
-                          onClick={() => handleEditClick(tier)}
-                          sx={{
-                            textTransform: 'none',
-                            color: '#FFFFFF',
-                            backgroundColor: '#C6487E',
-                            '&:hover': { backgroundColor: '#E7ABC5' }
-                          }}
-                        >
-                          EDIT
-                        </Button>
-                      </>
-                    )}
-                  </CardContent>
+                        </>
+                      )}
+                    </CardContent>
                   </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </CardContent>
+                </Grid>
+              ))}
+            </Grid>
+          </CardContent>
+        </Box>
+      </Box>
     </Box>
   );
 };

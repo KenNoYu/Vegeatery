@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import http from '../../../http';
 import RoleGuard from '../../../utils/RoleGuard';
+import RewardsSidebar from "./RewardsSidebar.jsx";
+
 
 const AdminVouchersSystem = () => {
   RoleGuard('Admin');
@@ -49,95 +51,103 @@ const AdminVouchersSystem = () => {
   };
 
   return (
-    <Box sx={{
-      maxWidth: 1200,
-      minHeight: 500,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#FFFFFF',
-      padding: '2rem',
-      boxShadow: 3,
-      borderRadius: 2,
-      overflow: "hidden",
-      overflowY: "auto",
-      overflowX: "hidden",
-      paddingBottom: '2rem',
-      marginTop: '2rem'
-    }}>
+    <Box
+      sx={{
+        marginBottom: 2
+      }}
+    >
 
-      <Typography variant="h4" fontWeight="bold" >Admin Voucher System</Typography>
-
-
-      <Box mt={4} width="100%">
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: '50px', }}>
-          <Typography variant="h5" fontWeight='bold'>Available Vouchers</Typography>
-          <Button
-            variant="contained"
-            sx={{
-              textTransform: 'none', 
-              color: '#FFFFFF', 
-              backgroundColor: '#C6487E', 
-              '&:hover': { 
-                backgroundColor: '#E7ABC5'
-              }}}
-            onClick={() => navigate('/admin/voucherssystemadd')}
-          >
-            ADD NEW VOUCHER
-          </Button>
+      <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden" }}>
+        {/* Sidebar */}
+        <Box sx={{ width: "20%" }}>
+          <RewardsSidebar />
         </Box>
 
-        {Object.entries(groupedVouchers).map(([tier, vouchers]) => (
-          <Box key={tier} mt={2} sx={{ width: '100%' }}>
-            <Typography variant="h5" sx={{
-              fontWeight: 'bold',
-              marginTop: '50px',
-              }} >
-                {tier}
+        {/* Main Content */}
+        <Box
+          sx={{
+            width: "80%",
+            padding: 5,
+            backgroundColor: "#FFFFFF",
+            marginTop: "5px",
+            paddingLeft: "3em",
+            overflowX: "hidden",
+          }}
+        >
+
+          <Typography variant="h4" fontWeight="bold" mt={5} ml={3} mb={2}> Voucher System</Typography>
+
+
+          <Box mt={4}  ml={3} width="100%">
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: '50px', }}>
+              <Typography variant="h5" fontWeight='bold'>Available Vouchers</Typography>
+              <Button
+                variant="contained"
+                sx={{
+                  textTransform: 'none',
+                  color: '#FFFFFF',
+                  backgroundColor: '#C6487E',
+                  '&:hover': {
+                    backgroundColor: '#E7ABC5'
+                  }
+                }}
+                onClick={() => navigate('/admin/voucherssystemadd')}
+              >
+                ADD NEW VOUCHER
+              </Button>
+            </Box>
+
+            {Object.entries(groupedVouchers).map(([tier, vouchers]) => (
+              <Box key={tier} mt={2} sx={{ width: '100%' }}>
+                <Typography variant="h5" sx={{
+                  fontWeight: 'bold',
+                  marginTop: '50px',
+                }} >
+                  {tier}
                 </Typography>
-            <Grid container spacing={2}>
-              {vouchers.map(voucher => (
-                <Grid item xs={12} sm={6} md={4} key={voucher.voucherId}>
-                  <Card sx={tierStyles[tier]}>
-                    <CardContent>
-                      <Typography variant="h6">{voucher.voucherName}</Typography>
-                      <Typography>Discount: {voucher.discountPercentage}%</Typography>
-                      <Typography>Expiry: {voucher.expiryDate.split('T')[0]}</Typography>
-                      <Box mt={2} display="flex" justifyContent="space-between">
-                        <Button
-                          variant="contained"
-                          sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C6487E', '&:hover': { backgroundColor: '#E7ABC5' } }}
-                          component={Link}
-                          to={`/rewards/admin/voucherssystem/edit/${voucher.voucherId}`}>
-                          EDIT
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          sx={{
-                            textTransform: 'none',
-                            color: '#C6487E',
-                            backgroundColor: '#FFFFFF',
-                            borderColor: '#C6487E',
-                            '&:hover': {
-                              backgroundColor: '#E7ABC5',
-                              color: '#FFFFFF'
-                            }
-                          }}
-                          onClick={() => handleDeleteVoucher(voucher.voucherId)}>
-                          DELETE
-                        </Button>
-                      </Box>
-                    </CardContent>
-                  </Card>
+                <Grid container spacing={2}>
+                  {vouchers.map(voucher => (
+                    <Grid item xs={12} sm={6} md={4} key={voucher.voucherId}>
+                      <Card sx={tierStyles[tier]}>
+                        <CardContent>
+                          <Typography variant="h6">{voucher.voucherName}</Typography>
+                          <Typography>Discount: {voucher.discountPercentage}%</Typography>
+                          <Typography>Expiry: {voucher.expiryDate.split('T')[0]}</Typography>
+                          <Box mt={2} display="flex" justifyContent="space-between">
+                            <Button
+                              variant="contained"
+                              sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C6487E', '&:hover': { backgroundColor: '#E7ABC5' } }}
+                              component={Link}
+                              to={`/rewards/admin/voucherssystem/edit/${voucher.voucherId}`}>
+                              EDIT
+                            </Button>
+                            <Button
+                              variant="outlined"
+                              sx={{
+                                textTransform: 'none',
+                                color: '#C6487E',
+                                backgroundColor: '#FFFFFF',
+                                borderColor: '#C6487E',
+                                '&:hover': {
+                                  backgroundColor: '#E7ABC5',
+                                  color: '#FFFFFF'
+                                }
+                              }}
+                              onClick={() => handleDeleteVoucher(voucher.voucherId)}>
+                              DELETE
+                            </Button>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
+              </Box>
+            ))}
           </Box>
-        ))}
+        </Box>
       </Box>
     </Box>
-
   );
 };
 
