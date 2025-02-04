@@ -24,6 +24,7 @@ import RoleGuard from "../../../utils/RoleGuard";
 import AdminSidebar from "./AdminSidebar";
 import UserRegistrationsGraph from "./UserRegistrationsGraph";
 import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
+import { useNavigate } from "react-router-dom"; 
 
 export default function Accounts() {
   RoleGuard("Admin");
@@ -117,6 +118,12 @@ export default function Accounts() {
   };
 
   const UserProfileCard = ({ user }) => {
+    const navigate = useNavigate();
+
+    // Function to handle navigation to the user's profile page
+    const handleViewProfile = () => {
+      navigate(`/user/profile/${user.id}`); // Navigate to the profile page with the userId in the URL
+    };
     return (
       <Card
         sx={{
@@ -149,6 +156,9 @@ export default function Accounts() {
           <CardContent
             sx={{ padding: "0", paddingLeft: "16px", marginTop: "1em" }}
           >
+            {/* <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              {user.tierName}
+            </Typography> */}
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               {user.username}
             </Typography>
@@ -179,6 +189,7 @@ export default function Accounts() {
           {/* View Profile Button */}
           <Button
             variant="outlined"
+            onClick={handleViewProfile}
             sx={{
               borderColor: "#C6487E",
               color: "#C6487E",
