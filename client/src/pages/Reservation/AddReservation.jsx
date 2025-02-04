@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Grid, TextField, Box, Typography } from "@mui/material";
 import DateSelector from "./Components/DateSelector";
 import { useTheme } from '@mui/material/styles';
@@ -8,6 +8,7 @@ import http from '../../http';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { parse, isBefore, isDate } from 'date-fns';
+import emailjs from "@emailjs/browser";
 
 const DetailsTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputLabel-root.Mui-focused": {
@@ -34,22 +35,66 @@ const ReservationPage = () => {
   const navigate = useNavigate();
   const [view, setView] = useState("details"); // 'details' or 'seats'
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);const [user, setUser] = useState(null); // Stores user data or remains null if not logged in
+  const [tables, setTables] = useState([]); 
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: "",
-    mobileNumber: "",
+    email: user ? user.email : "",
+    mobileNumber: user ? user.contactNumber : "",
   });
-  const [selectedTables, setSelectedTables] = useState(null);
-  const [tables, setTables] = useState([
-    { id: 1, status: "available", pax: 2 },
-    { id: 2, status: "unavailable", pax: 2 },
-    { id: 3, status: "available", pax: 2 },
-    { id: 4, status: "available", pax: 4 },
-    { id: 5, status: "available", pax: 4 },
-    { id: 6, status: "unavailable", pax: 5 },
-  ]);
+  const [selectedTables, setSelectedTables] = useState([]);
+
+  useEffect(() => {
+    const fetchUserAndTables = async () => {
+        setLoading(true); // Start loading when fetching starts
+
+        try {
+            let userData = null;
+
+            // Try fetching user data
+            try {
+                const userResponse = await http.get("/Auth/current-user", { withCredentials: true });
+                if (userResponse.data) {
+                    setUser(userResponse.data);
+                    userData = userResponse.data;
+                }
+            } catch (userError) {
+                console.warn("User not logged in or authentication failed.");
+                setUser(null); // Ensure user state is cleared if no user is found
+            }
+
+            if (userData) {
+              setFormData(prevState => ({
+                  ...prevState,
+                  mobileNumber: userData.contactNumber,
+                  email: userData.email, // Auto-fill email when user is available
+              }));
+          }
+
+            // Fetch tables regardless of user authentication status
+            let url = "/Reservation/GetTables";
+            if (selectedDate && selectedTime) {
+                url += `?date=${selectedDate}&timeSlot=${selectedTime}`;
+            }
+
+            const response = await http.get(url);
+            setTables(response.data);
+
+        } catch (error) {
+            console.error("Error fetching data", error);
+            toast.error("Failed to load data.");
+        } finally {
+            setLoading(false); // Stop loading state in all cases
+        }
+    };
+
+    fetchUserAndTables(); // Invoke the function
+
+}, [selectedDate, selectedTime]); // Runs when selectedDate or selectedTime changes
+
+
 
   // Mock data for times
   const times = [
@@ -67,6 +112,7 @@ const ReservationPage = () => {
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
+    setSelectedTables([]);
     if (selectedTime) {
       if (isDateTimeBeforeNow(date, selectedTime)) {
         setSelectedTime(null)
@@ -75,6 +121,7 @@ const ReservationPage = () => {
   };
 
   const handleTimeSelect = (time) => {
+    setSelectedTables([]);
     setSelectedTime(time);
   };
 
@@ -84,22 +131,32 @@ const ReservationPage = () => {
 
   const handleTableClick = (id) => {
     setTables((prevTables) => {
-      const updatedTables = prevTables.map((table) => {
-        if (table.id === id) {
-          const newStatus = table.status === "available" ? "selected" : "available";
-          return { ...table, status: newStatus };
+      let updatedTables = [...prevTables];
+      let newSelectedTables = [...selectedTables];
+
+      // Find the table being selected
+      const tableIndex = updatedTables.findIndex((table) => table.id === id);
+      if (tableIndex !== -1) {
+        const table = updatedTables[tableIndex];
+
+        if (selectedTables.includes(id)) {
+          // Deselect the table
+          newSelectedTables = newSelectedTables.filter(tableId => tableId !== id);
+          updatedTables[tableIndex] = { ...table, status: "available" };
+        } else {
+          if (selectedTables.length >= 2) {
+            toast.warning("You can only select up to 2 tables.");
+            return prevTables;
+          }
+
+          // Select the table
+          newSelectedTables.push(id);
+          updatedTables[tableIndex] = { ...table, status: "selected" };
         }
-        return table;
-      });
+      }
 
-      // Collect all selected table IDs using the updated tables
-      const selected = updatedTables.filter((table) => table.status === "selected").map((table) => table.id);
-      console.log(selected);
-
-      // Update selectedTables state with a comma-separated string
-      setSelectedTables(selected.join(", "));
-
-      return updatedTables; // Update the state with the new table statuses
+      setSelectedTables(newSelectedTables);
+      return updatedTables;
     });
   };
 
@@ -136,7 +193,7 @@ const ReservationPage = () => {
     } else if (!/^\+?[\d\s-]+$/.test(formData.mobileNumber)) {
       toast.error("Mobile Number must be valid.");
       return;
-    } else if (!selectedTables || selectedTables.trim() === "") {
+    } else if (!selectedTables || selectedTables.length == 0) {
       toast.error("Please select at least one table.");
       return;
     }
@@ -150,7 +207,7 @@ const ReservationPage = () => {
       "customerPhone": formData.mobileNumber,
       "timeSlot": selectedTime,
       "status": "Pending",
-      "tables": selectedTables
+      "tableIds": selectedTables
     };
 
     console.log(reservationData)
@@ -165,11 +222,31 @@ const ReservationPage = () => {
         "action": "created",
         "reservationDate": selectedDate,
         "timeSlot": selectedTime,
-        "tables": selectedTables
+        "tables": selectedTables.join(", "),
+        "doneBy": "user"
       }
 
       const logResponse = await http.post("/Reservation/CreateReservationLog", logData);
       console.log("Reservation log created:", logResponse.data);
+
+      const emailParams = {
+        customer_name: reservationData.customerName,
+        customer_email: reservationData.customerEmail,
+        reservation_date: new Intl.DateTimeFormat('en-GB', { 
+          day: '2-digit', 
+          month: 'short', 
+          year: 'numeric' 
+      }).format(new Date(reservationData.reservationDate)),
+        reservation_time: reservationData.timeSlot,
+        table_numbers: selectedTables.join(", ") // Convert array to string
+    };
+
+    await emailjs.send(
+        "service_1yw1hkh", 
+        "template_5lv58es", 
+        emailParams,
+        "HpadWHSOZyo_0NyHD" 
+    );
 
       navigate("/reserve/confirmed"); // Redirect after success
     } catch (error) {
@@ -345,7 +422,7 @@ const ReservationPage = () => {
                       }
                     >
                       Table {table.id}<br />
-                      {table.pax} Pax
+                      {table.capacity} Pax
                     </Button>
                   </Grid>
                 ))}
