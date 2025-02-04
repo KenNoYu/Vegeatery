@@ -520,25 +520,25 @@ export default function UserProfileView() {
                   }}
                 >
                   <FormControlLabel
-                    value="male"
+                    value="Male"
                     control={<Radio />}
                     label="Male"
                     disabled={!isEditing}
                   />
                   <FormControlLabel
-                    value="female"
+                    value="Female"
                     control={<Radio />}
                     label="Female"
                     disabled={!isEditing}
                   />
                   <FormControlLabel
-                    value="others"
+                    value="Others"
                     control={<Radio />}
                     label="Others"
                     disabled={!isEditing}
                   />
                   <FormControlLabel
-                    value="prefer_not_say"
+                    value="Prefer not to say"
                     control={<Radio />}
                     label="Prefer not to say"
                     disabled={!isEditing}
