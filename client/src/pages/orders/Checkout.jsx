@@ -4,10 +4,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from 'react-toastify';
 import http from '../../http';
 import { loadStripe } from '@stripe/stripe-js';
+import RoleGuard from '../../utils/RoleGuard';
 
 const stripePromise = loadStripe('pk_test_51QZWKZG2Vyjd8Bevj32U8i0SRUVWPuchLByOvA0G4locEVUpq6qNrF4jJnHmspyAtKQBC0VFjxtsRS8XppJxDFTc00B0A9uox3'); 
 
 const Checkout = () => {
+    RoleGuard('User');
     const navigate = useNavigate();
     const location = useLocation();
     const orderId = location.state?.orderId;

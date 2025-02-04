@@ -40,22 +40,8 @@ const StaffReserveLogs = () => {
     >
       <Box
         sx={{
-          width: '20%',
-          height: '80vh',
-          backgroundColor: 'black',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderTopLeftRadius: '20px',
-          borderBottomLeftRadius: '20px'
-        }}
-      >
-        <Typography variant="h6" color="primary">Sidebar Content</Typography>
-      </Box>
-      <Box
-        sx={{
           backgroundColor: 'white',
-          width: '80%',
+          width: '100%',
           height: '80vh',
           display: 'flex',
           justifyContent: 'flex-start',
@@ -135,13 +121,13 @@ const StaffReserveLogs = () => {
                     {logs.reservation.customerPhone} | {logs.reservation.customerEmail}
                   </Typography>
                   <Typography variant="body2" sx={{ marginTop: "10px" }}>
-                    Table(s) {logs.reservation.tables}
+                    Table(s) {logs.tables}
                   </Typography>
                 </CardContent>
                 <Typography variant="h6" sx={{ marginRight: "20px", textAlign: "center" }}>
                   {logs.reservation.timeSlot} <br />
                   <Typography variant="body2">
-                    {logs.action}
+                    {logs.action} by {logs.doneBy}
                   </Typography>
                 </Typography>
 
