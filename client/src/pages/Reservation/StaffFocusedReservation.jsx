@@ -25,14 +25,8 @@ const StaffFocusedReservation = () => {
     setUnreserveOpen(false); // Close the modal
   };
 
-  const [tables, setTables] = useState([
-    { id: 1, status: "available", pax: 2 },
-    { id: 2, status: "unavailable", pax: 2 },
-    { id: 3, status: "available", pax: 2 },
-    { id: 4, status: "available", pax: 4 },
-    { id: 5, status: "available", pax: 4 },
-    { id: 6, status: "unavailable", pax: 5 },
-  ]);
+  
+  const [tables, setTables] = useState([]);
 
   const times = [
     "11:00am", "11:30am", "12:00pm", "12:30pm",
@@ -52,6 +46,17 @@ const StaffFocusedReservation = () => {
       console.error("Error fetching reservation:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTables = async (date, timeSlot, reservationId) => {
+    try {
+      const response = await http.get(`/Reservation/GetTables?date=${date}&timeSlot=${timeSlot}&reservationId=${reservationId}`);
+      console.log("Tables fetched:", response.data);
+      setTables(response.data);
+    } catch (error) {
+      console.error("Error fetching tables:", error);
+      toast.error("Failed to load tables.");
     }
   };
 
@@ -87,6 +92,13 @@ const StaffFocusedReservation = () => {
     fetchReservationById();
   }, [id]);
 
+  useEffect(() => {
+    if (reservation) {
+      console.log("Reservation Tables:", reservation);
+      fetchTables(reservation.reservationDate, reservation.timeSlot, reservation.id);
+    }
+  }, [reservation]);
+
   if (loading) {
     toast.info("Loading reservation...");
     return null;
@@ -102,23 +114,11 @@ const StaffFocusedReservation = () => {
         alignItems: 'center',
         marginTop: '40px',
         boxShadow: 2,
-        borderRadius: '20px'
+        borderRadius: '20px',
+        backgroundColor: 'white',
+        overflow: 'auto',
       }}
     >
-      <Box
-        sx={{
-          width: '20%',
-          height: '80vh',
-          backgroundColor: 'black',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderTopLeftRadius: '20px',
-          borderBottomLeftRadius: '20px'
-        }}
-      >
-        <Typography variant="h6" color="primary">Sidebar Content</Typography>
-      </Box>
       <Box
         sx={{
           backgroundColor: 'white',
@@ -130,7 +130,6 @@ const StaffFocusedReservation = () => {
           flexDirection: 'row',
           borderTopRightRadius: '20px',
           borderBottomRightRadius: '20px',
-          overflow: 'auto',
         }}
       >
 
@@ -208,27 +207,28 @@ const StaffFocusedReservation = () => {
           </Typography>
           <Box sx={{ textAlign: "center", marginTop: "20px" }}>
             <Grid container spacing={2} justifyContent="center">
-              {tables.map((table) => (
-                <Grid item xs={12} sm={8} md={6} lg={4} key={table.id}>
+              {tables.map((table) => {
+    const isSelected = reservation?.tables?.some((t) => t.id === table.id);
+
+              return (
+                <Grid item xs={6} lg={4} key={table.id}>
                   <Button
                     variant="contained"
                     sx={{
                       padding: "20px",
-                      backgroundColor:
-                      reservation.tables.split(",").includes(String(table.id))
-                          ? theme.palette.Accent.main
-                          : table.status === "unavailable"
-                            ? theme.palette.secondaryText.main
-                            : theme.palette.primary.main,
-                      color: table.status === "unavailable" || reservation.tables.split(",").includes(String(table.id)) ? "#fff" : "#000",
-                      cursor: table.status !== "unavailable" ? "pointer" : "not-allowed",
+                      backgroundColor: 
+              isSelected ? theme.palette.Accent.main : 
+              table.status === "available" ? theme.palette.primary.main :
+              theme.palette.secondaryText.main,
+            color: isSelected || table.status === "unavailable" ? "#fff" : "#000",
+            cursor: table.status !== "unavailable" ? "pointer" : "not-allowed",
                     }}
                   >
                     Table {table.id}<br />
                     {table.pax} Pax
                   </Button>
                 </Grid>
-              ))}
+              )})}
             </Grid>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "space-around" }}>
               <Button
