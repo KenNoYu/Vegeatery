@@ -58,7 +58,6 @@ public class User
 
     public Tier Tier { get; set; }
 
-
 	// foreign key
 	public int CartId { get; set; }
 
