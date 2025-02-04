@@ -1,182 +1,205 @@
-import React, { useState, useEffect } from "react";
-import http from "../../../http";
+import React, { useEffect, useState } from "react";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-  Label,
-} from "recharts";
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+import { Typography, Box, Button, TextField } from "@mui/material";
+import http from "../../../http";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import RoleGuard from "../../../utils/RoleGuard";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const UserRegistrationsGraph = () => {
-  const [registrationData, setRegistrationData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [chartType, setChartType] = useState("day"); // Default chart type
+  RoleGuard("Admin");
+
+  const [registrationsData, setRegistrationsData] = useState([]);
+  const [responseMessage, setResponseMessage] = useState("");
+  const [responseType, setResponseType] = useState("");
+  const [startDate, setStartDate] = useState(dayjs().subtract(30, "day")); // Default to past 30 days
+  const [endDate, setEndDate] = useState(dayjs());
 
   useEffect(() => {
-    const fetchRegistrationData = async () => {
-      try {
-        const response = await http.get("/Account/registrations/summary", {
-          withCredentials: true,
-        });
-        setRegistrationData(response.data);
-      } catch (err) {
-        setError("Error fetching registration data");
-        console.error("Error fetching registration data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchRegistrations();
+  }, [startDate, endDate]);
 
-    fetchRegistrationData();
-  }, []);
+  const fetchRegistrations = async () => {
+    try {
+      const response = await http.get("/Account"); // Adjust API endpoint as needed
+      const registrations = response.data;
 
-  const handleChartTypeChange = (event) => {
-    setChartType(event.target.value);
-  };
+      // Filter registrations based on selected date range
+      const filteredRegistrations = registrations.filter((registration) => {
+        const registrationDate = dayjs(registration.createdAt).startOf("day");
+        return registrationDate.isBetween(startDate, endDate, null, "[]");
+      });
 
-  const filterDataByDate = (data, chartType) => {
-    const now = dayjs();
+      // Group registrations by day
+      const registrationsCount = {};
+      filteredRegistrations.forEach((registration) => {
+        const date = dayjs(registration.createdAt).format("YYYY-MM-DD");
+        registrationsCount[date] = (registrationsCount[date] || 0) + 1;
+      });
 
-    switch (chartType) {
-      case "day":
-        return data.filter((item) => dayjs(item.date).isAfter(now.subtract(7, "days")));
-      case "week":
-        return data.filter((item) => dayjs(item.startDate).isAfter(now.subtract(4, "week")));
-      case "month":
-        return data.filter((item) => dayjs(item.startDate).isAfter(now.subtract(6, "month")));
-      default:
-        return data;
+      // Convert registrationsCount to an array for chart data
+      const formattedData = Object.entries(registrationsCount).map(
+        ([date, count]) => ({
+          date,
+          count,
+        })
+      );
+
+      setRegistrationsData(formattedData);
+      setResponseMessage("Successfully loaded registrations data.");
+      setResponseType("success");
+    } catch (error) {
+      console.error("Error fetching registrations:", error);
+      setResponseMessage("Failed to fetch registrations data.");
+      setResponseType("fail");
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const handleGenerate = () => {
+    if (endDate.isBefore(startDate)) {
+      setResponseMessage("End date cannot be before start date.");
+      setResponseType("fail");
+    } else {
+      fetchRegistrations();
+    }
+  };
 
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!registrationData) {
-    return <div>No data available</div>;
-  }
-
-  let chartData = [];
-  let xAxisKey = "";
-  let chartLabel = "";
-
-  switch (chartType) {
-    case "day":
-      chartData = filterDataByDate(registrationData.daily, "day").map((r) => ({
-        date: r.date,
-        count: r.count,
-      }));
-      xAxisKey = "date";
-      chartLabel = "Daily Registrations (Last 7 Days)";
-      break;
-    case "week":
-      chartData = filterDataByDate(registrationData.weekly, "week").map((w) => ({
-        week: `${w.startDate} - ${w.endDate}`,
-        count: w.count,
-      }));
-      xAxisKey = "week";
-      chartLabel = "Weekly Registrations (Last 4 Weeks)";
-      break;
-    case "month":
-      chartData = filterDataByDate(registrationData.monthly, "month").map((m) => ({
-        month: `${m.startDate} - ${m.endDate}`,
-        count: m.count,
-      }));
-      xAxisKey = "month";
-      chartLabel = "Monthly Registrations (Last 6 Months)";
-      break;
-    default:
-      chartData = filterDataByDate(registrationData.daily, "day").map((r) => ({
-        date: r.date,
-        count: r.count,
-      }));
-      xAxisKey = "date";
-      chartLabel = "Daily Registrations";
-      break;
-  }
+  const data = {
+    labels: registrationsData.map((item) => item.date),
+    datasets: [
+      {
+        label: "Number of Registrations",
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        data: registrationsData.map((item) => item.count),
+        fill: true,
+        tension: 0.4,
+      },
+    ],
+  };
 
   return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: "80vw", // Adjusted to make it responsive
-        padding: "16px",
-        borderRadius: "8px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        backgroundColor: "#fff",
-        textAlign: "center",
-      }}
-    >
-      <h3
-        style={{
-          fontSize: "20px", // Slightly larger font for header
-          fontWeight: "bold",
-          marginBottom: "16px",
-          color: "#333",
-        }}
+    <Box>
+      <Typography variant="h4" textAlign="center" mb={5}>
+        User Registrations Statistics
+      </Typography>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        gap={2}
+        mb={5}
       >
-        {chartLabel}
-      </h3>
-
-      <div style={{ marginBottom: "16px" }}>
-        <label htmlFor="chartType" style={{ fontWeight: "bold" }}>
-          Chart Type:
-        </label>
-        <select
-          id="chartType"
-          value={chartType}
-          onChange={handleChartTypeChange}
-          style={{
-            marginLeft: "8px",
-            padding: "5px 10px",
-            borderRadius: "4px",
-            border: "1px solid #ccc",
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            sx={{
+              mr: 2,
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused": {
+                  fieldset: {
+                    borderColor: "#C6487E !important", // Keep your border color
+                  },
+                },
+              },
+              "& .MuiInputLabel-root": {
+                // Target the label specifically
+                color: "black", // Default label color
+                "&.Mui-focused": {
+                  // Label styles when focused
+                  color: "black !important", // Black on focus
+                },
+              },
+            }}
+            label="Start Date"
+            value={startDate}
+            onChange={(newValue) => setStartDate(newValue)}
+            renderInput={(params) => (
+              <TextField {...params} size="small" sx={{ width: "150px" }} />
+            )}
+            maxDate={dayjs()}
+          />
+          <DatePicker
+            sx={{
+              mr: 2,
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused": {
+                  fieldset: {
+                    borderColor: "#C6487E !important", // Keep your border color
+                  },
+                },
+              },
+              "& .MuiInputLabel-root": {
+                // Target the label specifically
+                color: "black", // Default label color
+                "&.Mui-focused": {
+                  // Label styles when focused
+                  color: "black !important", // Black on focus
+                },
+              },
+            }}
+            label="End Date"
+            value={endDate}
+            onChange={(newValue) => setEndDate(newValue)}
+            renderInput={(params) => (
+              <TextField {...params} size="small" sx={{ width: "150px" }} />
+            )}
+            maxDate={dayjs()}
+          />
+        </LocalizationProvider>
+        <Button
+          variant="contained"
+          onClick={handleGenerate}
+          sx={{
+            fontSize: "0.75rem", 
+            padding: "6px 12px",
+            backgroundColor: "#C6487E",
+            padding: "10px",
+            fontSize: "1rem",
+            color: "#fff",
+            borderRadius: "8px",
+            "&:hover": { backgroundColor: "#C6487E" },
           }}
         >
-          <option value="day">Daily</option>
-          <option value="week">Weekly</option>
-          <option value="month">Monthly</option>
-        </select>
-      </div>
-
-      <ResponsiveContainer width="100%" height={250}>
-        <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-          <XAxis
-            dataKey={xAxisKey}
-            tick={{ fontSize: 12, color: "#888" }}
-            interval={0} // Ensures all labels are visible
-          />
-          <YAxis tick={{ fontSize: 12, color: "#888" }} />
-          <Tooltip contentStyle={{ backgroundColor: "#fff", border: "1px solid #ddd" }} />
-          <Line
-            type="monotone"
-            dataKey="count"
-            stroke="#3b82f6"
-            strokeWidth={2}
-            dot={true} // Show the dots
-            activeDot={{ r: 8 }}
-          />
-          <Legend
-            verticalAlign="bottom"
-            align="center"
-            wrapperStyle={{ marginTop: "16px" }} // Added margin for legend
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+          Generate
+        </Button>
+      </Box>
+      <Box width="80%" margin="auto">
+        <Line
+          data={data}
+          options={{ responsive: true, plugins: { legend: { display: true } } }}
+        />
+      </Box>
+      {responseMessage && (
+        <Typography
+          textAlign="center"
+          color={responseType === "success" ? "green" : "red"}
+        >
+          {responseMessage}
+        </Typography>
+      )}
+    </Box>
   );
 };
 
