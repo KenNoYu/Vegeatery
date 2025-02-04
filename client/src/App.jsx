@@ -212,7 +212,7 @@ function App() {
                 </Box>
 
                 {/* Right side: 2 directories and sign-in button */}
-                <Box sx={{ display: "flex", gap: 3 }}>
+                <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
                   {loading ? (
                     <CircularProgress color="inherit" />
                   ) : user ? (
@@ -319,7 +319,6 @@ function App() {
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />
 
-
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />
               <Route path={"/viewcategories"} element={<CategoryList />} />
@@ -349,6 +348,7 @@ function App() {
               <Route path="/user/generalfeedbackadd" element={<GeneralFeedbackAdd />} />
               <Route path="/admin/feedback" element={<AdminGeneralFeedback />} />
               <Route path="/admin/ratingstatistics" element={<RatingStatistics />} />
+              
               {/* ORDERS */}
               <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />
