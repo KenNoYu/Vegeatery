@@ -1,33 +1,20 @@
 import { Box, Typography, Button, Card, CardContent, Grid, Input, IconButton, MenuItem, Select } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import http from '../../../http';
+import RoleGuard from '../../../utils/RoleGuard';
 
 const AdminVouchersSystem = () => {
+  RoleGuard('Admin');
   const [tiers, setTiers] = useState([]);
   const [vouchers, setVouchers] = useState([]);
-  const [voucher, setNewVoucher] = useState({
-    voucherName: '', discountPercentage: 1.0, expiryDate: '', tierId: '',
-    tier: { tierId: '', tierName: '', minPoints: 0 } // Added tier object
-  });
-  const [errorMessage, setErrorMessage] = useState("");
-  // const [editingVoucherId, setEditingVoucherId] = useState(null);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
-    // Fetch tiers and vouchers
-    fetchTiers();
     fetchVouchers();
   }, []);
-
-  const fetchTiers = async () => {
-    try {
-      const { data } = await http.get('/tiers');
-      setTiers(data);
-    } catch (error) {
-      console.error('Error fetching tiers:', error);
-    }
-  };
-
 
 
   const fetchVouchers = async () => {
@@ -39,74 +26,6 @@ const AdminVouchersSystem = () => {
     }
   };
 
-  const handleAddVoucher = async () => {
-    // Validate that all required fields are filled
-    if (!voucher.voucherName || voucher.discountPercentage == null || !voucher.expiryDate || !voucher.tierId) {
-        setErrorMessage('Please fill in all required fields before adding the voucher.');
-        return;
-    }
-
-    // Voucher name validation
-    if (voucher.voucherName.length > 50) {
-        setErrorMessage("Voucher name cannot exceed 50 characters.");
-        return;
-    }
-
-    if (!voucher.voucherName.trim()) {
-        setErrorMessage("Name of voucher cannot be empty.");
-        return;
-    }
-
-    // Discount percentage validation
-    if (voucher.discountPercentage <= 0 || voucher.discountPercentage > 100) {
-        setErrorMessage("Discount percentage must be between 1 and 100.");
-        return;
-    }
-
-    // Date validation: Ensure it's not an earlier or current date
-    const currentDate = new Date();
-    const expiryDate = new Date(voucher.expiryDate);
-
-    // Compare only the date part, ignoring time
-    if (expiryDate <= currentDate.setHours(0, 0, 0, 0)) {
-        setErrorMessage("Expiry date must be in the future.");
-        return;
-    }
-
-    // Tier validation: Ensure a tier is selected
-    if (!voucher.tierId) {
-        setErrorMessage("Please select a tier for the voucher.");
-        return;
-    }
-
-    // Update voucher object with full tier details when creating a voucher
-    const selectedTier = tiers.find((tier) => tier.tierId === voucher.tierId);
-
-    const newVoucher = {
-        ...voucher,
-        tier: selectedTier ? selectedTier : { tierId: 1, tierName: "Bronze", minPoints: 0 } // Default tier if not selected
-    };
-
-    try {
-        // Send the POST request
-        await http.post('/vouchers', newVoucher);
-
-        // Refresh the voucher list and reset the form state
-        fetchVouchers();
-        setVoucher({
-            voucherName: '',
-            discountPercentage: 1.0,
-            expiryDate: '',
-            tierId: '',
-            tier: { tierId: '', tierName: '', minPoints: 0 }
-        });
-        setErrorMessage(''); // Clear any previous error message
-    } catch (error) {
-        console.error("Failed to add voucher:", error);
-        
-    }
-};
-
 
   const handleDeleteVoucher = async (voucherId) => {
     try {
@@ -117,83 +36,108 @@ const AdminVouchersSystem = () => {
     }
   };
 
+  const groupedVouchers = {
+    Gold: vouchers.filter(v => v.tier?.tierName === 'Gold'),
+    Silver: vouchers.filter(v => v.tier?.tierName === 'Silver'),
+    Bronze: vouchers.filter(v => v.tier?.tierName === 'Bronze')
+  };
+
+  const tierStyles = {
+    Gold: { backgroundColor: '#E5D040', color: '#000' },
+    Silver: { backgroundColor: '#C0C0C0', color: '#000' },
+    Bronze: { backgroundColor: '#CD7F32', color: '#FFF' }
+  };
+
   return (
-    <Box>
-      <Typography variant="h4">Admin Voucher System</Typography>
-      {errorMessage && <Typography color="error">{errorMessage}</Typography>} {/* Display error message */}
-      <Box mt={2}>
-        <Typography variant="h6">Add New Voucher</Typography>
-        <Input
-          placeholder="Voucher Name"
-          value={voucher.voucherName}
-          onChange={(e) => setNewVoucher({ ...voucher, voucherName: e.target.value })}
-        />
-        <Input
-          placeholder="Discount"
-          type="number"
-          value={voucher.discountPercentage}
-          onChange={(e) =>
-            setNewVoucher({ ...voucher, discountPercentage: parseFloat(e.target.value) || 0 })
-          }
-          inputProps={{ step: "0.01", min: "1", max: "100" }}
-        />
+    <Box sx={{
+      maxWidth: 1200,
+      minHeight: 500,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#FFFFFF',
+      padding: '2rem',
+      boxShadow: 3,
+      borderRadius: 2,
+      overflow: "hidden",
+      overflowY: "auto",
+      overflowX: "hidden",
+      paddingBottom: '2rem',
+      marginTop: '2rem'
+    }}>
 
-        <Input
-          placeholder="Expiry Date"
-          type="date"
-          value={voucher.expiryDate}
-          onChange={(e) => setNewVoucher({ ...voucher, expiryDate: e.target.value })}
-        />
-        <Select
-          value={voucher.tierId}
-          onChange={(e) => setNewVoucher({ ...voucher, tierId: e.target.value })}
-          displayEmpty
-        >
-          <MenuItem value="" disabled>
-            Select Tier
-          </MenuItem>
-          {tiers.map((tier) => (
-            <MenuItem key={tier.tierId} value={tier.tierId}>
-              {tier.tierName}
-            </MenuItem>
-          ))}
-        </Select>
-        <Button onClick={handleAddVoucher}>Add Voucher</Button>
-      </Box>
+      <Typography variant="h4" fontWeight="bold" >Admin Voucher System</Typography>
 
-      <Box mt={4}>
-        <Typography variant="h6">Vouchers List</Typography>
-        <Grid container spacing={2}>
-          {vouchers.map((voucher) => (
-            <Grid item xs={12} sm={6} md={4} key={voucher.voucherId}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6">{voucher.voucherName}</Typography>
-                  <Typography>Discount: {voucher.discountPercentage}</Typography>
-                  <Typography>Expiry: {voucher.expiryDate.split('T')[0]}</Typography>
-                  <Typography>Tier: {voucher.tier?.tierName}</Typography>
-                  <Box mt={2} display="flex" justifyContent="space-between">
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      component={Link}
-                      to={`/rewards/admin/voucherssystem/edit/${voucher.voucherId}`}>
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="black"
-                      onClick={() => handleDeleteVoucher(voucher.voucherId)}>
-                      Delete
-                    </Button>
-                  </Box>
-                </CardContent>
-              </Card>
+
+      <Box mt={4} width="100%">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: '50px', }}>
+          <Typography variant="h5" fontWeight='bold'>Available Vouchers</Typography>
+          <Button
+            variant="contained"
+            sx={{
+              textTransform: 'none', 
+              color: '#FFFFFF', 
+              backgroundColor: '#C6487E', 
+              '&:hover': { 
+                backgroundColor: '#E7ABC5'
+              }}}
+            onClick={() => navigate('/rewards/admin/voucherssystemadd')}
+          >
+            ADD NEW VOUCHER
+          </Button>
+        </Box>
+
+        {Object.entries(groupedVouchers).map(([tier, vouchers]) => (
+          <Box key={tier} mt={2} sx={{ width: '100%' }}>
+            <Typography variant="h5" sx={{
+              fontWeight: 'bold',
+              marginTop: '50px',
+              }} >
+                {tier}
+                </Typography>
+            <Grid container spacing={2}>
+              {vouchers.map(voucher => (
+                <Grid item xs={12} sm={6} md={4} key={voucher.voucherId}>
+                  <Card sx={tierStyles[tier]}>
+                    <CardContent>
+                      <Typography variant="h6">{voucher.voucherName}</Typography>
+                      <Typography>Discount: {voucher.discountPercentage}%</Typography>
+                      <Typography>Expiry: {voucher.expiryDate.split('T')[0]}</Typography>
+                      <Box mt={2} display="flex" justifyContent="space-between">
+                        <Button
+                          variant="contained"
+                          sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C6487E', '&:hover': { backgroundColor: '#E7ABC5' } }}
+                          component={Link}
+                          to={`/rewards/admin/voucherssystem/edit/${voucher.voucherId}`}>
+                          EDIT
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            textTransform: 'none',
+                            color: '#C6487E',
+                            backgroundColor: '#FFFFFF',
+                            borderColor: '#C6487E',
+                            '&:hover': {
+                              backgroundColor: '#E7ABC5',
+                              color: '#FFFFFF'
+                            }
+                          }}
+                          onClick={() => handleDeleteVoucher(voucher.voucherId)}>
+                          DELETE
+                        </Button>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          </Box>
+        ))}
       </Box>
     </Box>
+
   );
 };
 

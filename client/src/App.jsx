@@ -30,16 +30,18 @@ import UserMenu from "./pages/ProductCategory/User/UserMenu";
 import EditCategory from "./pages/ProductCategory/EditCategory";
 
 // REWARDS
-import PointsSystem from "./pages/rewards/User/PointsSystem";
-import PointsHistory from "./pages/rewards/User/PointsHistory";
-import AdminVouchersSystem from "./pages/rewards/Admin/VouchersSystem";
-// import AdminVouchersSystemEdit from "./pages/rewards/Admin/VouchersSystemEdit';
-import PointsRange from "./pages/rewards/Admin/PointsRange";
+import PointsSystem from './pages/rewards/User/PointsSystem';
+import PointsHistory from './pages/rewards/User/PointsHistory';
+import AdminVouchersSystem from './pages/rewards/Admin/VouchersSystem';
+import AdminVouchersSystemEdit from './pages/rewards/Admin/VouchersSystemEdit';
+import VouchersSystemAdd from './pages/rewards/Admin/VouchersSystemAdd';
+import PointsRange from './pages/rewards/Admin/PointsRange';
 
 // FEEDBACKS
-import GeneralFeedback from "./pages/feedback/User/GeneralFeedback";
-import GeneralFeedbackEdit from "./pages/feedback/User/GeneralFeedbackEdit";
-import AdminGeneralFeedback from "./pages/feedback/Admin/GeneralFeedback";
+import GeneralFeedback from './pages/feedback/User/GeneralFeedback';
+import GeneralFeedbackAdd from './pages/feedback/User/GeneralFeedbackAdd';
+import AdminGeneralFeedback from './pages/feedback/Admin/GeneralFeedback';
+import RatingStatistics from "./pages/feedback/Admin/RatingStatistics";
 
 // RESERVATIONS
 import ReservationPage from "./pages/Reservation/AddReservation";
@@ -55,14 +57,10 @@ import Checkout from "./pages/orders/Checkout";
 import OrderConfirmation from "./pages/orders/OrderConfirmation";
 import StaffOrders from "./pages/orders/StaffOrders";
 
-import Tutorials from "./pages/Tutorials";
-import AddTutorial from "./pages/AddTutorial";
-import EditTutorial from "./pages/EditTutorial";
-import MyForm from "./pages/MyForm";
 import Register from "./pages/Accounts/User/Register";
 import Login from "./pages/Accounts/User/Login";
 import Home from "./pages/Home";
-import ProductsTemp from "./pages/ProductTemporary";
+import MyForm from "./pages/MyForm";
 
 // Accounts
 import UserOverview from "./pages/Accounts/User/UserOverview";
@@ -71,6 +69,7 @@ import Unauthorized from "./pages/Accounts/User/Unauthorized";
 import Accounts from "./pages/Accounts/Admin/Accounts";
 import RequestPasswordReset from "./pages/Accounts/User/RequestPasswordReset";
 import ResetPassword from "./pages/Accounts/User/ResetPassword";
+import MyOrdersPage from "./pages/Accounts/User/OrderHistory";
 
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
@@ -236,7 +235,7 @@ function App() {
                       {/* Show navigation for 'customer' role */}
                       {user.role === "User" && (
                         <>
-                          <Link to="/user/reservations">
+                          <Link to="/reserve">
                             <Typography>Reserve</Typography>
                           </Link>
                           <Link to="#">
@@ -307,21 +306,19 @@ function App() {
           <Container>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path={"/productsTemporary"} element={<ProductsTemp />} />
-              <Route path="/tutorials" element={<Tutorials />} />
-              <Route path="/addtutorial" element={<AddTutorial />} />
-              <Route path="/edittutorial/:id" element={<EditTutorial />} />
-              
+
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/form" element={<MyForm />} />
               <Route path="/overview" element={<UserOverview />} />
               <Route path="/user/profile" element={<Profile />} />
+              <Route path="/user/orders" element={<MyOrdersPage />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/admin/accounts" element={<Accounts />} />
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />
+
 
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />
@@ -330,58 +327,33 @@ function App() {
               <Route path={"/viewcategories/:id"} element={<CategoryList />} />
               <Route path="/product/:productId" element={<ProductDetails />} />
               <Route path="/editproduct/:productId" element={<EditProduct />} />
-              <Route path="/Store" element={<UserMenu/>} />
+              <Route path="/Store" element={<UserMenu />} />
               <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
               <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
 
               {/* RESERVATION */}
               <Route path="/reserve" element={<ReservationPage />} />
               <Route path="/reserve/confirmed" element={<ConfirmationPage />} />
-              <Route
-                path="/staff/viewreservations"
-                element={<StaffReservations />}
-              />
-              <Route
-                path="/staff/reservationlogs"
-                element={<StaffReserveLogs />}
-              />
-              <Route
-                path="/staff/viewreservations/:id"
-                element={<StaffFocusedReservation />}
-              />
+              <Route path="/staff/viewreservations" element={<StaffReservations />} />
+              <Route path="/staff/reservationlogs" element={<StaffReserveLogs />} />
+              <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation />} />
 
               {/* REWARDS */}
-              <Route path="/rewards/user/pointssystem" element={<PointsSystem />} />
-              <Route path="/rewards/user/pointshistory" element={<PointsHistory />} />
-              <Route
-                path="/rewards/admin/voucherssystem"
-                element={<AdminVouchersSystem />}
-              />
-              <Route
-                path="/rewards/admin/pointsrange"
-                element={<PointsRange />}
-              />
-              <Route
-                path="/feedback/user/generalfeedback"
-                element={<GeneralFeedback />}
-              />
-              <Route
-                path="/general-feedback/edit/:id"
-                element={<GeneralFeedbackEdit />}
-              />
-              <Route
-                path="/feedback/admin/generalfeedback"
-                element={<AdminGeneralFeedback />}
-              />
-              
+              <Route path="/user/rewards" element={<PointsSystem />} />
+              <Route path="/user/pointshistory" element={<PointsHistory />} />
+              <Route path="/admin/rewards"element={<AdminVouchersSystem />}/>
+              <Route path="/rewards/admin/voucherssystem/edit/:id" element={<AdminVouchersSystemEdit />} />
+              <Route path="/admin/voucherssystemadd" element={<VouchersSystemAdd />} />
+              <Route path="/admin/pointsrange" element={<PointsRange />} />
+              <Route path="/user/feedback" element={<GeneralFeedback />} />
+              <Route path="/user/generalfeedbackadd" element={<GeneralFeedbackAdd />} />
+              <Route path="/admin/feedback" element={<AdminGeneralFeedback />} />
+              <Route path="/admin/ratingstatistics" element={<RatingStatistics />} />
               {/* ORDERS */}
               <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
-              <Route
-                path={"/orderconfirmation"}
-                element={<OrderConfirmation />}
-              />
+              <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
               <Route path={"/stafforders"} element={<StaffOrders />} />
             </Routes>
           </Container>

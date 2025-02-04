@@ -45,16 +45,24 @@ public class User
 	[Required]
 	public bool Agreement { get; set; }
 
-	public int TotalPoints { get; set; }
+	public int TotalPoints { get; set; } = 0;
 
-	public string? JwtToken { get; set; }
+    public string? JwtToken { get; set; }
 
 	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 	public int RoleId { get; set; }
+    public int TierId { get; set; }
 
-	public Role? Role { get; set; }
+    public Role? Role { get; set; }
 
-	public Guid CartId { get; set; }
+    public Tier Tier { get; set; }
+
+
+	// foreign key
+	public int CartId { get; set; }
+
+	// Navigation property
+	public Cart Cart { get; set; }
 }
 

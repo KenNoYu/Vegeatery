@@ -14,37 +14,7 @@ namespace vegeatery.Controllers
         public TiersController(MyDbContext context)
         {
             _context = context;
-        }
-
-        // POST: /tiers
-        [HttpPost]
-        public IActionResult CreateTier([FromBody] Tier tier)
-        {
-            if (tier == null || string.IsNullOrEmpty(tier.TierName))
-            {
-                return BadRequest("TierName is required.");
-            }
-
-            if (tier.MinPoints < 0)
-            {
-                return BadRequest("MinPoints must be greater than or equal to 0.");
-            }
-
-            // Ensure non-overlapping MinPoints
-            if (_context.Tiers.Any(t => t.MinPoints == tier.MinPoints))
-            {
-                return BadRequest("MinPoints must be unique and not overlap with existing tiers.");
-            }
-
-            _context.Tiers.Add(new Tier
-            {
-                TierName = tier.TierName,
-                MinPoints = tier.MinPoints
-            });
-            _context.SaveChanges();
-
-            return CreatedAtAction(nameof(GetTierById), new { tierid = tier.TierId }, tier);
-        }
+        }   
 
         // GET: /tiers
         [HttpGet]
@@ -118,5 +88,23 @@ namespace vegeatery.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetTiersForUser(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Tier)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var tiers = _context.Tiers.OrderBy(t => t.MinPoints).ToList();
+            return Ok(tiers);
+        }
+
+
     }
 }

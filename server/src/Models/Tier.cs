@@ -3,7 +3,7 @@
     public class Tier
     {
         public int TierId { get; set; }
-        public string TierName { get; set; } = string.Empty; // Bronze, Silver, Gold
+        public string TierName { get; set; }
         public int MinPoints { get; set; }
     }
 }

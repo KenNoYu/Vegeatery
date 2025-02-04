@@ -7,8 +7,11 @@ import http from '../../../http';
 import dayjs from 'dayjs';
 import UserContext from '../../../contexts/UserContext';
 import global from '../../../global';
+import RoleGuard from '../../../utils/RoleGuard';
 
 const PointsHistory = () => {
+    RoleGuard('User');
+
     const points = 10; // Current points
     const maxPoints = 276; // Points required for the next tier
     const rewards = [
