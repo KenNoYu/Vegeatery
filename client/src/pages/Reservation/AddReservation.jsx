@@ -403,7 +403,7 @@ const ReservationPage = () => {
             <Box sx={{ textAlign: "center" }}>
               <Grid container spacing={2} justifyContent="center">
                 {tables.map((table) => (
-                  <Grid item sm={8} md={6} lg={4} key={table.id}>
+                  <Grid item xs={6} lg={4} key={table.id}>
                     <Button
                       variant="contained"
                       sx={{
