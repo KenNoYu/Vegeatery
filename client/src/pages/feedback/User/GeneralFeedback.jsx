@@ -55,7 +55,8 @@ const GeneralFeedback = () => {
             console.log("Attempting to delete feedback with ID:", feedbackId); // Debug
             await http.delete(`/GeneralFeedback/${feedbackId}`);
             console.log("Feedback deleted successfully."); // Debug
-            fetchFeedbacks(); // Refresh the feedback list
+            // fetchFeedbacks(); // Refresh the feedback list
+            setFeedbacks((prevFeedbacks) => prevFeedbacks.filter(feedback => feedback.feedbackId !== feedbackId));
         } catch (error) {
             console.error("Error deleting feedback:", error);
             setErrorMessage("Failed to delete feedback. Please ensure the feedback ID is valid and try again.");
