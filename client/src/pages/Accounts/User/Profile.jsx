@@ -124,7 +124,6 @@ export default function ProfilePage() {
       });
 
       const userData = response.data;
-      console.log(userData.roleName);
       setUser({
         username: userData.username,
         email: userData.email,
@@ -544,7 +543,7 @@ export default function ProfilePage() {
                 <RadioGroup
                   row
                   name="gender"
-                  value={user.gender}
+                  value={user.gender || "prefer_not_say"}
                   onChange={handleInputChange}
                   sx={{
                     "& .MuiRadio-root": {
@@ -558,25 +557,25 @@ export default function ProfilePage() {
                   }}
                 >
                   <FormControlLabel
-                    value="male"
+                    value="Male"
                     control={<Radio />}
                     label="Male"
                     disabled={!isEditing}
                   />
                   <FormControlLabel
-                    value="female"
+                    value="Female"
                     control={<Radio />}
                     label="Female"
                     disabled={!isEditing}
                   />
                   <FormControlLabel
-                    value="others"
+                    value="Others"
                     control={<Radio />}
                     label="Others"
                     disabled={!isEditing}
                   />
                   <FormControlLabel
-                    value="prefer_not_say"
+                    value="Prefer not to say"
                     control={<Radio />}
                     label="Prefer not to say"
                     disabled={!isEditing}
