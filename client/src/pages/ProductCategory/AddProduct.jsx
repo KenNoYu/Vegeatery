@@ -100,7 +100,7 @@ function AddProduct() {
                 <Button
                     variant="outlined"
                     color="Accent"
-                    onClick={() => navigate('/viewcategories')}
+                    onClick={() => navigate('/admin/store')}
                     sx={{ cursor: 'pointer', marginTop: '10px', paddingLeft: '10px', paddingRight: '10px' }}
                 >
                     Cancel
