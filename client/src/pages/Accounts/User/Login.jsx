@@ -6,13 +6,11 @@ import http from "../../../http";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import loginbanner from "../../../assets/loginbanner.jpg";
-import { useNavigate } from "react-router-dom"; 
-
-
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
-  
+
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -62,12 +60,19 @@ function Login() {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        backgroundColor: "#f5f5f5",
       }}
     >
-      <Grid container sx={{ maxWidth: "1200px" }}>
+      <Grid
+        container
+        sx={{
+          maxWidth: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         {/* Banner Section */}
-        <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
           <Box
             sx={{
               backgroundImage: `url(${loginbanner})`,
@@ -107,7 +112,7 @@ function Login() {
               eating easy and enjoyable for everyone.
             </Typography>
           </Box>
-        </Grid>
+        </Grid> */}
 
         {/* Login Form Section */}
         <Grid item xs={12} md={6}>
@@ -117,14 +122,14 @@ function Login() {
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              padding: "40px",
+              padding: "5em",
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
               borderRadius: "8px",
             }}
           >
             <Typography
               variant="h1"
-              sx={{ fontSize: "2rem", fontWeight: "bold", mb: 3 }}
+              sx={{ fontSize: "2rem", fontWeight: "bold", mb: 3, alignSelf: "center" }}
             >
               Login
             </Typography>
@@ -145,10 +150,21 @@ function Login() {
                 }
                 helperText={formik.touched.username && formik.errors.username}
                 margin="dense"
-                InputProps={{
-                  sx: {
-                    borderRadius: "8px",
-                    "&:hover fieldset": { borderColor: "#FF69B4" }, // Hover effect
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "&.Mui-focused": {
+                      fieldset: {
+                        borderColor: "#C6487E !important",
+                      },
+                    },
+                  },
+                  "& .MuiInputLabel-root": {
+                    // Target the label specifically
+                    color: "black", // Default label color
+                    "&.Mui-focused": {
+                      // Label styles when focused
+                      color: "black !important", // Black on focus
+                    },
                   },
                 }}
               />
@@ -165,10 +181,21 @@ function Login() {
                 }
                 helperText={formik.touched.password && formik.errors.password}
                 margin="dense"
-                InputProps={{
-                  sx: {
-                    borderRadius: "8px",
-                    "&:hover fieldset": { borderColor: "#FF69B4" },
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "&.Mui-focused": {
+                      fieldset: {
+                        borderColor: "#C6487E !important",
+                      },
+                    },
+                  },
+                  "& .MuiInputLabel-root": {
+                    // Target the label specifically
+                    color: "black", // Default label color
+                    "&.Mui-focused": {
+                      // Label styles when focused
+                      color: "black !important", // Black on focus
+                    },
                   },
                 }}
               />

@@ -35,16 +35,7 @@ public class AuthController : ControllerBase
 	public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
 	{
 
-      
-
-        var tier = await _context.Tiers.SingleOrDefaultAsync(r => r.TierId == 1); // Default tier is Bronse
-
-        if (tier == null)
-        {
-            return BadRequest(new { message = "Tier not found" });
-        }
-
-        var existingUser = await _context.Users
+		var existingUser = await _context.Users
 			.Where(u => u.Username == registerDto.username || u.Email == registerDto.email)
 			.ToListAsync();
 
@@ -53,8 +44,13 @@ public class AuthController : ControllerBase
 			return BadRequest(new { message = "Username or Email already exists" });
 		}
 
-        var role = await _context.Role.SingleOrDefaultAsync(r => r.Id == 1); // Default role is User
+		var tier = await _context.Tiers.SingleOrDefaultAsync(r => r.TierId == 1); // Default tier is Bronse
+        if (tier == null)
+        {
+            return BadRequest(new { message = "Tier not found" });
+        }
 
+        var role = await _context.Role.SingleOrDefaultAsync(r => r.Id == 1); // Default role is User
         if (role == null)
 		{
 			return BadRequest(new { message = "Role not found" });
@@ -86,10 +82,10 @@ public class AuthController : ControllerBase
 			Promotions = registerDto.promotions,
 			Agreement = registerDto.agreement,
 			TotalPoints = 0,
-            TierId = tier.TierId,
-			Tier = tier,
             RoleId = role.Id,
-			Role = role, // Assign the role to the user
+			TierId = tier.TierId,
+			Role = role,
+			Tier = tier,
 			CartId = cart.CartId
 		};
 

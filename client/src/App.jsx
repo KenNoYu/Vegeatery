@@ -73,6 +73,7 @@ import Accounts from "./pages/Accounts/Admin/Accounts";
 import RequestPasswordReset from "./pages/Accounts/User/RequestPasswordReset";
 import ResetPassword from "./pages/Accounts/User/ResetPassword";
 import MyOrdersPage from "./pages/Accounts/User/OrderHistory";
+import UserProfileView from "./pages/Accounts/Admin/UserProfileView";
 
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
@@ -219,7 +220,7 @@ function App() {
                 </Box>
 
                 {/* Right side: 2 directories and sign-in button */}
-                <Box sx={{ display: "flex", gap: 3 }}>
+                <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
                   {loading ? (
                     <CircularProgress color="inherit" />
                   ) : user ? (
@@ -325,7 +326,7 @@ function App() {
               <Route path="/admin/accounts" element={<Accounts />} />
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />
-
+              <Route path="/user/profile/:userId" element={<UserProfileView />} />
 
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />
@@ -357,6 +358,7 @@ function App() {
               <Route path="/user/generalfeedbackadd" element={<GeneralFeedbackAdd />} />
               <Route path="/admin/feedback" element={<AdminGeneralFeedback />} />
               <Route path="/admin/ratingstatistics" element={<RatingStatistics />} />
+              
               {/* ORDERS */}
               <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />

@@ -22,10 +22,10 @@ function Register() {
 
   // Meal types options
   const mealTypes = [
+    "Low-Carb",
+    "High-Protein",
+    "Balanced",
     "Vegetarian",
-    "Vegan",
-    "Non-Vegetarian",
-    "Gluten-Free",
     "Keto",
     "Other",
   ];
@@ -34,71 +34,80 @@ function Register() {
     "Vegan",
     "Non-Vegetarian",
     "Gluten-Free",
+    "Pesco-Vegetarian",
+    "Lacto-Vegetarian",
+    "Pescatarian",
     "Keto",
     "Other",
   ];
 
   const formik = useFormik({
     initialValues: {
-      username: '',
-      password: '',
-      email: '',
-      dateOfBirth: '',
-      contactNumber: '',
-      gender: '',
-      dietPreference: '',
-      allergyInfo: '',
-      mealTypes: '',
+      username: "",
+      password: "",
+      email: "",
+      dateOfBirth: "",
+      contactNumber: "",
+      gender: "",
+      dietPreference: "",
+      allergyInfo: "",
+      mealTypes: "",
       promotions: false,
       agreement: false,
     },
     validationSchema: yup.object({
       username: yup
-    .string()
-    .trim()
-    .min(8, 'Username must be at least 8 characters')
-    .max(20, 'Username must be at most 20 characters')
-    .required('Username is required')
-    .matches(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens'),
-  email: yup
-    .string()
-    .trim()
-    .email('Enter a valid email')
-    .max(50, 'Email must be at most 50 characters')
-    .required('Email is required'),
-  password: yup
-    .string()
-    .trim()
-    .min(12, 'Password must be at least 12 characters')
-    .max(50, 'Password must be at most 50 characters')
-    .required('Password is required')
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-      'Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 special character'
-    ),
-  confirmPassword: yup
-    .string()
-    .trim()
-    .required('Confirm password is required')
-    .oneOf([yup.ref('password')], 'Passwords must match'),
-  gender: yup.string().required('Gender is required'),
-  dateOfBirth: yup
-    .date()
-    .required('Date of birth is required')
-    .max(new Date(), 'Date of birth must be in the past'),
-  contactNumber: yup
-    .string()
-    .trim()
-    .matches(/^\d{10}$/, 'Contact number must be 10 digits long') // Example: 10 digits for illustration
-    .required('Contact number is required'),
-  dietPreference: yup.string().required('Diet preference is required'),
-  allergyInfo: yup
-    .string()
-    .max(100, 'Allergy info should not exceed 100 characters')
-    .matches(/^[a-zA-Z0-9.,\s-]*$/, 'Allergy info can only contain letters, numbers, periods, commas, spaces, and hyphens'),
-  mealTypes: yup.string().required('Meal type is required'),
-  receivePromotions: yup.boolean(),
-  agreement: yup.boolean().required('Agreement is required')
+        .string()
+        .trim()
+        .min(8, "Username must be at least 8 characters")
+        .max(20, "Username must be at most 20 characters")
+        .required("Username is required")
+        .matches(
+          /^[a-zA-Z0-9_-]+$/,
+          "Username can only contain letters, numbers, underscores, and hyphens"
+        ),
+      email: yup
+        .string()
+        .trim()
+        .email("Enter a valid email")
+        .max(50, "Email must be at most 50 characters")
+        .required("Email is required"),
+      password: yup
+        .string()
+        .trim()
+        .min(8, "Password must be at least 8 characters")
+        .max(50, "Password must be at most 50 characters")
+        .required("Password is required")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+          "Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 special character"
+        ),
+      confirmPassword: yup
+        .string()
+        .trim()
+        .required("Confirm password is required")
+        .oneOf([yup.ref("password")], "Passwords must match"),
+      gender: yup.string().required("Gender is required"),
+      dateOfBirth: yup
+        .date()
+        .required("Date of birth is required")
+        .max(new Date(), "Date of birth must be in the past"),
+      contactNumber: yup
+        .string()
+        .trim()
+        .matches(/^\d{8}$/, "Contact number must be 8 digits long")
+        .required("Contact number is required"),
+      dietPreference: yup.string().required("Diet preference is required"),
+      allergyInfo: yup
+        .string()
+        .max(100, "Allergy info should not exceed 100 characters")
+        .matches(
+          /^[a-zA-Z0-9.,\s-]*$/,
+          "Allergy info can only contain letters, numbers, periods, commas, spaces, and hyphens"
+        ),
+      mealTypes: yup.string().required("Meal type is required"),
+      receivePromotions: yup.boolean(),
+      agreement: yup.boolean().required("Agreement is required"),
     }),
     onSubmit: (data) => {
       data.username = data.username.trim();
@@ -129,17 +138,20 @@ function Register() {
     <Box
       sx={{
         marginTop: 8,
+        marginBottom: 5,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        backgroundColor: "#fff",
+        borderRadius: "8px",
       }}
     >
-      <Typography variant="h5" sx={{ my: 2 }}>
+      <Typography variant="h5" sx={{ fontSize: "2rem", fontWeight: "bold", mb: 3, mt: 7, alignSelf: "center" }}>
         Register
       </Typography>
       <Box
         component="form"
-        sx={{ maxWidth: "500px" }}
+        sx={{ maxWidth: "47%", margin: "auto" }}
         onSubmit={formik.handleSubmit}
       >
         {/* Name */}
@@ -154,6 +166,23 @@ function Register() {
           onBlur={formik.handleBlur}
           error={formik.touched.username && Boolean(formik.errors.username)}
           helperText={formik.touched.username && formik.errors.username}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused": {
+                fieldset: {
+                  borderColor: "#C6487E !important",
+                },
+              },
+            },
+            "& .MuiInputLabel-root": {
+              // Target the label specifically
+              color: "black", // Default label color
+              "&.Mui-focused": {
+                // Label styles when focused
+                color: "black !important", // Black on focus
+              },
+            },
+          }}
         />
 
         {/* Email */}
@@ -168,6 +197,23 @@ function Register() {
           onBlur={formik.handleBlur}
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused": {
+                fieldset: {
+                  borderColor: "#C6487E !important",
+                },
+              },
+            },
+            "& .MuiInputLabel-root": {
+              // Target the label specifically
+              color: "black", // Default label color
+              "&.Mui-focused": {
+                // Label styles when focused
+                color: "black !important", // Black on focus
+              },
+            },
+          }}
         />
 
         {/* Password */}
@@ -183,6 +229,23 @@ function Register() {
           onBlur={formik.handleBlur}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused": {
+                fieldset: {
+                  borderColor: "#C6487E !important",
+                },
+              },
+            },
+            "& .MuiInputLabel-root": {
+              // Target the label specifically
+              color: "black", // Default label color
+              "&.Mui-focused": {
+                // Label styles when focused
+                color: "black !important", // Black on focus
+              },
+            },
+          }}
         />
 
         {/* Confirm Password */}
@@ -203,6 +266,23 @@ function Register() {
           helperText={
             formik.touched.confirmPassword && formik.errors.confirmPassword
           }
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused": {
+                fieldset: {
+                  borderColor: "#C6487E !important",
+                },
+              },
+            },
+            "& .MuiInputLabel-root": {
+              // Target the label specifically
+              color: "black", // Default label color
+              "&.Mui-focused": {
+                // Label styles when focused
+                color: "black !important", // Black on focus
+              },
+            },
+          }}
         />
         {/* Gender */}
         <TextField
@@ -211,6 +291,23 @@ function Register() {
           select
           label="Gender"
           name="gender"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused": {
+                fieldset: {
+                  borderColor: "#C6487E !important",
+                },
+              },
+            },
+            "& .MuiInputLabel-root": {
+              // Target the label specifically
+              color: "black", // Default label color
+              "&.Mui-focused": {
+                // Label styles when focused
+                color: "black !important", // Black on focus
+              },
+            },
+          }}
           value={formik.values.gender}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -230,6 +327,23 @@ function Register() {
           label="Date of Birth"
           name="dateOfBirth"
           type="date"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused": {
+                fieldset: {
+                  borderColor: "#C6487E !important",
+                },
+              },
+            },
+            "& .MuiInputLabel-root": {
+              // Target the label specifically
+              color: "black", // Default label color
+              "&.Mui-focused": {
+                // Label styles when focused
+                color: "black !important", // Black on focus
+              },
+            },
+          }}
           value={formik.values.dateOfBirth}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -256,6 +370,23 @@ function Register() {
           helperText={
             formik.touched.contactNumber && formik.errors.contactNumber
           }
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused": {
+                fieldset: {
+                  borderColor: "#C6487E !important",
+                },
+              },
+            },
+            "& .MuiInputLabel-root": {
+              // Target the label specifically
+              color: "black", // Default label color
+              "&.Mui-focused": {
+                // Label styles when focused
+                color: "black !important", // Black on focus
+              },
+            },
+          }}
         />
         {/* Diet Preference */}
         <TextField
@@ -274,6 +405,23 @@ function Register() {
           helperText={
             formik.touched.dietPreference && formik.errors.dietPreference
           }
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused": {
+                fieldset: {
+                  borderColor: "#C6487E !important",
+                },
+              },
+            },
+            "& .MuiInputLabel-root": {
+              // Target the label specifically
+              color: "black", // Default label color
+              "&.Mui-focused": {
+                // Label styles when focused
+                color: "black !important", // Black on focus
+              },
+            },
+          }}
         >
           {dietPreference.map((diet, index) => (
             <MenuItem key={index} value={diet}>
@@ -295,6 +443,23 @@ function Register() {
             formik.touched.allergyInfo && Boolean(formik.errors.allergyInfo)
           }
           helperText={formik.touched.allergyInfo && formik.errors.allergyInfo}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused": {
+                fieldset: {
+                  borderColor: "#C6487E !important",
+                },
+              },
+            },
+            "& .MuiInputLabel-root": {
+              // Target the label specifically
+              color: "black", // Default label color
+              "&.Mui-focused": {
+                // Label styles when focused
+                color: "black !important", // Black on focus
+              },
+            },
+          }}
         />
 
         {/* Meal Type */}
@@ -309,6 +474,23 @@ function Register() {
           onBlur={formik.handleBlur}
           error={formik.touched.mealTypes && Boolean(formik.errors.mealTypes)}
           helperText={formik.touched.mealTypes && formik.errors.mealTypes}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused": {
+                fieldset: {
+                  borderColor: "#C6487E !important",
+                },
+              },
+            },
+            "& .MuiInputLabel-root": {
+              // Target the label specifically
+              color: "black", // Default label color
+              "&.Mui-focused": {
+                // Label styles when focused
+                color: "black !important", // Black on focus
+              },
+            },
+          }}
         >
           {mealTypes.map((meal, index) => (
             <MenuItem key={index} value={meal}>
@@ -331,6 +513,18 @@ function Register() {
             />
           }
           label="Receive Email Promotions"
+          sx={{
+            "& .MuiFormControlLabel-label": {
+              color: formik.values.receivePromotions ? "#C6487E" : "black",
+              fontWeight: "500",
+            },
+            "& .MuiCheckbox-root": {
+              color: formik.values.receivePromotions ? "red" : "#C6487E",
+              "&.Mui-checked": {
+                color: "#C6487E",
+              },
+            },
+          }}
         />
         {/* Agreement to Terms */}
         <FormControlLabel
@@ -345,13 +539,39 @@ function Register() {
             />
           }
           label="I agree to the terms & policy"
+          sx={{
+            "& .MuiFormControlLabel-label": {
+              color: formik.values.agreement ? "#C6487E" : "black",
+              fontWeight: "500",
+            },
+            "& .MuiCheckbox-root": {
+              color: formik.values.agreement ? "red" : "#C6487E",
+              "&.Mui-checked": {
+                color: "#C6487E",
+              },
+            },
+          }}
         />
         {formik.touched.agreement && formik.errors.agreement && (
           <Typography color="error">{formik.errors.agreement}</Typography>
         )}
 
         {/* Submit Button */}
-        <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
+        <Button
+          fullWidth
+          variant="contained"
+          sx={{
+            mt: 2,
+            mb: 5,
+            backgroundColor: "#C6487E",
+            padding: "10px",
+            fontSize: "1rem",
+            color: "#fff",
+            borderRadius: "8px",
+            "&:hover": { backgroundColor: "#C6487E" },
+          }}
+          type="submit"
+        >
           Register
         </Button>
       </Box>
