@@ -10,6 +10,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import { parse, isBefore, isDate } from 'date-fns';
 import emailjs from "@emailjs/browser";
 
+import RoleGuard from '../../utils/RoleGuard';
+
 const DetailsTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputLabel-root.Mui-focused": {
     color: "black", // Label color when focused and at the top
@@ -31,47 +33,48 @@ const DetailsTextField = styled(TextField)(({ theme }) => ({
 }));
 
 const StaffAddReservation = () => {
+  RoleGuard('Staff');
   const theme = useTheme();
   const navigate = useNavigate();
   const [view, setView] = useState("details"); // 'details' or 'seats'
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [tables, setTables] = useState([]); 
+  const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email:"",
-    mobileNumber:"",
+    email: "",
+    mobileNumber: "",
   });
   const [selectedTables, setSelectedTables] = useState([]);
 
   useEffect(() => {
     const fetchTables = async () => {
-        setLoading(true); // Start loading when fetching starts
+      setLoading(true); // Start loading when fetching starts
 
-        try {
+      try {
 
-            // Fetch tables 
-            let url = "/Reservation/GetTables";
-            if (selectedDate && selectedTime) {
-                url += `?date=${selectedDate}&timeSlot=${selectedTime}`;
-            }
-
-            const response = await http.get(url);
-            setTables(response.data);
-
-        } catch (error) {
-            console.error("Error fetching data", error);
-            toast.error("Failed to load data.");
-        } finally {
-            setLoading(false); // Stop loading state in all cases
+        // Fetch tables 
+        let url = "/Reservation/GetTables";
+        if (selectedDate && selectedTime) {
+          url += `?date=${selectedDate}&timeSlot=${selectedTime}`;
         }
+
+        const response = await http.get(url);
+        setTables(response.data);
+
+      } catch (error) {
+        console.error("Error fetching data", error);
+        toast.error("Failed to load data.");
+      } finally {
+        setLoading(false); // Stop loading state in all cases
+      }
     };
 
     fetchTables(); // Invoke the function
 
-}, [selectedDate, selectedTime]); // Runs when selectedDate or selectedTime changes
+  }, [selectedDate, selectedTime]); // Runs when selectedDate or selectedTime changes
 
 
 
@@ -211,21 +214,21 @@ const StaffAddReservation = () => {
       const emailParams = {
         customer_name: reservationData.customerName,
         customer_email: reservationData.customerEmail,
-        reservation_date: new Intl.DateTimeFormat('en-GB', { 
-          day: '2-digit', 
-          month: 'short', 
-          year: 'numeric' 
-      }).format(new Date(reservationData.reservationDate)),
+        reservation_date: new Intl.DateTimeFormat('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }).format(new Date(reservationData.reservationDate)),
         reservation_time: reservationData.timeSlot,
         table_numbers: selectedTables.join(", ") // Convert array to string
-    };
+      };
 
-    await emailjs.send(
-        "service_1yw1hkh", 
-        "template_5lv58es", 
+      await emailjs.send(
+        "service_1yw1hkh",
+        "template_5lv58es",
         emailParams,
-        "HpadWHSOZyo_0NyHD" 
-    );
+        "HpadWHSOZyo_0NyHD"
+      );
 
       navigate("/staff/reservationlogs"); // Redirect after success
     } catch (error) {
@@ -237,50 +240,54 @@ const StaffAddReservation = () => {
   return (
 
     <Box
+      sx={{
+        flexGrow: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '40px',
+        boxShadow: 2,
+        borderRadius: '20px',
+        backgroundColor: 'white',
+        overflow: 'auto',
+      }}
+    >
+      <Box
+        sx={{
+          backgroundColor: 'white',
+          width: '80%',
+          height: '80vh',
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          flexDirection: 'row',
+          borderTopRightRadius: '20px',
+          borderBottomRightRadius: '20px',
+        }}
+      >
+
+        <Box
           sx={{
-            flexGrow: 1,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: '40px',
-            boxShadow: 2,
-            borderRadius: '20px',
-            backgroundColor: 'white',
-            overflow: 'auto',
+            flex: 1,
+            p: 3,
           }}
         >
-          <Box
+          <Button
+            onClick={() => navigate('/staff/viewreservations')}
             sx={{
-              backgroundColor: 'white',
-              width: '80%',
-              height: '80vh',
-              display: 'flex',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              flexDirection: 'row',
-              borderTopRightRadius: '20px',
-              borderBottomRightRadius: '20px',
+              textTransform: 'none',
+              color: 'black',
+              marginTop: '-50px',
+              marginBottom: '50px',
+              '&:hover': {
+                color: 'grey',
+              },
             }}
           >
-    
-            <Box
-              sx={{
-                flex: 1,
-                p: 4,
-              }}
-            >
-              <Button
-          onClick={() => navigate('/staff/viewreservations')}
-          sx={{
-            textTransform: 'none',
-            color: 'black',
-            '&:hover': {
-              color: 'grey',
-            },
-          }}
-        >
-          Back
-        </Button>
+            Back
+          </Button>
+
+          
 
           {/* Date Selector */}
           <DateSelector
@@ -305,14 +312,14 @@ const StaffAddReservation = () => {
                 <Button
                   key={time}
                   variant="outlined"
-                  color={selectedTime === time ? "primary" : "default"}
                   onClick={() => !isPast && handleTimeSelect(time)} // Only handle click if time is not in the past
                   sx={{
-                    backgroundColor: selectedTime === time ? theme.palette.Accent.main : "primary",
+                    backgroundColor: selectedTime === time ? '#C6487E' : "white",
                     width: "90px",
                     opacity: isPast ? 0.5 : 1, // Grey out past times
                     cursor: isPast ? "not-allowed" : "pointer",
                     pointerEvents: isPast ? "none" : "auto", // Disable click for past times
+                    color: selectedTime === time ? "white" : "black",
                     "&:hover": {
                       backgroundColor: selectedTime === time ? "none" : "#E7ABC5",
                     },
@@ -383,8 +390,8 @@ const StaffAddReservation = () => {
               />
 
               <Button variant="contained" onClick={handleViewChange} sx={{
-                backgroundColor: theme.palette.Accent.main,
-                color: theme.palette.primary.main,
+                backgroundColor: '#C6487E',
+                color: "white",
                 "&:hover": {
                   backgroundColor: "#E7ABC5"
                 }
@@ -403,10 +410,10 @@ const StaffAddReservation = () => {
                         padding: "20px",
                         backgroundColor:
                           table.status === "available"
-                            ? theme.palette.primary.main
+                            ? "white"
                             : table.status === "unavailable"
-                              ? theme.palette.secondaryText.main
-                              : theme.palette.Accent.main,
+                              ? '#585858'
+                              : '#C6487E',
                         color: table.status === "unavailable" || table.status === "selected" ? "#fff" : "#000",
                         cursor: table.status !== "unavailable" ? "pointer" : "not-allowed",
                       }}
@@ -438,8 +445,8 @@ const StaffAddReservation = () => {
                 <Button
                   variant="contained"
                   sx={{
-                    backgroundColor: theme.palette.Accent.main,
-                    color: theme.palette.primary.main,
+                    backgroundColor: '#C6487E',
+                    color: "white",
                     "&:hover": {
                       backgroundColor: "#E7ABC5"
                     }
