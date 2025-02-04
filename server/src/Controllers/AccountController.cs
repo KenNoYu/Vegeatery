@@ -44,7 +44,9 @@ public class AccountController : ControllerBase
 			TotalPoints = user.TotalPoints,
 			JwtToken = user.JwtToken,
 			CreatedAt = user.CreatedAt,
-			RoleId = user.RoleId,
+            TierId = user.TierId,
+            TierName = user.Tier.TierName,
+            RoleId = user.RoleId,
 			RoleName = user.Role.Name,
 			CartId = user.CartId
 		};
@@ -77,6 +79,8 @@ public class AccountController : ControllerBase
 			TotalPoints = user.TotalPoints,
 			JwtToken = user.JwtToken ?? string.Empty,
 			CreatedAt = user.CreatedAt,
+			TierId = user.TierId,
+			TierName = user.Tier?.TierName ?? string.Empty,
 			RoleId = user.RoleId,
 			RoleName = user.Role?.Name ?? string.Empty,
 			CartId = user.CartId
@@ -146,6 +150,20 @@ public class AccountController : ControllerBase
 
 		return Ok(new { message = "User role updated successfully" });
 	}
+
+    [HttpGet("user/{userId}/email")]
+    [Authorize(Policy = "Admin")]
+    public async Task<IActionResult> GetUserEmail(int userId)
+    {
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found" });
+        }
+
+        return Ok(new { email = user.Email });
+    }
 }
 
 public class UpdateUserDto
