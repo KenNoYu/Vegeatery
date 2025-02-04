@@ -19,9 +19,12 @@ const RoleGuard = (requiredRole) => {
 
         console.log(userRole);
         console.log(requiredRole);
-
-        if (userRole != requiredRole) {
-          navigate('/unauthorized'); // Redirect if the user doesn't have the required role
+        if (Array.isArray(requiredRole)) {
+          if (!requiredRole.includes(userRole)) { // Use includes() for array check
+            navigate('/unauthorized');
+          }
+        } else if (userRole !== requiredRole) { // Original single role check
+          navigate('/unauthorized');
         }
       })
       .catch((err) => {

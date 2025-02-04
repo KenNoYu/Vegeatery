@@ -8,17 +8,17 @@ import {
   Button,
   Divider,
   Card,
-  CardContent,
-  IconButton,
-  LinearProgress,
+  CardContent
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./UserSidebar.jsx";
 import { styled } from "@mui/system";
+import RoleGuard from "../../../utils/RoleGuard.js";
 
 function UserOverview() {
+  RoleGuard(["User", "Admin", "Staff"]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -62,6 +62,38 @@ function UserOverview() {
         console.error("Error fetching orders:", error);
       })
   }
+
+  const StyledTierName = styled(Typography)(({ theme, tierColor }) => ({
+    textTransform: 'uppercase',
+    fontWeight: 'bold',         
+    textShadow: `2px 2px 4px rgba(0, 0, 0, 0.2)`,
+    letterSpacing: '0.1em',
+    color: tierColor,
+  }));
+  
+  const TierDisplay = ({ tierName }) => {
+    const getTierColor = (tier) => {
+      switch (tier?.toLowerCase()) {
+        case 'bronze':
+          return '#CD7F32'; // Bronze hex code
+        case 'silver':
+          return '#C0C0C0'; // Silver hex code
+        case 'gold':
+          return '#FFD700'; // Gold hex code
+        default:
+          return 'textSecondary';
+      }
+    };
+  
+    const tierColor = getTierColor(tierName);
+  
+    return (
+      <StyledTierName variant="h5" tierColor={tierColor} gutterBottom>
+        {tierName}
+      </StyledTierName>
+    );
+  };
+  
 
   // If still loading, show a loading message
   if (loading) {
@@ -141,13 +173,11 @@ function UserOverview() {
                 textAlign: "left",
               }}
             >
+              <TierDisplay tierName={user.data.tierName} />
               <Typography variant="h3" fontWeight="bold" gutterBottom>
                 {user.data.username}
               </Typography>
-              <Typography variant="h5" color="textSecondary" gutterBottom>
-                BRONZE
-                {/* Membership Tier: {user.membershipTier} */}
-              </Typography>
+              
               <Typography
                 variant="subtitle2"
                 sx={{
