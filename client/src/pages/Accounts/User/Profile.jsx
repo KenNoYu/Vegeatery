@@ -8,14 +8,6 @@ import {
   Radio,
   Typography,
   Avatar,
-  Input,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import http from "../../../http";
@@ -28,6 +20,7 @@ import Sidebar from "./UserSidebar";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Link } from "react-router-dom";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import RoleGuard from "../../../utils/RoleGuard";
 
 // Styling for the custom components
 const ProfileBox = styled(Box)(({ theme }) => ({
@@ -108,6 +101,7 @@ const updateProfileSchema = yup.object().shape({
 });
 
 export default function ProfilePage() {
+  RoleGuard(["User", "Admin", "Staff"]);
   const [userId, setUserId] = useState(null);
   const [user, setUser] = useState({
     username: "",
@@ -141,6 +135,7 @@ export default function ProfilePage() {
         mealTypes: userData.mealTypes,
         gender: userData.gender,
         roleName: userData.roleName,
+        tierName: userData.tierName,
         createdAt: userData.createdAt,
       });
 
@@ -246,6 +241,37 @@ export default function ProfilePage() {
     }
   };
 
+  const StyledTierName = styled(Typography)(({ theme, tierColor }) => ({
+    textTransform: "uppercase",
+    fontWeight: "bold",
+    textShadow: `2px 2px 4px rgba(0, 0, 0, 0.2)`,
+    letterSpacing: "0.1em",
+    color: tierColor,
+  }));
+
+  const TierDisplay = ({ tierName }) => {
+    const getTierColor = (tier) => {
+      switch (tier?.toLowerCase()) {
+        case "bronze":
+          return "#CD7F32"; // Bronze hex code
+        case "silver":
+          return "#C0C0C0"; // Silver hex code
+        case "gold":
+          return "#FFD700"; // Gold hex code
+        default:
+          return "textSecondary";
+      }
+    };
+
+    const tierColor = getTierColor(tierName);
+
+    return (
+      <StyledTierName variant="h5" tierColor={tierColor} gutterBottom>
+        {tierName}
+      </StyledTierName>
+    );
+  };
+
   return (
     <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
       {/* Sidebar */}
@@ -327,22 +353,19 @@ export default function ProfilePage() {
                   textAlign: "left",
                 }}
               >
+                <TierDisplay tierName={user.tierName} />
                 <Typography variant="h3" fontWeight="bold" gutterBottom>
                   {user.username}
-                </Typography>
-                <Typography variant="h5" color="textSecondary" gutterBottom>
-                  BRONZE
-                  {/* Membership Tier: {user.membershipTier} */}
                 </Typography>
                 <Typography
                   variant="subtitle2"
                   sx={{
                     width: "fit-content",
-                    backgroundColor: "#007BFF", // A stronger blue color
+                    backgroundColor: "#007BFF",
                     color: "white",
                     borderRadius: "12px",
                     padding: "4px 12px",
-                    display: "inline-block", // To make sure the background wraps tightly around the text
+                    display: "inline-block",
                     marginBottom: 3,
                   }}
                 >
@@ -415,7 +438,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important", // Keep your border color
+                          borderColor: "#C6487E !important",
                         },
                       },
                     },
@@ -442,7 +465,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important", // Keep your border color
+                          borderColor: "#C6487E !important",
                         },
                       },
                     },
@@ -468,7 +491,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important", // Keep your border color
+                          borderColor: "#C6487E !important",
                         },
                       },
                     },
@@ -498,7 +521,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important", // Keep your border color
+                          borderColor: "#C6487E !important",
                         },
                       },
                     },
@@ -584,7 +607,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important", // Keep your border color
+                          borderColor: "#C6487E !important",
                         },
                       },
                     },
@@ -610,7 +633,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important", // Keep your border color
+                          borderColor: "#C6487E !important",
                         },
                       },
                     },
@@ -636,7 +659,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important", // Keep your border color
+                          borderColor: "#C6487E !important",
                         },
                       },
                     },
