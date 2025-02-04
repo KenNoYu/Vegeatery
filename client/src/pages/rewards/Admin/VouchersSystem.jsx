@@ -82,7 +82,7 @@ const AdminVouchersSystem = () => {
               '&:hover': { 
                 backgroundColor: '#E7ABC5'
               }}}
-            onClick={() => navigate('/rewards/admin/voucherssystemadd')}
+            onClick={() => navigate('/admin/voucherssystemadd')}
           >
             ADD NEW VOUCHER
           </Button>

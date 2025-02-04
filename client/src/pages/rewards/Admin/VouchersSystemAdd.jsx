@@ -91,7 +91,7 @@ const VouchersSystemAdd = () => {
         try {
             // Send the POST request
             await http.post('/vouchers', newVoucher);
-            navigate('/rewards/admin/voucherssystem');
+            navigate('/admin/rewards');
 
             // Refresh the voucher list and reset the form state
             fetchVouchers();
