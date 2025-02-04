@@ -20,14 +20,19 @@ public class AccountController : ControllerBase
 	[Authorize(Policy = "Admin")]
 	public async Task<IActionResult> GetUserById(int id)
 	{
-		var user = await _context.Users.Include(u => u.Role).SingleOrDefaultAsync(u => u.Id == id);
+		var user = await _context.Users.Include(u => u.Role).Include(u => u.Tier).SingleOrDefaultAsync(u => u.Id == id);
 
 		if (user == null)
 		{
 			return NotFound(new { message = "User not found" });
 		}
 
-		var userDto = new UserDto
+        var nextTier = await _context.Tiers
+        .Where(t => t.MinPoints > user.Tier.MinPoints)
+        .OrderBy(t => t.MinPoints)
+        .FirstOrDefaultAsync();
+
+        var userDto = new UserDto
 		{
 			Id = user.Id,
 			Username = user.Username,
@@ -59,7 +64,7 @@ public class AccountController : ControllerBase
 	public async Task<IActionResult> GetAllUsers()
 	{
 		// Directly access the database to get users
-		var users = await _context.Users.Include(u => u.Role).ToListAsync();
+		var users = await _context.Users.Include(u => u.Role).Include(u => u.Tier).ToListAsync();
 
 		// Map users to UserDto
 		var userDtos = users.Select(user => new UserDto
@@ -164,7 +169,52 @@ public class AccountController : ControllerBase
 
         return Ok(new { email = user.Email });
     }
+
+    [HttpPut("{userId}/points")]
+    public async Task<IActionResult> UpdateUserPoints(int userId, [FromBody] PointsUpdateDto request)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found" });
+        }
+
+        // Update total points
+        user.TotalPoints += request.Points;
+
+        // Determine new tier based on updated points
+        var newTier = await _context.Tiers
+            .Where(t => user.TotalPoints >= t.MinPoints)
+            .OrderByDescending(t => t.MinPoints)
+            .FirstOrDefaultAsync();
+
+        if (newTier != null && user.TierId != newTier.TierId)  // Ensure it updates only when necessary
+        {
+            user.TierId = newTier.TierId;
+            user.Tier = newTier; // Explicitly updating the navigation property
+        }
+
+        // Explicitly update the user entity
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = "User points updated successfully",
+            newTotalPoints = user.TotalPoints,
+            newTierId = user.TierId,
+            newTier = newTier?.TierName
+        });
+    }
+
+
 }
+
+public class PointsUpdateDto
+{
+    public int Points { get; set; }
+}
+
 
 public class UpdateUserDto
 {
