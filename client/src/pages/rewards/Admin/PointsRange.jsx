@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, TextField, IconButton, Grid, CardContent, Card, Button } from "@mui/material";
+import { Box, Typography, TextField, IconButton, Grid, CardContent, Card, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import http from "../../../http"; // Adjust the path to your http.js
 import RoleGuard from '../../../utils/RoleGuard';
 import RewardsSidebar from "./RewardsSidebar.jsx";
@@ -11,6 +11,7 @@ const PointsRange = () => {
   const [editMode, setEditMode] = useState(null); // ID of the tier in edit mode
   const [updatedTier, setUpdatedTier] = useState({});
   const [error, setError] = useState(null); // To handle errors
+  const [openModal, setOpenModal] = useState(null);
   const [tiers, setTiers] = useState([]);
 
 
@@ -30,6 +31,7 @@ const PointsRange = () => {
   const handleEditClick = (tier) => {
     setEditMode(tier.tierId); // Enter edit mode for the specific tier
     setUpdatedTier({ ...tier }); // Initialize the edit data for the selected tier
+    
   };
 
   const handleInputChange = (field, value) => {
@@ -88,7 +90,7 @@ const PointsRange = () => {
             overflowX: "hidden",
           }}
         >
-          <Typography variant="h4" fontWeight="bold"  mt={5} ml={3} mb={2}>
+          <Typography variant="h4" fontWeight="bold" mt={5} ml={3} mb={2}>
             Points System
           </Typography>
           {error && (
@@ -115,7 +117,7 @@ const PointsRange = () => {
                             sx={{ mb: 2, width: "100%" }}
                           />
                           <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
-                            <Button onClick={handleSaveClick} variant="contained" sx={{
+                            <Button onClick={() => setOpenModal(true)} variant="contained" sx={{
                               textTransform: 'none',
                               color: '#FFFFFF',
                               backgroundColor: '#C6487E',
@@ -161,6 +163,32 @@ const PointsRange = () => {
           </CardContent>
         </Box>
       </Box>
+
+      {/* Confirmation Modal */}
+      <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+        <DialogTitle>Confirm Submission</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Are you sure you want to submit save these changes?</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenModal(false)} sx={{
+            textTransform: 'none',
+            color: '#C6487E',
+            backgroundColor: '#FFFFFF',
+            borderColor: '#C6487E',
+            '&:hover': {
+              backgroundColor: '#E7ABC5',
+              color: '#FFFFFF',
+            }
+          }}>CANCEL</Button>
+          <Button onClick={() => { handleSaveClick(); setOpenModal(false); }} sx={{
+            backgroundColor: '#C6487E',
+            '&:hover': {
+              backgroundColor: '#E7ABC5'
+            }
+          }}>SAVE CHANGES</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
