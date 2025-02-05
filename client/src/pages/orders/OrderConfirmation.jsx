@@ -36,6 +36,14 @@ const OrderConfirmation = () => {
             });
     }, []);
 
+    useEffect(() => {
+        if (order) {
+            UpdateOrderAsNew(order.orderId);
+            sendEmail();
+            updateUserPoints();
+        }
+    }, [order]);
+
     // Update order status
     const UpdateOrderAsNew = (orderId) => {
         const updateData = {
@@ -105,11 +113,8 @@ const OrderConfirmation = () => {
     const getOrderByID = async (orderId) => {
         http.get(`/order/orderId?orderId=${orderId}`)
             .then((res) => {
-                UpdateOrderAsNew(orderId)
-                sendEmail()
-                updateUserPoints()
-                console.log("Get API Response:", res.data);
                 setOrder(res.data);
+                console.log("Get API Response:", res.data);
             })
             .catch((error) => {
                 console.error("Error fetching orders:", error);
