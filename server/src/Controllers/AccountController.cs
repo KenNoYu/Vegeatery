@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using vegeatery;
 using vegeatery.Dtos;
 
@@ -84,9 +85,9 @@ public class AccountController : ControllerBase
 			TotalPoints = user.TotalPoints,
 			JwtToken = user.JwtToken ?? string.Empty,
 			CreatedAt = user.CreatedAt,
-			TierId = user.TierId,
-			TierName = user.Tier?.TierName ?? string.Empty,
 			RoleId = user.RoleId,
+			TierId = user.TierId,
+			TierName = user.Tier.TierName,
 			RoleName = user.Role?.Name ?? string.Empty,
 			CartId = user.CartId
 		}).ToList();

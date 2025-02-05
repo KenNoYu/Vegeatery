@@ -29,7 +29,7 @@ const AdminSidebar = () => {
         sx: {
           backgroundColor: '#000000',
           width: 240,
-          height: '120vh',
+          height: '250vh',
           borderRight: '0.5px solid #000000',
           padding: '2em 0.5em',
           position: 'sticky',

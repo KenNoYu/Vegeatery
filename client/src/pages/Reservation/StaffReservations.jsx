@@ -14,7 +14,10 @@ import { useTheme } from '@mui/material/styles';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
+import RoleGuard from '../../utils/RoleGuard';
+
 const StaffReservations = () => {
+  RoleGuard('Staff');
   const theme = useTheme();
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
@@ -169,10 +172,11 @@ const StaffReservations = () => {
             </ToggleButtonGroup>
 
           <Button sx={{
-            backgroundColor: theme.palette.Accent.main,
+            backgroundColor: '#C6487E',
+            color: 'white',
             height: "35px",
             width: "152px",
-          }}>
+          }} onClick={() => navigate("/staff/addreservation")}>
             Add
           </Button>
         </Box>
@@ -230,7 +234,7 @@ const StaffReservations = () => {
                   variant="contained"
                 sx={{
                   color: "white",
-                  backgroundColor: theme.palette.Accent.main,
+                  backgroundColor: '#C6487E',
                   minWidth: "100px",
                   fontWeight: "bold",
                   textTransform: "none",

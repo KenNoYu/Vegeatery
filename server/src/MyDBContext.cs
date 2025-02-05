@@ -80,7 +80,6 @@ namespace vegeatery
       );
 
 
-
       // Common token generation logic
       string GenerateJwtToken(string username, string role)
       {
@@ -132,7 +131,7 @@ namespace vegeatery
     new User
     {
       Id = 2,  // Assuming the next available ID is 2
-	  Username = "staffuser",
+      Username = "staffuser",
       PasswordHash = BCrypt.Net.BCrypt.HashPassword("StaffUserPassword123!"),
       Email = "staff@domain.com",
       DateofBirth = "",
@@ -142,7 +141,7 @@ namespace vegeatery
       AllergyInfo = "",
       MealTypes = "",
       Promotions = false,  // Staff might not have access to promotions
-	  Agreement = true,
+      Agreement = true,
       TotalPoints = 0,
       RoleId = 2, // Staff role
       TierId = 3,

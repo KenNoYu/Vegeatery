@@ -8,6 +8,14 @@ import {
   Radio,
   Typography,
   Avatar,
+  Input,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import http from "../../../http";
@@ -16,11 +24,12 @@ import { UserProvider } from "../../../contexts/UserContext";
 import { WindowSharp } from "@mui/icons-material";
 import * as yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
-import Sidebar from "./UserSidebar";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import RoleGuard from "../../../utils/RoleGuard";
+import { useParams } from "react-router-dom";
+import AdminSidebar from "./AdminSidebar";
+import { useNavigate } from "react-router-dom";
 
 // Styling for the custom components
 const ProfileBox = styled(Box)(({ theme }) => ({
@@ -100,9 +109,10 @@ const updateProfileSchema = yup.object().shape({
   meal: yup.string(), // Optional field, so no validation required
 });
 
-export default function ProfilePage() {
-  RoleGuard(["User", "Admin", "Staff"]);
-  const [userId, setUserId] = useState(null);
+export default function UserProfileView() {
+  const navigate = useNavigate();
+  const { userId } = useParams();
+  console.log(userId);
   const [user, setUser] = useState({
     username: "",
     email: "",
@@ -119,11 +129,12 @@ export default function ProfilePage() {
   // Function to fetch the user info from the API
   const fetchUserInfo = async () => {
     try {
-      const response = await http.get("/Auth/current-user", {
+      const response = await http.get(`/Account/${userId}`, {
         withCredentials: true,
       });
-
+      console.log("Ran");
       const userData = response.data;
+      console.log(userData);
       setUser({
         username: userData.username,
         email: userData.email,
@@ -144,18 +155,10 @@ export default function ProfilePage() {
       setLoading(false);
     }
   };
-
   console.log(user);
-  // Use useEffect to fetch user info when the component loads
+
+  // Load the fetched user data on component mount
   useEffect(() => {
-    http
-      .get("/Auth/auth", { withCredentials: true })
-      .then((res) => {
-        setUserId(res.data.user.id);
-      })
-      .catch((err) => {
-        console.error("Error fetching user data", err);
-      });
     fetchUserInfo();
     setLoading(false);
   }, []);
@@ -219,63 +222,20 @@ export default function ProfilePage() {
         withCredentials: true,
       });
 
-      console.log("Account deleted successfully:", response.data.message);
-
-      // Logout the user after deleting the account
-      http
-        .post("/auth/logout", {}, { withCredentials: true })
-        .then((res) => {
-          console.log(res.data.message);
-          window.location = "/";
-        })
-        .catch((err) => {
-          console.error("Error during logout", err);
-        });
-
       // Handle successful deletion (e.g., redirect to login page)
-      alert("Your account has been deleted successfully.");
+      alert("Account has been deleted successfully.");
+      navigate("/admin/accounts");
     } catch (error) {
       console.error("Error deleting account:", error);
       alert("Error deleting your account, please try again.");
     }
   };
 
-  const StyledTierName = styled(Typography)(({ theme, tierColor }) => ({
-    textTransform: "uppercase",
-    fontWeight: "bold",
-    textShadow: `2px 2px 4px rgba(0, 0, 0, 0.2)`,
-    letterSpacing: "0.1em",
-    color: tierColor,
-  }));
-
-  const TierDisplay = ({ tierName }) => {
-    const getTierColor = (tier) => {
-      switch (tier?.toLowerCase()) {
-        case "bronze":
-          return "#CD7F32"; // Bronze hex code
-        case "silver":
-          return "#C0C0C0"; // Silver hex code
-        case "gold":
-          return "#FFD700"; // Gold hex code
-        default:
-          return "textSecondary";
-      }
-    };
-
-    const tierColor = getTierColor(tierName);
-
-    return (
-      <StyledTierName variant="h5" tierColor={tierColor} gutterBottom>
-        {tierName}
-      </StyledTierName>
-    );
-  };
-
   return (
     <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
       {/* Sidebar */}
       <Box sx={{ height: "100%" }}>
-        <Sidebar />
+        <AdminSidebar />
       </Box>
       <ProfileBox sx={{ paddingRight: "3em" }}>
         {loading ? (
@@ -352,19 +312,22 @@ export default function ProfilePage() {
                   textAlign: "left",
                 }}
               >
-                <TierDisplay tierName={user.tierName} />
                 <Typography variant="h3" fontWeight="bold" gutterBottom>
                   {user.username}
+                </Typography>
+                <Typography variant="h5" color="textSecondary" gutterBottom>
+                  BRONZE
+                  {/* Membership Tier: {user.membershipTier} */}
                 </Typography>
                 <Typography
                   variant="subtitle2"
                   sx={{
                     width: "fit-content",
-                    backgroundColor: "#007BFF",
+                    backgroundColor: "#007BFF", // A stronger blue color
                     color: "white",
                     borderRadius: "12px",
                     padding: "4px 12px",
-                    display: "inline-block",
+                    display: "inline-block", // To make sure the background wraps tightly around the text
                     marginBottom: 3,
                   }}
                 >
@@ -437,7 +400,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important",
+                          borderColor: "#C6487E !important", // Keep your border color
                         },
                       },
                     },
@@ -464,7 +427,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important",
+                          borderColor: "#C6487E !important", // Keep your border color
                         },
                       },
                     },
@@ -490,7 +453,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important",
+                          borderColor: "#C6487E !important", // Keep your border color
                         },
                       },
                     },
@@ -520,7 +483,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important",
+                          borderColor: "#C6487E !important", // Keep your border color
                         },
                       },
                     },
@@ -543,7 +506,7 @@ export default function ProfilePage() {
                 <RadioGroup
                   row
                   name="gender"
-                  value={user.gender || "prefer_not_say"}
+                  value={user.gender}
                   onChange={handleInputChange}
                   sx={{
                     "& .MuiRadio-root": {
@@ -606,7 +569,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important",
+                          borderColor: "#C6487E !important", // Keep your border color
                         },
                       },
                     },
@@ -632,7 +595,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important",
+                          borderColor: "#C6487E !important", // Keep your border color
                         },
                       },
                     },
@@ -658,7 +621,7 @@ export default function ProfilePage() {
                     "& .MuiOutlinedInput-root": {
                       "&.Mui-focused": {
                         fieldset: {
-                          borderColor: "#C6487E !important",
+                          borderColor: "#C6487E !important", // Keep your border color
                         },
                       },
                     },

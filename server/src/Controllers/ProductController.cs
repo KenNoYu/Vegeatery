@@ -185,10 +185,37 @@ namespace vegeatery.Controllers
                 return NotFound(new { message = "Product not found." });
             }
 
+            // Retrieve the associated category
+            var category = _context.Category.FirstOrDefault(c => c.CategoryId == product.CategoryId);
+            if (category == null)
+            {
+                return NotFound(new { message = "Category not found." });
+            }
+
+            // Remove the product
             _context.Product.Remove(product);
             _context.SaveChanges();
 
+            // Recalculate the TotalProduct count for the category by subtracting 1
+            category.TotalProduct = _context.Product.Count(p => p.CategoryId == product.CategoryId);
+
+            // Save the changes to the category
+            _context.SaveChanges();
+
             return Ok(new { message = "Product deleted successfully." });
+        }
+
+
+
+        [HttpGet("GetProducts")]
+        public IActionResult GetFilteredProducts([FromQuery] ProductFilter filter)
+        {
+            var products = _context.Product.AsQueryable();
+
+            // Apply filters
+            var filteredProducts = filter.ApplyFiltering(products);
+
+            return Ok(filteredProducts.ToList());
         }
     }
 }

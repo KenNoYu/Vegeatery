@@ -124,6 +124,23 @@ const RequestPasswordReset = () => {
             margin="normal"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused": {
+                  fieldset: {
+                    borderColor: "#C6487E !important",
+                  },
+                },
+              },
+              "& .MuiInputLabel-root": {
+                // Target the label specifically
+                color: "black", // Default label color
+                "&.Mui-focused": {
+                  // Label styles when focused
+                  color: "black !important", // Black on focus
+                },
+              },
+            }}
           />
           <StyledButton
             type="submit"
