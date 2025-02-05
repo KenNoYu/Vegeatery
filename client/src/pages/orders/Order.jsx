@@ -150,8 +150,8 @@ const Orders = () => {
                 orderDate: convertToISODateTime(selectedDate, selectedTime),
                 timeSlot: convertToTimeOnly(selectedTime),
                 status: "Pending",
-                discountPercent: discountedTotal?? null,
-                voucherId: selectedVoucher?.voucherId?? null,
+                discountPercent: discountedTotal ?? null,
+                voucherId: selectedVoucher?.voucherId ?? null,
                 // autofill session and customer id next time
                 customerId: user.data.id,
                 sessionId: null
