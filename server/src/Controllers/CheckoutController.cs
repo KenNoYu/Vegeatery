@@ -44,13 +44,13 @@ namespace vegeatery.Controllers
                 LineItems = order.OrderItems.Select(item => new SessionLineItemOptions
                 {
                     PriceData = new SessionLineItemPriceDataOptions
-                    {
+                    { 
                         Currency = "sgd",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = item.ProductName != null ? item.ProductName : "Unknown",
                         },
-                        UnitAmount = (long)(order.TotalPrice * 100), // Stripe expects the amount in cents
+                        UnitAmount = (long)(item.Price * 100), // Stripe expects the amount in cents
                     },
                     Quantity = item.Quantity,
                 }).ToList(),
