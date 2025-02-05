@@ -102,7 +102,7 @@ const UserRegistrationsGraph = () => {
 
   return (
     <Box>
-      <Typography variant="h4" textAlign="center" mb={5}>
+      <Typography variant="h4" textAlign="center" mb={5} fontWeight="bold" sx={{ textAlign: "left" }}>
         User Registrations Statistics
       </Typography>
       <Box
