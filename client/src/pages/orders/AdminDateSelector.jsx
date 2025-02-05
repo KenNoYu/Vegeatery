@@ -85,7 +85,7 @@ const AdminDateSelector = ({ selectedDate, onDateChange, allowPastDates = false 
               sx={{
                 color: "black",
                 "&:hover": {
-                  color: theme.palette.secondaryText.main,
+                  color: "#585858",
                 },
               }}
             />
@@ -108,7 +108,7 @@ const AdminDateSelector = ({ selectedDate, onDateChange, allowPastDates = false 
               sx={{
                 color: "black",
                 "&:hover": {
-                  color: theme.palette.secondaryText.main,
+                  color: "#585858",
                 },
               }}
             />
@@ -129,7 +129,7 @@ const AdminDateSelector = ({ selectedDate, onDateChange, allowPastDates = false 
                       month: "2-digit",
                       day: "2-digit",
                     }).format(date)
-                      ? theme.palette.Accent.main
+                      ? "#C6487E"
                       : "#fff",
                   color:
                     selectedDate ===
@@ -139,7 +139,7 @@ const AdminDateSelector = ({ selectedDate, onDateChange, allowPastDates = false 
                       month: "2-digit",
                       day: "2-digit",
                     }).format(date)
-                      ? "primary"
+                      ? "white"
                       : "black",
                   padding: "0.5rem",
                   flex: "1",

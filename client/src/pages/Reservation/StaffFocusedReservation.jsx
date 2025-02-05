@@ -75,7 +75,8 @@ const StaffFocusedReservation = () => {
         "action": "cancelled",
         "reservationDate": reservation.reservationDate,
         "timeSlot": reservation.timeSlot,
-        "tables": reservation.tables
+        "tables": reservation.tables.map(table => table.id).join(", "),
+        "doneBy": "staff"
       }
 
       console.log(logData)

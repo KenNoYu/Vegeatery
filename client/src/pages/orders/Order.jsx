@@ -255,6 +255,8 @@ const Orders = () => {
     // handling time conversion for request to api
     const convertToISODateTime = (selectedDate, selectedTime) => {
         if (!selectedDate || !selectedTime) return null; // Handle cases where inputs are missing
+        console.log(selectedDate);
+        console.log(selectedTime);
 
         const [startTime] = selectedTime.split(" - "); // Extract the start time (e.g., "11:00AM")
 
@@ -274,7 +276,8 @@ const Orders = () => {
 
         const adjustedHours = hours - Math.floor(tzoffset / 60);
         const adjustedMinutes = minutes - (tzoffset % 60);
-        const dateTime = new Date(`${selectedDate} ${adjustedHours}:${adjustedMinutes}`)
+        const dateTime = new Date(`${selectedDate} ${hours}:${minutes}`)
+        console.log(dateTime);
         const localISOTime = (dateTime).toISOString()
 
         return localISOTime; // Format as ISO string (UTC)

@@ -110,7 +110,7 @@ function UserOverview() {
     return (
       <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
         {/* Sidebar */}
-        <Box sx={{ marginTop: "0.5em", height: "120vh", backgroundColor: "#FFFFFF", borderRight: '0.5px solid #000000', borderTopLeftRadius: "1em", }}>
+        <Box sx={{ marginTop: "0.5em", height: "200vh", backgroundColor: "#FFFFFF", borderRight: '0.5px solid #000000', borderTopLeftRadius: "1em", }}>
           <Sidebar />
         </Box>
 

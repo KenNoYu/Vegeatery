@@ -11,62 +11,62 @@ import {
 import http from "../../../http";
 import vegeateryMain from "../../../assets/logo/vegeateryMain.png";
 
+const StyledContainer = styled(Container)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center", // Center content horizontally
+  justifyContent: "center", // Center content vertically
+  minHeight: "80vh", // Ensure full viewport height for vertical centering
+  padding: theme.spacing(4),
+  borderRadius: 30,
+  marginTop: theme.spacing(8),
+  boxShadow: theme.shadows[3],
+  backgroundColor: "#ffffff", // White background
+}));
+
+const StyledContent = styled(Box)(({ theme }) => ({
+  // Added a content box for centering
+  width: "100%", // Take full width of the container
+  maxWidth: "400px", // Set a maximum width if needed
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center", // Center content within the box
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  textTransform: "none",
+  width: "100%",
+  backgroundColor: "#C6487E",
+  padding: "10px",
+  fontSize: "1rem",
+  color: "#fff",
+  borderRadius: "8px",
+  "&:hover": { backgroundColor: "#C6487E" }, // Full width within the content box
+}));
+
+const ErrorMessage = styled(Typography)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  color: theme.palette.error.main,
+}));
+
+const Title = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(3),
+  fontWeight: 600,
+  color: "#000000",
+  textAlign: "center", // Center the title
+}));
+
+const LogoContainer = styled(Box)(({ theme }) => ({
+  marginBottom: theme.spacing(3),
+  display: "flex",
+  justifyContent: "center", // Center the logo
+}));
+
 const RequestPasswordReset = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const StyledContainer = styled(Container)(({ theme }) => ({
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center", // Center content horizontally
-    justifyContent: "center", // Center content vertically
-    minHeight: "80vh", // Ensure full viewport height for vertical centering
-    padding: theme.spacing(4),
-    borderRadius: 30,
-    marginTop: theme.spacing(8),
-    boxShadow: theme.shadows[3],
-    backgroundColor: "#ffffff", // White background
-  }));
-
-  const StyledContent = styled(Box)(({ theme }) => ({
-    // Added a content box for centering
-    width: "100%", // Take full width of the container
-    maxWidth: "400px", // Set a maximum width if needed
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center", // Center content within the box
-  }));
-
-  const StyledButton = styled(Button)(({ theme }) => ({
-    marginTop: theme.spacing(2),
-    textTransform: "none",
-    width: "100%",
-    backgroundColor: "#C6487E",
-    padding: "10px",
-    fontSize: "1rem",
-    color: "#fff",
-    borderRadius: "8px",
-    "&:hover": { backgroundColor: "#C6487E" }, // Full width within the content box
-  }));
-
-  const ErrorMessage = styled(Typography)(({ theme }) => ({
-    marginTop: theme.spacing(2),
-    color: theme.palette.error.main,
-  }));
-
-  const Title = styled(Typography)(({ theme }) => ({
-    marginBottom: theme.spacing(3),
-    fontWeight: 600,
-    color: "#000000",
-    textAlign: "center", // Center the title
-  }));
-
-  const LogoContainer = styled(Box)(({ theme }) => ({
-    marginBottom: theme.spacing(3),
-    display: "flex",
-    justifyContent: "center", // Center the logo
-  }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();

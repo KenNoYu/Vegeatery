@@ -219,6 +219,9 @@ export default function Accounts() {
           padding: "3em",
           borderTopRightRadius: "1em",
           width: "60%",
+          height: "245vh",
+          overflow: "auto",
+          // overflowY: "hidden"
         }}
       >
         <Box sx={{ marginBottom: "7em" }}>

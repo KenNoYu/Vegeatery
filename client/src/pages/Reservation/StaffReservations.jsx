@@ -60,7 +60,8 @@ const StaffReservations = () => {
         "action": "seated",
         "reservationDate": date,
         "timeSlot": time,
-        "tables": tables
+        "tables": tables.join(", "),
+        "doneBy": "staff"
       }
 
       const logResponse = await http.post("/Reservation/CreateReservationLog", logData);
@@ -245,7 +246,7 @@ const StaffReservations = () => {
                     reservation.id,
                     reservation.reservationDate,
                     reservation.timeSlot,
-                    reservation.tables
+                    reservation.tables.map(table => table.id)
                   );
                 }}
                 >
