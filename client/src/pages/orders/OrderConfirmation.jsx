@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import http from '../../http';
 import { Box, Typography, CircularProgress, Divider } from '@mui/material';
 import RoleGuard from '../../utils/RoleGuard';
+import emailjs from "@emailjs/browser";
 
 const OrderConfirmation = () => {
     RoleGuard('User');
@@ -41,7 +42,39 @@ const OrderConfirmation = () => {
                 UpdateOrderAsNew(orderId)
                 console.log("Get API Response:", res.data);
                 setOrder(res.data);
-                setLoading(false);
+                const emailParams = {
+                    customer_name: order.fullName, // Customer's full name
+                    customer_email: order.email, // Customer's email
+                    order_confirmation: order.orderId, // Order ID
+                    order_date: new Intl.DateTimeFormat('en-CA', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    }).format(new Date(order.orderDate)), // Formatted order date
+                    time_slot: order.timeSlot, // Time slot for the order
+                    order_items: order.orderItems.map(item => ({
+                        product_name: item.productName,
+                        quantity: item.quantity,
+                        price: item.price.toFixed(2)
+                    })), // Array of ordered items
+                    voucher_applied: order.voucherId != null, // Boolean to check if a voucher was used
+                    discount_amount: order.voucherId ? calculateDiscount().toFixed(2) : "0.00", // Discount amount
+                    discount_percent: order.voucherId ? (order.discountPercent * 100) : "0", // Discount percentage
+                    total_price: order.totalPrice.toFixed(2) // Total price
+                };
+
+                emailjs.send(
+                    "service_jg9u4so",
+                    "template_h6i5ctn",
+                    emailParams,
+                    "PGBYOmyKOLLfZCGuL"
+                ).then(() => {
+                    console.log("Email sent successfully!");
+                    setLoading(false);
+                }).catch((error) => {
+                    console.error("Error sending email:", error);
+                    setLoading(false);
+                });
             })
             .catch((error) => {
                 console.error("Error fetching orders:", error);
@@ -130,13 +163,13 @@ const OrderConfirmation = () => {
                     </Box>
                 ) : (
                     <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                    <Typography variant="body2" sx={{ color: "#555" }}>
-                        Voucher Applied
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: "#555" }}>
-                        None
-                    </Typography>
-                </Box>
+                        <Typography variant="body2" sx={{ color: "#555" }}>
+                            Voucher Applied
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: "#555" }}>
+                            None
+                        </Typography>
+                    </Box>
                 )}
 
                 {/* Total */}
