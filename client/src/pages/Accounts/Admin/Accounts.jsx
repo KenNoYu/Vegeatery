@@ -210,14 +210,14 @@ export default function Accounts() {
   return (
     <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
       {/* Sidebar */}
-      <Box sx={{ height: "100%" }}>
+      <Box>
         <AdminSidebar />
       </Box>
       <Box
         sx={{
           backgroundColor: "#FFFFFF",
           padding: "3em",
-          borderRadius: "16px",
+          borderTopRightRadius: "1em",
           width: "60%",
         }}
       >
@@ -225,7 +225,7 @@ export default function Accounts() {
           <UserRegistrationsGraph />
         </Box>
         <Box>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h4" gutterBottom fontWeight="bold">
             Accounts
           </Typography>
 
@@ -298,7 +298,7 @@ export default function Accounts() {
           ></hr>
           {!!users.length ? (
             <Box>
-              <Typography variant="h5" fontWeight="bold">
+              <Typography variant="h5">
                 Platform Users
               </Typography>
               {filteredUsers.length > 0 ? (
