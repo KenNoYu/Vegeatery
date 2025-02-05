@@ -31,11 +31,11 @@ const Sidebar = () => {
         sx: {
           backgroundColor: '#FFFFFF',
           width: 240,
-          height: '120vh',
-          borderRight: '0.5px solid #000000',
+          height: '100vh',
           padding: '2em 0.5em',
           position: 'sticky',
-          marginTop: '5px', // Dynamically adjust based on navbar height
+          marginTop: '0.5em',
+          height: 'auto',
         },
       }}
     >
