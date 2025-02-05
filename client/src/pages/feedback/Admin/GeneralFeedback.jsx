@@ -11,7 +11,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField
+  TextField,
+  DialogContentText
 } from "@mui/material";
 import { Star, StarBorder } from "@mui/icons-material";
 import http from "../../../http";
@@ -25,6 +26,7 @@ const AdminGeneralFeedback = () => {
   const [feedbackList, setFeedbackList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [confirmModal, setConfirmModal] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [replyTitle, setReplyTitle] = useState("");
   const [replyText, setReplyText] = useState("");
@@ -81,6 +83,7 @@ const AdminGeneralFeedback = () => {
       .then((response) => {
         console.log("Email successfully sent!", response);
         setOpenModal(false);
+        setConfirmModal(false);
         setReplyTitle("");
         setReplyText("");
       })
@@ -137,7 +140,7 @@ const AdminGeneralFeedback = () => {
               >
                 <ListItem disablePadding>
                   <ListItemText
-                    primary ={`Title: ${feedback.feedbackTitle}`}
+                    primary={`Title: ${feedback.feedbackTitle}`}
                     secondary={
                       <>
                         <Box marginBottom={2} marginTop={2}>
@@ -212,19 +215,48 @@ const AdminGeneralFeedback = () => {
                 color: '#FFFFFF'
               }
             }}>CANCEL</Button>
-            <Button onClick={handleSendEmail} sx={{
-              alignSelf: 'flex-start',
-              textTransform: 'none',
-              color: '#FFFFFF',
-              backgroundColor: '#C6487E',
-              '&:hover': { backgroundColor: '#E7ABC5' }
+            <Button onClick={() => setConfirmModal(true)}
+              sx={{
+                alignSelf: 'flex-start',
+                textTransform: 'none',
+                color: '#FFFFFF',
+                backgroundColor: '#C6487E',
+                '&:hover': { backgroundColor: '#E7ABC5' }
 
-            }} variant="contained">SEND</Button>
+              }} variant="contained">SEND</Button>
           </DialogActions>
         </Dialog>
+
+        <Dialog open={confirmModal} onClose={() => setConfirmModal(false)}>
+          <DialogTitle>Confirm Sending Email</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Are you sure you want to send this email?</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setConfirmModal(false)}
+              sx={{
+                textTransform: 'none',
+                color: '#C6487E',
+                backgroundColor: '#FFFFFF',
+                borderColor: '#C6487E',
+                '&:hover': {
+                  backgroundColor: '#E7ABC5',
+                  color: '#FFFFFF',
+                }
+              }}
+            >CANCEL</Button>
+            <Button onClick={handleSendEmail}
+              sx={{
+                backgroundColor: '#C6487E',
+                '&:hover': {
+                  backgroundColor: '#E7ABC5'
+                }
+              }}
+            >CONFIRM</Button>
+          </DialogActions>
+        </Dialog>
+
       </Box>
-
-
     </Box>
   );
 };
