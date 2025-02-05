@@ -65,12 +65,12 @@ function UserOverview() {
 
   const StyledTierName = styled(Typography)(({ theme, tierColor }) => ({
     textTransform: 'uppercase',
-    fontWeight: 'bold',         
+    fontWeight: 'bold',
     textShadow: `2px 2px 4px rgba(0, 0, 0, 0.2)`,
     letterSpacing: '0.1em',
     color: tierColor,
   }));
-  
+
   const TierDisplay = ({ tierName }) => {
     const getTierColor = (tier) => {
       switch (tier?.toLowerCase()) {
@@ -84,16 +84,16 @@ function UserOverview() {
           return 'textSecondary';
       }
     };
-  
+
     const tierColor = getTierColor(tierName);
-  
+
     return (
       <StyledTierName variant="h5" tierColor={tierColor} gutterBottom>
         {tierName}
       </StyledTierName>
     );
   };
-  
+
 
   // If still loading, show a loading message
   if (loading) {
@@ -108,20 +108,23 @@ function UserOverview() {
   // If user data is available, display the user profile
   if (user) {
     return (
-      <Box sx={{ display: "flex", height: "100vh", marginTop: "2em" }}>
+      <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
         {/* Sidebar */}
-        <Box sx={{ width: "20%" }}>
+        <Box sx={{ marginTop: "0.5em", height: "120vh", backgroundColor: "#FFFFFF", borderRight: '0.5px solid #000000', borderTopLeftRadius: "1em", }}>
           <Sidebar />
         </Box>
 
         {/* Main Content */}
         <Box
           sx={{
-            width: "80%",
-            padding: 5,
-            backgroundColor: "#FFFFFF",
-            marginTop: "5px",
+            flexGrow: 1,
+            paddingTop: "3em",
+            paddingRight: "3em",
             paddingLeft: "3em",
+            backgroundColor: "#FFFFFF",
+            marginTop: "0.5em",
+            overflowX: "hidden",
+            borderTopRightRadius: "1em",
           }}
         >
           {/* Profile Header */}
@@ -177,7 +180,7 @@ function UserOverview() {
               <Typography variant="h3" fontWeight="bold" gutterBottom>
                 {user.data.username}
               </Typography>
-              
+
               <Typography
                 variant="subtitle2"
                 sx={{
@@ -239,7 +242,7 @@ function UserOverview() {
 
           {/* Upcoming Reservations */}
           <Box>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom fontWeight="bold" mb="0.5em">
               Upcoming Reservations
             </Typography>
             <Card sx={{ mb: 2 }}>
@@ -286,7 +289,7 @@ function UserOverview() {
 
           {/* Recent Purchases */}
           <Box>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom fontWeight="bold" mb="0.5em">
               Recent Purchases
             </Typography>
             {orders.length > 0 ? (
@@ -301,7 +304,7 @@ function UserOverview() {
                       }}
                     >
                       <Box key={order.orderId || i} sx={{ display: "flex", gap: 2 }}>
-                      <Typography variant="body1">{order.date}</Typography>
+                        <Typography variant="body1">{order.date}</Typography>
                         {order.orderItems.map((item, i) => {
                           return (
                             <>
