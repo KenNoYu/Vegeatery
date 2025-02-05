@@ -259,7 +259,7 @@ const EditProduct = () => {
                         <Button
                             variant="outlined"
                             color="Accent"
-                            onClick={() => navigate('/viewcategories')}
+                            onClick={() => navigate('/viewcategories/1')}
                             sx={{ cursor: 'pointer', marginTop: '10px', paddingLeft: '10px', paddingRight: '10px' }}
                         >
                             Cancel
