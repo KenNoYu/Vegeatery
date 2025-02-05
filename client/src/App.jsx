@@ -84,6 +84,11 @@ function App() {
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cartOpen, setCartOpen] = useState(false);
+
+  const toggleCart = (open) => () => {
+    setCartOpen(open);
+  };
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -247,15 +252,7 @@ function App() {
                           <Link to="/reserve">
                             <Typography>Reserve</Typography>
                           </Link>
-                          <Link to="#">
-                            <Tooltip title="cart">
-                              {/* Add a tooltip for better UX */}
-                              <IconButton aria-label="Your cart">
-                                {/* Add aria-label for accessibility */}
-                                <ShoppingCartIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </Link>
+                          <Cart />
                         </>
                       )}
                     </>
@@ -359,9 +356,8 @@ function App() {
               <Route path="/user/generalfeedbackadd" element={<GeneralFeedbackAdd />} />
               <Route path="/admin/feedback" element={<AdminGeneralFeedback />} />
               <Route path="/admin/ratingstatistics" element={<RatingStatistics />} />
-              
+
               {/* ORDERS */}
-              <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
               <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />

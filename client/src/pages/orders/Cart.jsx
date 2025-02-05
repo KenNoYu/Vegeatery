@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid2 as Grid, Card, CardContent, Button, TextField, CircularProgress } from '@mui/material';
+import { Box, Typography, Grid2 as Grid, Button, CircularProgress, Drawer, IconButton, List, ListItem, ListItemText, Divider, TextField } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import http from '../../http';
 import RoleGuard from '../../utils/RoleGuard';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const Cart = () => {
     RoleGuard('User');
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
+    const [totalPoints, setPoints] = useState(0);
     const [user, setUser] = useState(null);
+    const [cartOpen, setCartOpen] = useState(false);
+
+    const toggleCart = (open) => () => {
+        setCartOpen(open);
+    };
 
     // get user info
     useEffect(() => {
@@ -26,13 +36,12 @@ const Cart = () => {
             });
     }, []);
 
-    // Fetch cart items when user is set
     useEffect(() => {
-        if (user?.data.cartId) {
+        if (cartOpen && user?.data.cartId) {
+            setLoading(true); // Set loading to true when opening the cart
             GetCartItems();
-            setLoading(false);
         }
-    }, [user]);
+    }, [cartOpen, user]);
 
     // Fetch the cart items
     const GetCartItems = () => {
@@ -41,6 +50,7 @@ const Cart = () => {
             console.log("API Response:", res.data);
             setCartItems(res.data);
             calculateTotal(res.data);
+            calculateTotalPoints(res.data);
             setLoading(false);
         })
             .catch((error) => {
@@ -63,12 +73,6 @@ const Cart = () => {
                 console.log("Updated Cart");
                 // Refresh cart data
                 GetCartItems();
-                // Recalculate the total after updating
-                calculateTotal(
-                    cartItems.map((item) =>
-                        item.productId === productId ? { ...item, quantity: quantity } : item
-                    )
-                );
                 toast.success("Product Updated!");
             })
             .catch((error) => {
@@ -79,11 +83,29 @@ const Cart = () => {
 
     // Calculate the total price for the cart
     const calculateTotal = (cartItems) => {
-        const totalAmount = cartItems.reduce((sum, item) => {
-            const quantity = item.quantity || 1;
-            return sum + quantity * item.productPrice;
-        }, 0);
-        setTotal(totalAmount);
+        if (!Array.isArray(cartItems) || cartItems.length === 0) {
+            setTotal(0);
+            return 0;
+        } else {
+            const totalAmount = cartItems.reduce((sum, item) => {
+                const quantity = item.quantity || 1;
+                return sum + quantity * item.productPrice;
+            }, 0);
+            setTotal(totalAmount);
+        }
+    };
+
+    const calculateTotalPoints = (cartItems) => {
+        if (!Array.isArray(cartItems) || cartItems.length === 0) {
+            setPoints(0);
+            return 0;
+        } else {
+            const totalPoints = cartItems.reduce((sum, item) => {
+                const quantity = item.quantity || 1;
+                return sum + (quantity * item.points);
+            }, 0);
+            setPoints(totalPoints);
+        }
     };
 
     // Remove item from cart
@@ -92,12 +114,6 @@ const Cart = () => {
             console.log("product deleted from cart");
             // Refresh cart data
             GetCartItems();
-            // Recalculate the total after updating
-            calculateTotal(
-                cartItems.map((item) =>
-                    item.productId === productId ? { ...item, quantity: quantity } : item
-                )
-            );
             toast.success(`Product deleted from cart!`);
         })
             .catch((error) => {
@@ -109,88 +125,146 @@ const Cart = () => {
     const navigate = useNavigate();
 
     const handleCheckout = () => {
+        setCartOpen(false);
         // Redirect to the /orders page
         navigate("/orders");
     };
 
     if (loading) {
         return (
-            <Box>
-                <Typography variant="h5" sx={{ my: 2 }}>
-                    Your Cart
-                </Typography>
-                <Grid container spacing={2}><CircularProgress /></Grid>
-            </Box>
+            <>
+                <IconButton onClick={() => setCartOpen(!cartOpen)} color="inherit">
+                    <ShoppingCartIcon />
+                </IconButton>
+
+                <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)} ModalProps={{ keepMounted: true, }}>
+                    <Box
+                        sx={{
+                            width: 350, // Set to a smaller width
+                            padding: 2,
+                            height: '50%', // Keep full height
+                            overflow: 'auto', // Allow scrolling
+                        }}
+                        role="presentation"
+                    >
+                        <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                            PICK-UP
+                        </Typography>
+                        <Divider />
+                        <List>
+                            <ListItem>
+                                <CircularProgress color="Primary" />
+                            </ListItem>
+                        </List>
+                        <Divider sx={{ marginY: 2 }} />
+                        <Box display="flex" justifyContent="space-between" marginBottom={2}>
+                            <Typography variant="body1">Total Price:</Typography>
+                            <Typography variant="body1">${total.toFixed(2)}</Typography>
+                        </Box>
+                        <Box display="flex" justifyContent="space-between" marginBottom={2}>
+                            <Typography variant="body1">Points:</Typography>
+                            <Typography variant="body1">{total}</Typography>
+                        </Box>
+                        <Button variant="contained" color="Accent" fullWidth onClick={handleCheckout}>
+                            Checkout
+                        </Button>
+                    </Box>
+                </Drawer>
+            </>
         )
     }
 
+
     return (
-        <Box>
-            <Typography variant="h5" sx={{ my: 2 }}>
-                Your Cart
-            </Typography>
+        <>
+            <IconButton onClick={() => setCartOpen(!cartOpen)} color="inherit">
+                <ShoppingCartIcon />
+            </IconButton>
 
-            <Grid container spacing={2}>
-                {cartItems.length > 0 ? (
-                    cartItems.map((product, i) => {
-                        return (
-                            <Grid item xs={12} md={6} lg={4} key={product.productId || i}>
-                                <Card>
-                                    <CardContent>
-                                        <Typography variant="h6">
-                                            {product.productName}
-                                        </Typography>
-                                        <Typography color="text.secondary">
-                                            Price: ${product.productPrice?.toFixed(2)}
-                                        </Typography>
-                                        <Box sx={{ my: 1 }}>
-                                            <TextField
-                                                label="Quantity"
-                                                type="number"
-                                                size="small"
-                                                value={product.quantity}
-                                                onChange={(e) =>
-                                                    UpdateCartItems(user.data.cartId, product.productId, Number(e.target.value))
-                                                }
-                                            />
-                                        </Box>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                                            <Button
-                                                color="error"
-                                                onClick={() => RemoveCartItem(product.productId)}
-                                            >
-                                                Remove
-                                            </Button>
-                                        </Box>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                        )
-                    })
-                ) : (
-                    <Grid item xs={12}>
-                        <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-                            Your cart is empty.
-                        </Typography>
-                    </Grid>
-                )}
-            </Grid>
+            <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)} ModalProps={{ keepMounted: true, disableEnforceFocus: true, disableBackdropClick: true, }}>
+                <Box
+                    sx={{
+                        width: 350, // Set to a smaller width
+                        padding: 2,
+                        height: '50%', // Keep full height
+                        overflow: 'auto', // Allow scrolling
+                    }}
+                    role="presentation"
 
-            {cartItems.length > 0 && (
-                <Box sx={{ mt: 3, textAlign: 'right' }}>
-                    <Typography variant="h6">
-                        Total: ${total?.toFixed(2)}
+                >
+                    <Typography variant="h6" sx={{ marginBottom: 2, backgroundColor: "Accent" }} align='center'>
+                        Your Cart | PICK-UP
                     </Typography>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleCheckout}
-                    >
+                    <Divider />
+                    <List>
+                        {cartItems.length > 0 ? (
+                            cartItems.map((product, index) => (
+                                <ListItem key={index} sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    paddingY: 1,
+                                }}>
+                                    <Box>
+                                        <Typography variant="body1">{product.productName}</Typography>
+                                        <Typography variant="body2" color="textSecondary">
+                                            Price: ${product.productPrice.toFixed(2)} | Points: {product.points}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <IconButton
+                                            onClick={() => UpdateCartItems(user.data.cartId, product.productId, product.quantity-1)}
+                                            color="Accent"
+                                            size="small"
+                                            disabled={product.quantity === 1}
+                                        >
+                                            <RemoveIcon />
+                                        </IconButton>
+                                        <TextField
+                                            value={product.quantity}
+                                            size="small"
+                                            inputProps={{ readOnly: true, style: { textAlign: 'center', width: 40 } }}
+                                            variant="outlined"
+                                        />
+                                        <IconButton
+                                            onClick={() => UpdateCartItems(user.data.cartId, product.productId, product.quantity+1)}
+                                            color="Accent"
+                                            size="small"
+                                            disabled={product.quantity === 10}
+                                        >
+                                            <AddIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            onClick={() => RemoveCartItem(product.productId)}
+                                            color="error"
+                                            size="small"
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </Box>
+                                </ListItem>
+                            ))
+                        ) : (
+                            <ListItem>
+                                <ListItemText>You Have No Products in Cart</ListItemText>
+                            </ListItem>
+                        )}
+                    </List>
+                    <Divider sx={{ marginY: 2 }} />
+                    <Box display="flex" justifyContent="space-between" marginBottom={2}>
+                        <Typography variant="body1">Total Price:</Typography>
+                        <Typography variant="body1">${total.toFixed(2)}</Typography>
+                    </Box>
+                    <Box display="flex" justifyContent="space-between" marginBottom={2}>
+                        <Typography variant="body1">Points:</Typography>
+                        <Typography variant="body1">{total}</Typography>
+                    </Box>
+                    <Button variant="contained" color="Accent" fullWidth onClick={handleCheckout}>
                         Checkout
                     </Button>
                 </Box>
-            )}
-        </Box>
+            </Drawer>
+        </>
     );
 };
 

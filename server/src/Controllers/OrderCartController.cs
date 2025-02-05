@@ -122,7 +122,7 @@ namespace vegeatery.Controllers
 
         // Update item in cart
         [HttpPut]
-        public IActionResult UpdateCartItem(CartItem Item)
+        public IActionResult UpdateCartItem(CartItemUpdateRequest Item)
         {
             // Validate input parameters
             if (Item.CartId == 0 || Item.ProductId <= 0 || Item.Quantity <= 0)

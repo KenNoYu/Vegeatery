@@ -130,12 +130,11 @@ const Orders = () => {
     // create new order & set status as Pending
     const addOrder = () => {
         if (!selectedDate || !selectedTime) {
-            toast.error("Please select a pick-up date and time before proceeding to checkout.", {
-                position: toast.POSITION.TOP_RIGHT,
-                autoClose: 5000,
-                hideProgressBar: false,
-                theme: "colored",
-            });
+            toast.error("Please select a pick-up date and time before proceeding to checkout.");
+            return;
+        }
+        else if (!formik.isValid || !formik.dirty) {
+            toast.error("Please fill in all the required fields correctly.");
             return;
         }
         else {
