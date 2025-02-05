@@ -10,6 +10,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import { parse, isBefore, isDate } from 'date-fns';
 import emailjs from "@emailjs/browser";
 
+import RoleGuard from '../../utils/RoleGuard';
+
 const DetailsTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputLabel-root.Mui-focused": {
     color: "black", // Label color when focused and at the top
@@ -30,69 +32,49 @@ const DetailsTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-const ReservationPage = () => {
+const StaffAddReservation = () => {
+  RoleGuard('Staff');
   const theme = useTheme();
   const navigate = useNavigate();
   const [view, setView] = useState("details"); // 'details' or 'seats'
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);const [user, setUser] = useState(null); // Stores user data or remains null if not logged in
-  const [tables, setTables] = useState([]); 
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: user ? user.email : "",
-    mobileNumber: user ? user.contactNumber : "",
+    email: "",
+    mobileNumber: "",
   });
   const [selectedTables, setSelectedTables] = useState([]);
 
   useEffect(() => {
-    const fetchUserAndTables = async () => {
-        setLoading(true); // Start loading when fetching starts
+    const fetchTables = async () => {
+      setLoading(true); // Start loading when fetching starts
 
-        try {
-            let userData = null;
+      try {
 
-            // Try fetching user data
-            try {
-                const userResponse = await http.get("/Auth/current-user", { withCredentials: true });
-                if (userResponse.data) {
-                    setUser(userResponse.data);
-                    userData = userResponse.data;
-                }
-            } catch (userError) {
-                console.warn("User not logged in or authentication failed.");
-                setUser(null); // Ensure user state is cleared if no user is found
-            }
-
-            if (userData) {
-              setFormData(prevState => ({
-                  ...prevState,
-                  mobileNumber: userData.contactNumber,
-                  email: userData.email, // Auto-fill email when user is available
-              }));
-          }
-
-            // Fetch tables regardless of user authentication status
-            let url = "/Reservation/GetTables";
-            if (selectedDate && selectedTime) {
-                url += `?date=${selectedDate}&timeSlot=${selectedTime}`;
-            }
-
-            const response = await http.get(url);
-            setTables(response.data);
-
-        } catch (error) {
-            console.error("Error fetching data", error);
-            toast.error("Failed to load data.");
-        } finally {
-            setLoading(false); // Stop loading state in all cases
+        // Fetch tables 
+        let url = "/Reservation/GetTables";
+        if (selectedDate && selectedTime) {
+          url += `?date=${selectedDate}&timeSlot=${selectedTime}`;
         }
+
+        const response = await http.get(url);
+        setTables(response.data);
+
+      } catch (error) {
+        console.error("Error fetching data", error);
+        toast.error("Failed to load data.");
+      } finally {
+        setLoading(false); // Stop loading state in all cases
+      }
     };
 
-    fetchUserAndTables(); // Invoke the function
+    fetchTables(); // Invoke the function
 
-}, [selectedDate, selectedTime]); // Runs when selectedDate or selectedTime changes
+  }, [selectedDate, selectedTime]); // Runs when selectedDate or selectedTime changes
 
 
 
@@ -223,7 +205,7 @@ const ReservationPage = () => {
         "reservationDate": selectedDate,
         "timeSlot": selectedTime,
         "tables": selectedTables.join(", "),
-        "doneBy": "user"
+        "doneBy": "staff"
       }
 
       const logResponse = await http.post("/Reservation/CreateReservationLog", logData);
@@ -232,62 +214,80 @@ const ReservationPage = () => {
       const emailParams = {
         customer_name: reservationData.customerName,
         customer_email: reservationData.customerEmail,
-        reservation_date: new Intl.DateTimeFormat('en-GB', { 
-          day: '2-digit', 
-          month: 'short', 
-          year: 'numeric' 
-      }).format(new Date(reservationData.reservationDate)),
+        reservation_date: new Intl.DateTimeFormat('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }).format(new Date(reservationData.reservationDate)),
         reservation_time: reservationData.timeSlot,
         table_numbers: selectedTables.join(", ") // Convert array to string
-    };
+      };
 
-    await emailjs.send(
-        "service_1yw1hkh", 
-        "template_5lv58es", 
+      await emailjs.send(
+        "service_1yw1hkh",
+        "template_5lv58es",
         emailParams,
-        "HpadWHSOZyo_0NyHD" 
-    );
+        "HpadWHSOZyo_0NyHD"
+      );
 
-      navigate("/reserve/confirmed"); // Redirect after success
+      navigate("/staff/reservationlogs"); // Redirect after success
     } catch (error) {
       toast.error("Failed to create reservation.");
       console.error("Error:", error.response?.data || error.message);
     }
   };
 
-
-
   return (
+
     <Box
       sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "85vh",
-        p: 2,
+        flexGrow: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '40px',
+        boxShadow: 2,
+        borderRadius: '20px',
+        backgroundColor: 'white',
+        overflow: 'auto',
       }}
     >
-      {/* White Background Container */}
       <Box
         sx={{
-          width: "80%",
-          maxWidth: 1200,
-          minHeight: 500,
-          backgroundColor: "white",
-          boxShadow: 3,
-          borderRadius: 2,
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "row",
+          backgroundColor: 'white',
+          width: '80%',
+          height: '80vh',
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          flexDirection: 'row',
+          borderTopRightRadius: '20px',
+          borderBottomRightRadius: '20px',
         }}
       >
-        {/* Left Half: Date Selector & Time Selector */}
+
         <Box
           sx={{
             flex: 1,
-            p: 4,
+            p: 3,
           }}
         >
+          <Button
+            onClick={() => navigate('/staff/viewreservations')}
+            sx={{
+              textTransform: 'none',
+              color: 'black',
+              marginTop: '-50px',
+              marginBottom: '50px',
+              '&:hover': {
+                color: 'grey',
+              },
+            }}
+          >
+            Back
+          </Button>
+
+          
 
           {/* Date Selector */}
           <DateSelector
@@ -312,14 +312,14 @@ const ReservationPage = () => {
                 <Button
                   key={time}
                   variant="outlined"
-                  color={selectedTime === time ? "primary" : "default"}
                   onClick={() => !isPast && handleTimeSelect(time)} // Only handle click if time is not in the past
                   sx={{
-                    backgroundColor: selectedTime === time ? theme.palette.Accent.main : "primary",
+                    backgroundColor: selectedTime === time ? '#C6487E' : "white",
                     width: "90px",
                     opacity: isPast ? 0.5 : 1, // Grey out past times
                     cursor: isPast ? "not-allowed" : "pointer",
                     pointerEvents: isPast ? "none" : "auto", // Disable click for past times
+                    color: selectedTime === time ? "white" : "black",
                     "&:hover": {
                       backgroundColor: selectedTime === time ? "none" : "#E7ABC5",
                     },
@@ -344,7 +344,7 @@ const ReservationPage = () => {
         >
 
           <Typography variant="h6" gutterBottom>
-            Reserve a Table
+            Create Reservation
           </Typography>
           {view === "details" ? (
             <Box
@@ -390,8 +390,8 @@ const ReservationPage = () => {
               />
 
               <Button variant="contained" onClick={handleViewChange} sx={{
-                backgroundColor: theme.palette.Accent.main,
-                color: theme.palette.primary.main,
+                backgroundColor: '#C6487E',
+                color: "white",
                 "&:hover": {
                   backgroundColor: "#E7ABC5"
                 }
@@ -410,10 +410,10 @@ const ReservationPage = () => {
                         padding: "20px",
                         backgroundColor:
                           table.status === "available"
-                            ? theme.palette.primary.main
+                            ? "white"
                             : table.status === "unavailable"
-                              ? theme.palette.secondaryText.main
-                              : theme.palette.Accent.main,
+                              ? '#585858'
+                              : '#C6487E',
                         color: table.status === "unavailable" || table.status === "selected" ? "#fff" : "#000",
                         cursor: table.status !== "unavailable" ? "pointer" : "not-allowed",
                       }}
@@ -445,8 +445,8 @@ const ReservationPage = () => {
                 <Button
                   variant="contained"
                   sx={{
-                    backgroundColor: theme.palette.Accent.main,
-                    color: theme.palette.primary.main,
+                    backgroundColor: '#C6487E',
+                    color: "white",
                     "&:hover": {
                       backgroundColor: "#E7ABC5"
                     }
@@ -460,8 +460,8 @@ const ReservationPage = () => {
         </Box>
       </Box>
       <ToastContainer />
-    </Box>
+    </Box >
   );
 };
 
-export default ReservationPage;
+export default StaffAddReservation;

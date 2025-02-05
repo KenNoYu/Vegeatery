@@ -83,7 +83,7 @@ const DateSelector = ({ selectedDate, onDateChange }) => {
           <ArrowBack sx={{
             color: "black",
             "&:hover": {
-              color: theme.palette.secondaryText.main
+              color: '#585858'
             }
           }} />
         </Button>
@@ -104,7 +104,7 @@ const DateSelector = ({ selectedDate, onDateChange }) => {
           <ArrowForward sx={{
             color: "black",
             "&:hover": {
-              color: theme.palette.secondaryText.main
+              color: '#585858'
             }
           }} />
         </Button>
@@ -122,7 +122,7 @@ const DateSelector = ({ selectedDate, onDateChange }) => {
                   month: '2-digit',
                   day: '2-digit'
                 }).format(date)
-                  ? theme.palette.Accent.main
+                  ? '#C6487E'
                   : "#fff",
                 color: selectedDate === new Intl.DateTimeFormat('en-CA', {
                   timeZone: 'Asia/Singapore',
@@ -130,7 +130,7 @@ const DateSelector = ({ selectedDate, onDateChange }) => {
                   month: '2-digit',
                   day: '2-digit'
                 }).format(date)
-                  ? "primary" : "black",
+                  ? "white" : "black",
                 padding: "0.5rem",
                 flex: "1",
                 textAlign: "center",

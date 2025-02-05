@@ -85,8 +85,6 @@ public class AccountController : ControllerBase
 			TotalPoints = user.TotalPoints,
 			JwtToken = user.JwtToken ?? string.Empty,
 			CreatedAt = user.CreatedAt,
-			TierId = user.TierId,
-			TierName = user.Tier?.TierName ?? string.Empty,
 			RoleId = user.RoleId,
 			TierId = user.TierId,
 			TierName = user.Tier.TierName,
