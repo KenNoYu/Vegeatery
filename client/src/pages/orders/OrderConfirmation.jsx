@@ -9,6 +9,7 @@ const OrderConfirmation = () => {
     RoleGuard('User');
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null);
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const orderId = searchParams.get('orderId');
@@ -17,9 +18,23 @@ const OrderConfirmation = () => {
     useEffect(() => {
         if (orderId) {
             getOrderByID(orderId);
-
         }
     }, [orderId]);
+
+    // get user info
+    useEffect(() => {
+        http
+            .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
+            .then((res) => {
+                console.log(res);
+                setUser(res);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch user data", err);
+                setLoading(false);
+            });
+    }, []);
 
     // Update order status
     const UpdateOrderAsNew = (orderId) => {
@@ -70,6 +85,20 @@ const OrderConfirmation = () => {
             console.error("Error sending email:", error);
             setLoading(false);
         });
+    };
+
+    const updateUserPoints = async () => {
+        const userPoints = {
+            points: order.totalPoints
+        }
+
+        http.put(`/Account/${user.data.id}/points`, userPoints)
+            .then((res) => {
+                console.log("Update API Response:", res.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching orders:", error);
+            })
     }
 
     const getOrderByID = async (orderId) => {
@@ -77,6 +106,7 @@ const OrderConfirmation = () => {
             .then((res) => {
                 UpdateOrderAsNew(orderId)
                 sendEmail()
+                updateUserPoints()
                 console.log("Get API Response:", res.data);
                 setOrder(res.data);
             })
