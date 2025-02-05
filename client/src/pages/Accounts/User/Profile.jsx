@@ -24,12 +24,12 @@ import RoleGuard from "../../../utils/RoleGuard";
 
 // Styling for the custom components
 const ProfileBox = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(4),
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  backgroundColor: "#f9f9f9",
-  marginTop: "0.3em",
+  flexGrow: 1,
+  paddingTop: "3em",
+  paddingRight: "3em",
+  backgroundColor: "#FFFFFF",
+  marginTop: "0.5em",
+  overflowX: "hidden",
 }));
 
 const ProfileImage = styled(Avatar)(({ theme }) => ({
@@ -274,10 +274,10 @@ export default function ProfilePage() {
   return (
     <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
       {/* Sidebar */}
-      <Box sx={{ height: "100%" }}>
+      <Box sx={{ marginTop: "0.5em", height: "230vh", backgroundColor: "#FFFFFF", borderRight: '0.5px solid #000000', borderTopLeftRadius: "1em",}}>
         <Sidebar />
       </Box>
-      <ProfileBox sx={{ paddingRight: "3em" }}>
+      <ProfileBox>
         {loading ? (
           <Typography variant="body1">Loading profile...</Typography>
         ) : error ? (
