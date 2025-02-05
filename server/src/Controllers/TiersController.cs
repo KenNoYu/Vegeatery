@@ -66,7 +66,7 @@ namespace vegeatery.Controllers
             existingTier.TierName = updatedTier.TierName;
             existingTier.MinPoints = updatedTier.MinPoints;
             _context.Tiers.Update(existingTier);
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
 
 
             // Update all users' tiers based on new tier settings
