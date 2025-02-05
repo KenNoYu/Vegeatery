@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Card, CardContent, Grid, Input, IconButton, MenuItem, Select } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent, Grid, Input, IconButton, MenuItem, Select, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ const AdminVouchersSystem = () => {
   RoleGuard('Admin');
   const [tiers, setTiers] = useState([]);
   const [vouchers, setVouchers] = useState([]);
+  const [openModal, setOpenModal] = useState(null);
   const navigate = useNavigate();
 
 
@@ -78,7 +79,7 @@ const AdminVouchersSystem = () => {
           <Typography variant="h4" fontWeight="bold" mt={5} ml={3} mb={2}> Voucher System</Typography>
 
 
-          <Box mt={4}  ml={3} width="100%">
+          <Box mt={4} ml={3} width="100%">
             <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: '50px', }}>
               <Typography variant="h5" fontWeight='bold'>Available Vouchers</Typography>
               <Button
@@ -133,7 +134,7 @@ const AdminVouchersSystem = () => {
                                   color: '#FFFFFF'
                                 }
                               }}
-                              onClick={() => handleDeleteVoucher(voucher.voucherId)}>
+                              onClick={() => setOpenModal(voucher.voucherId)}>
                               DELETE
                             </Button>
                           </Box>
@@ -147,6 +148,34 @@ const AdminVouchersSystem = () => {
           </Box>
         </Box>
       </Box>
+
+      <Dialog open={Boolean(openModal)} onClose={() => setOpenModal(null)}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this voucher? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenModal(null)} sx={{
+            textTransform: 'none',
+            color: '#C6487E',
+            backgroundColor: '#FFFFFF',
+            borderColor: '#C6487E',
+            '&:hover': {
+              backgroundColor: '#E7ABC5',
+              color: '#FFFFFF',
+            }
+          }}>CANCEL</Button>
+          <Button onClick={() => { handleDeleteVoucher(openModal); setOpenModal(null); }} sx={{
+            backgroundColor: '#C6487E',
+            '&:hover': {
+              backgroundColor: '#E7ABC5'
+            }
+          }}>DELETE</Button>
+        </DialogActions>
+      </Dialog>
+
     </Box>
   );
 };
