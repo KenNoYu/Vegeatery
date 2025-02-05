@@ -42,8 +42,10 @@ namespace vegeatery.Models
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
 
-        // Foreign Key
-        public int? VoucherId { get; set; }
+		public Double? discountPercent { get; set; }
+
+		// Foreign Key
+		public int? VoucherId { get; set; }
         public int? CustomerId { get; set; } // Nullable for guest users
         public string? SessionId { get; set; } // For guest checkout
 

@@ -59,6 +59,7 @@ import Orders from "./pages/orders/Order";
 import Checkout from "./pages/orders/Checkout";
 import OrderConfirmation from "./pages/orders/OrderConfirmation";
 import StaffOrders from "./pages/orders/StaffOrders";
+import AdminOrders from "./pages/orders/AdminOrders";
 
 import Register from "./pages/Accounts/User/Register";
 import Login from "./pages/Accounts/User/Login";
@@ -365,6 +366,7 @@ function App() {
               <Route path={"/checkout"} element={<Checkout />} />
               <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
               <Route path={"/staff/vieworders"} element={<StaffOrders />} />
+              <Route path={"/admin/orders"} element={<AdminOrders />} />
             </Routes>
           </Container>
         </ThemeProvider>

@@ -8,6 +8,8 @@
 		public string Address { get; set; }
 		public DateTime OrderDate { get; set; }
 		public TimeOnly TimeSlot { get; set; }
+		public Double? discountPercent { get; set; }
+		public int? VoucherId { get; set; }
 		public decimal TotalPrice { get; set; }
 		public int TotalPoints { get; set; }
 		public List<OrderItemResponse> OrderItems { get; set; }
