@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Card, CardContent, Typography, TextField, IconButton, Button, Stack } from "@mui/material";
+import { Box, Card, CardContent, Typography, TextField, IconButton, Button, Stack, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { Star, StarBorder } from "@mui/icons-material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -12,12 +12,13 @@ import RoleGuard from '../../../utils/RoleGuard';
 const BASE_URL = "http://localhost:7273/uploads";
 
 const GeneralFeedback = () => {
-  RoleGuard('User');
+    RoleGuard('User');
     const [feedbacks, setFeedbacks] = useState([]);
     const [form, setForm] = useState({ feedbackTitle: "", imagePath: null, rating: 1, review: "" });
     const [editId, setEditId] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [userId, setUserId] = useState(null);
+    const [openModal, setOpenModal] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -158,7 +159,7 @@ const GeneralFeedback = () => {
                                                     color: '#FFFFFF'
                                                 }
                                             }}
-                                            onClick={() => handleDelete(feedback.feedbackId)}>
+                                            onClick={() => setOpenModal(feedback.feedbackId)}>
                                             DELETE
                                         </Button>
                                     </Box>
@@ -168,6 +169,33 @@ const GeneralFeedback = () => {
                     ))
                 )}
             </Box>
+
+            <Dialog open={Boolean(openModal)} onClose={() => setOpenModal(null)}>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete this feedback? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenModal(null)} sx={{
+                        textTransform: 'none',
+                        color: '#C6487E',
+                        backgroundColor: '#FFFFFF',
+                        borderColor: '#C6487E',
+                        '&:hover': {
+                            backgroundColor: '#E7ABC5',
+                            color: '#FFFFFF',
+                        }
+                    }}>CANCEL</Button>
+                    <Button onClick={() => { handleDelete(openModal); setOpenModal(null); }} sx={{
+                        backgroundColor: '#C6487E',
+                        '&:hover': {
+                            backgroundColor: '#E7ABC5'
+                        }
+                    }}>DELETE</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

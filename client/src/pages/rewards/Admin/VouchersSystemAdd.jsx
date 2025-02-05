@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Card, CardContent, Grid, Input, IconButton, MenuItem, Select, TextField } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent, Grid, Input, IconButton, MenuItem, Select, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ const VouchersSystemAdd = () => {
         tier: { tierId: '', tierName: '', minPoints: 0 }
     });
     const [errorMessage, setErrorMessage] = useState("");
+    const [openModal, setOpenModal] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -181,20 +182,47 @@ const VouchersSystemAdd = () => {
                                     color: '#FFFFFF'
                                 }
                             }}>
-                                Back
+                                BACK
                             </Button>
-                            <Button onClick={handleAddVoucher} variant="contained" sx={{
+                            <Button onClick={() => setOpenModal(true)} variant="contained" sx={{
                                 textTransform: 'none',
                                 color: '#FFFFFF',
                                 backgroundColor: '#C6487E',
                                 '&:hover': { backgroundColor: '#E7ABC5' }
                             }}>
-                                Add
+                                ADD
                             </Button>
                         </Grid>
                     </Grid>
                 </CardContent>
             </Card>
+
+            {/* Confirmation Modal */}
+            <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+                <DialogTitle>Confirm Submission</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>Are you sure you want to add this new voucher?</DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenModal(false)} sx={{
+                        textTransform: 'none',
+                        color: '#C6487E',
+                        backgroundColor: '#FFFFFF',
+                        borderColor: '#C6487E',
+                        '&:hover': {
+                            backgroundColor: '#E7ABC5',
+                            color: '#FFFFFF',
+                        }
+                    }}>CANCEL</Button>
+                    <Button onClick={handleAddVoucher} sx={{
+                        backgroundColor: '#C6487E',
+                        '&:hover': {
+                            backgroundColor: '#E7ABC5'
+                        }
+                    }}>SUBMIT</Button>
+                </DialogActions>
+            </Dialog>
+
         </Box>
     );
 };

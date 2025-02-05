@@ -4,11 +4,13 @@ import StarIcon from '@mui/icons-material/Star';
 import http from '../../../http';
 import dayjs from 'dayjs';
 import RoleGuard from '../../../utils/RoleGuard';
+import { useNavigate } from 'react-router-dom';
 
 const PointsSystem = () => {
   RoleGuard('User');
   const [vouchers, setVouchers] = useState([]);
   const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -101,8 +103,8 @@ const PointsSystem = () => {
                 <Typography variant="caption" display="block" textAlign="center" gutterBottom>
                   Expires on {dayjs(voucher.ExpiryDate).format('DD/MM/YYYY')}
                 </Typography>
-                <Button variant="contained" fullWidth sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}>
-                  USE VOUCHER
+                <Button onClick={() => navigate('/user/store')} variant="contained" fullWidth sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}>
+                  BUY NOW
                 </Button>
               </CardContent>
             </Card>

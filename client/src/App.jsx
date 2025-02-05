@@ -51,6 +51,7 @@ import ConfirmationPage from "./pages/Reservation/ConfirmedReservation";
 import StaffReservations from "./pages/Reservation/StaffReservations";
 import StaffReserveLogs from "./pages/Reservation/StaffLogs";
 import StaffFocusedReservation from "./pages/Reservation/StaffFocusedReservation";
+import StaffAddReservation from "./pages/Reservation/StaffAddReservation";
 
 // ORDERS
 import Cart from "./pages/orders/Cart";
@@ -58,6 +59,7 @@ import Orders from "./pages/orders/Order";
 import Checkout from "./pages/orders/Checkout";
 import OrderConfirmation from "./pages/orders/OrderConfirmation";
 import StaffOrders from "./pages/orders/StaffOrders";
+import AdminOrders from "./pages/orders/AdminOrders";
 
 import Register from "./pages/Accounts/User/Register";
 import Login from "./pages/Accounts/User/Login";
@@ -344,6 +346,7 @@ function App() {
               <Route path="/staff/viewreservations" element={<StaffReservations />} />
               <Route path="/staff/reservationlogs" element={<StaffReserveLogs />} />
               <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation />} />
+              <Route path="/staff/addreservation" element={<StaffAddReservation />} />
 
               {/* REWARDS */}
               <Route path="/user/rewards" element={<PointsSystem />} />
@@ -363,6 +366,7 @@ function App() {
               <Route path={"/checkout"} element={<Checkout />} />
               <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
               <Route path={"/staff/vieworders"} element={<StaffOrders />} />
+              <Route path={"/admin/orders"} element={<AdminOrders />} />
             </Routes>
           </Container>
         </ThemeProvider>

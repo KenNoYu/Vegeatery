@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid2 as Grid, Button, TextField, Paper, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Box, Typography, Grid2 as Grid, Button, TextField, Paper, Dialog, DialogActions, DialogContent, DialogTitle, Card, CardContent, Divider } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import http from '../../http';
 import * as yup from "yup";
@@ -9,20 +9,25 @@ import { parse, isBefore, isDate } from 'date-fns';
 import { ToastContainer, toast } from 'react-toastify';
 import theme from '../../themes/MyTheme';
 import RoleGuard from '../../utils/RoleGuard';
+import dayjs from 'dayjs';
 
 const Orders = () => {
     RoleGuard('User');
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
+    const [discountedTotal, setDiscountedTotal] = useState(0);
     const [points, setPoints] = useState(0);
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
     const [pnumber, setPnumber] = useState('');
     const [openDialog, setOpenDialog] = useState(false);
+    const [openVouchers, setOpenVouchers] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
     const [user, setUser] = useState(null);
+    const [vouchers, setVouchers] = useState([]);
+    const [selectedVoucher, setSelectedVoucher] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -33,6 +38,7 @@ const Orders = () => {
             .then((res) => {
                 console.log(res);
                 setUser(res);
+                fetchVouchers(res.data.id)
                 setLoading(false);
             })
             .catch((err) => {
@@ -75,6 +81,16 @@ const Orders = () => {
                 .required("Phone number is required"),
         })
     });
+
+    // get users vouchers
+    const fetchVouchers = async (userId) => {
+        try {
+            const { data } = await http.get(`/vouchers/user/${userId}`);
+            setVouchers(data);
+        } catch (error) {
+            console.error('Error fetching vouchers:', error);
+        }
+    };
 
     // get cart item
     const GetCartItems = () => {
@@ -130,10 +146,12 @@ const Orders = () => {
                 email: email,
                 address: address,
                 totalPoints: points,
+                totalPrice: total,
                 orderDate: convertToISODateTime(selectedDate, selectedTime),
                 timeSlot: convertToTimeOnly(selectedTime),
                 status: "Pending",
-                voucherId: null,
+                discountPercent: discountedTotal ?? null,
+                voucherId: selectedVoucher?.voucherId ?? null,
                 // autofill session and customer id next time
                 customerId: user.data.id,
                 sessionId: null
@@ -197,6 +215,34 @@ const Orders = () => {
 
     const handleDialogClose = () => {
         setOpenDialog(false);
+    };
+
+    const handleDialogVoucherOpen = () => {
+        setOpenVouchers(true);
+    };
+
+    const handleDialogVoucherClose = () => {
+        setOpenVouchers(false);
+    };
+
+    const applyVoucher = (voucher) => {
+        if (!voucher) return;
+        if (selectedVoucher) {
+            if (voucher.voucherId == selectedVoucher.voucherId) {
+
+                toast.error("Voucher already applied")
+                return
+            }
+        }
+        else {
+            const discount = voucher.discountPercentage / 100;
+            const newTotal = total - (total * discount);
+
+            setSelectedVoucher(voucher);
+            setTotal(newTotal > 0 ? newTotal : 0);
+            setDiscountedTotal(discount);
+            setOpenVouchers(false);
+        }
     };
 
     const handleConfirm = () => {
@@ -411,6 +457,34 @@ const Orders = () => {
                             <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                                 Vouchers
                             </Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                {selectedVoucher ? (
+                                    <>
+                                        <Typography variant="body1" sx={{ color: '#292827' }}>
+                                            Voucher Applied:
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ color: '#292827' }}>
+                                            {selectedVoucher.voucherName} {selectedVoucher.discountPercentage}% off
+                                        </Typography>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Typography variant="body1" sx={{ color: '#292827' }}>
+                                            Voucher Applied:
+                                        </Typography>
+                                        <Typography variant="body1" sx={{ color: '#292827' }}>
+                                            None
+                                        </Typography>
+                                    </>
+                                )}
+                                <Button
+                                    variant="contained"
+                                    color="Accent"
+                                    onClick={handleDialogVoucherOpen}
+                                >
+                                    Select Voucher
+                                </Button>
+                            </Box>
                         </Paper>
                     </Grid>
 
@@ -420,6 +494,7 @@ const Orders = () => {
                             <Typography variant="h5" gutterBottom>
                                 Checkout-Summary
                             </Typography>
+                            <Divider aria-hidden="true" />
                             {
                                 cartItems.map((product, i) => {
                                     return (
@@ -429,6 +504,17 @@ const Orders = () => {
                                     );
                                 })
                             }
+                            {selectedVoucher ? (
+                                <>
+                                    <Divider aria-hidden="true" />
+
+                                    <Typography variant="body1" gutterBottom>
+                                        Discount: {selectedVoucher.discountPercentage}% (${discountedTotal.toFixed(2)})
+                                    </Typography>
+                                </>
+                            ) : (
+                                <Divider aria-hidden="true" />
+                            )}
                             <Typography variant="body1" sx={{ marginBottom: 2 }}>
                                 Total: ${total?.toFixed(2)}
                             </Typography>
@@ -447,7 +533,7 @@ const Orders = () => {
             </Box>
 
             {/* Dialog for Date and Time Selection */}
-            <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="lg">
+            <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="sm" fullWidth>
                 <DialogTitle>Select Pick-Up Date & Time</DialogTitle>
                 <DialogContent>
                     <Box
@@ -507,6 +593,49 @@ const Orders = () => {
                 <DialogActions>
                     <Button onClick={handleDialogClose} color="Accent">Cancel</Button>
                     <Button onClick={handleDialogClose} color="Accent">Confirm</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Dialog for voucher Selection */}
+            <Dialog open={openVouchers} onClose={() => setOpenVouchers(false)} maxWidth="lg">
+                <DialogTitle>Select a Voucher</DialogTitle>
+                <DialogContent>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                            gap: 4,
+                            width: "100%",
+                        }}
+                    >
+                        {/* select voucher */}
+                        {vouchers.length > 0 ? (
+                            vouchers.map((voucher) => (
+                                <Card key={voucher.voucherId} sx={{ backgroundColor: '#E3F2FD', boxShadow: 3, maxWidth: 300 }}>
+                                    <CardContent>
+                                        <Typography variant="h6" fontWeight="bold" textAlign="center">{voucher.voucherName} {voucher.discountPercentage}% off</Typography>
+                                        <Typography variant="caption" display="block" textAlign="center">
+                                            Expires on {dayjs(voucher.expiryDate).format('DD/MM/YYYY')}
+                                        </Typography>
+                                        <Button variant="contained" fullWidth sx={{ mt: 1 }}
+                                            onClick={() => applyVoucher(voucher)}>
+                                            USE VOUCHER
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        ) : (
+                            <Grid item xs={12}>
+                                <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
+                                    You have no vouchers available.
+                                </Typography>
+                            </Grid>
+                        )}
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDialogVoucherClose} color="Accent">Cancel</Button>
                 </DialogActions>
             </Dialog>
 

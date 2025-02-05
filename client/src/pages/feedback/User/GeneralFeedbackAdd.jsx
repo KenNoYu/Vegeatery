@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Card, CardContent, Typography, TextField, IconButton, Button, Grid } from "@mui/material";
+import { Box, Card, CardContent, Typography, TextField, IconButton, Button, Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -20,6 +20,7 @@ const GeneralFeedbackAdd = () => {
     const [editId, setEditId] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [userId, setUserId] = useState(null);
+    const [openModal, setOpenModal] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -190,20 +191,49 @@ const GeneralFeedbackAdd = () => {
                                     BACK
                                 </Button>
 
-                                <Button onClick={handleSubmit} variant="contained" sx={{
-                                    textTransform: 'none',
-                                    color: '#FFFFFF',
-                                    backgroundColor: '#C6487E',
-                                    '&:hover': { backgroundColor: '#E7ABC5' }
-                                }}>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => setOpenModal(true)}
+                                    sx={{
+                                        color: '#FFFFFF',
+                                        backgroundColor: '#C6487E',
+                                        '&:hover': {
+                                            backgroundColor: '#E7ABC5'
+                                        }
+                                    }}>
                                     SUBMIT FEEDBACK
                                 </Button>
-
                             </Grid>
                         </Grid>
                     </Grid>
                 </CardContent>
             </Card>
+
+            {/* Confirmation Modal */}
+            <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+                <DialogTitle>Confirm Submission</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>Are you sure you want to submit this feedback?</DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenModal(false)} sx={{
+                        textTransform: 'none',
+                        color: '#C6487E',
+                        backgroundColor: '#FFFFFF',
+                        borderColor: '#C6487E',
+                        '&:hover': {
+                            backgroundColor: '#E7ABC5',
+                            color: '#FFFFFF',
+                        }
+                    }}>CANCEL</Button>
+                    <Button onClick={handleSubmit} sx={{
+                        backgroundColor: '#C6487E',
+                        '&:hover': {
+                            backgroundColor: '#E7ABC5'
+                        }
+                    }}>SUBMIT</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

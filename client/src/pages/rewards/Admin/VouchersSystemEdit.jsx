@@ -11,7 +11,8 @@ import {
     MenuItem,
     Select,
     FormControl,
-    InputLabel
+    InputLabel,
+    Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -31,6 +32,7 @@ const AdminVouchersSystemEdit = () => {
 
     const [tiers, setTiers] = useState([]);
     const [loading, setLoading] = useState(true);
+        const [openModal, setOpenModal] = useState(null);
     const [errorMessage, setErrorMessage] = useState(""); // To display error messages
 
     useEffect(() => {
@@ -166,7 +168,7 @@ const AdminVouchersSystemEdit = () => {
                     </Grid>
 
                     <Grid item xs={12} display="flex" justifyContent="space-between">
-                        <Button onClick={() => navigate('/rewards/admin/voucherssystem')} variant="contained" sx={{
+                        <Button onClick={() => navigate('/admin/rewards')} variant="contained" sx={{
                             textTransform: 'none',
                             color: '#C6487E',
                             backgroundColor: '#FFFFFF',
@@ -178,7 +180,7 @@ const AdminVouchersSystemEdit = () => {
                         }}>
                             BACK
                         </Button>
-                        <Button onClick={handleSave} variant="contained" sx={{
+                        <Button onClick={() => setOpenModal(true)} variant="contained" sx={{
                             textTransform: 'none',
                             color: '#FFFFFF',
                             backgroundColor: '#C6487E',
@@ -190,6 +192,32 @@ const AdminVouchersSystemEdit = () => {
                 </Grid>
             </CardContent>
         </Card>
+
+        {/* Confirmation Modal */}
+                    <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+                        <DialogTitle>Confirm Submission</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>Are you sure you want to save these changes?</DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setOpenModal(false)} sx={{
+                                textTransform: 'none',
+                                color: '#C6487E',
+                                backgroundColor: '#FFFFFF',
+                                borderColor: '#C6487E',
+                                '&:hover': {
+                                    backgroundColor: '#E7ABC5',
+                                    color: '#FFFFFF',
+                                }
+                            }}>CANCEL</Button>
+                            <Button onClick={handleSave} sx={{
+                                backgroundColor: '#C6487E',
+                                '&:hover': {
+                                    backgroundColor: '#E7ABC5'
+                                }
+                            }}>SUBMIT</Button>
+                        </DialogActions>
+                    </Dialog>
     </Box>
 );
 };
