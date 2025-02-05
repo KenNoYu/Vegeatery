@@ -70,7 +70,8 @@ const OrderConfirmation = () => {
             voucher_applied: order.voucherId != null, // Boolean to check if a voucher was used
             discount_amount: order.voucherId ? calculateDiscount().toFixed(2) : "0.00", // Discount amount
             discount_percent: order.voucherId ? (order.discountPercent * 100) : "0", // Discount percentage
-            total_price: order.totalPrice.toFixed(2) // Total price
+            total_price: order.totalPrice.toFixed(2), // Total price,
+            total_points: order.totalPoints
         };
 
         emailjs.send(
