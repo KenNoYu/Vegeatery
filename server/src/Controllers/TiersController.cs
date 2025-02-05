@@ -39,7 +39,7 @@ namespace vegeatery.Controllers
 
         // PUT: /tiers/{id}
         [HttpPut("{tierid}")]
-        public IActionResult UpdateTier(int tierid, [FromBody] Tier updatedTier)
+        public async Task<IActionResult> UpdateTier(int tierid, [FromBody] Tier updatedTier)
         {
             if (updatedTier == null || string.IsNullOrEmpty(updatedTier.TierName))
             {
@@ -51,24 +51,39 @@ namespace vegeatery.Controllers
                 return BadRequest("MinPoints must be greater than or equal to 0.");
             }
 
-            var existingTier = _context.Tiers.Find(tierid);
+            var existingTier = await _context.Tiers.FindAsync(tierid);
             if (existingTier == null)
             {
                 return NotFound($"Tier with id {tierid} not found.");
             }
 
             // Ensure non-overlapping MinPoints
-            if (_context.Tiers.Any(t => t.TierId != tierid && t.MinPoints == updatedTier.MinPoints))
+            if (await _context.Tiers.AnyAsync(t => t.TierId != tierid && t.MinPoints == updatedTier.MinPoints))
             {
                 return BadRequest("MinPoints must be unique and not overlap with existing tiers.");
             }
 
             existingTier.TierName = updatedTier.TierName;
             existingTier.MinPoints = updatedTier.MinPoints;
-
             _context.Tiers.Update(existingTier);
-            _context.SaveChanges();
+            //await _context.SaveChangesAsync();
 
+
+            // Update all users' tiers based on new tier settings
+            var users = await _context.Users.ToListAsync();
+            var tiers = await _context.Tiers.OrderBy(t => t.MinPoints).ToListAsync();
+
+            foreach (var user in users)
+            {
+                var newTier = tiers.LastOrDefault(t => user.TotalPoints >= t.MinPoints);
+                if (newTier != null && user.TierId != newTier.TierId)
+                {
+                    user.TierId = newTier.TierId;
+                    _context.Users.Update(user);
+                }
+            }
+
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
