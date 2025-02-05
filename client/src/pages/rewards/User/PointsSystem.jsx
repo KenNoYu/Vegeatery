@@ -104,7 +104,7 @@ const PointsSystem = () => {
                   Expires on {dayjs(voucher.ExpiryDate).format('DD/MM/YYYY')}
                 </Typography>
                 <Button onClick={() => navigate('/user/store')} variant="contained" fullWidth sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}>
-                  USE VOUCHER
+                  BUY NOW
                 </Button>
               </CardContent>
             </Card>
