@@ -358,7 +358,6 @@ function App() {
               <Route path="/admin/ratingstatistics" element={<RatingStatistics />} />
 
               {/* ORDERS */}
-              <Route path={"/cart"} element={<Cart />} />
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
               <Route path={"/orderconfirmation"} element={<OrderConfirmation />} />
