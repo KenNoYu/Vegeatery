@@ -30,10 +30,9 @@ const AdminSidebar = () => {
           backgroundColor: '#000000',
           width: 240,
           height: '250vh',
-          borderRight: '0.5px solid #000000',
           padding: '2em 0.5em',
           position: 'sticky',
-          marginTop: '5px', // Dynamically adjust based on navbar height
+          borderTopLeftRadius: "1em",
         },
       }}
     >
