@@ -24,7 +24,7 @@ import RoleGuard from "../../../utils/RoleGuard";
 import AdminSidebar from "./AdminSidebar";
 import UserRegistrationsGraph from "./UserRegistrationsGraph";
 import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 export default function Accounts() {
   RoleGuard("Admin");
@@ -209,22 +209,18 @@ export default function Accounts() {
 
   return (
     <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
-      {/* Sidebar */}
-      <Box>
-        <AdminSidebar />
-      </Box>
+      <AdminSidebar />
       <Box
         sx={{
+          marginLeft: "240px",
+          // flexGrow: 1,
           backgroundColor: "#FFFFFF",
           padding: "3em",
           borderTopRightRadius: "1em",
-          width: "60%",
           height: "245vh",
-          overflow: "auto",
-          // overflowY: "hidden"
         }}
       >
-        <Box sx={{ marginBottom: "7em" }}>
+        <Box sx={{ marginBottom: "7em", marginTop: "1.5em" }}>
           <UserRegistrationsGraph />
         </Box>
         <Box>
