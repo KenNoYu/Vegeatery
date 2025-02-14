@@ -33,9 +33,9 @@ const Sidebar = () => {
           width: 240,
           height: '100vh',
           padding: '2em 0.5em',
-          position: 'sticky',
-          marginTop: '0.5em',
-          height: 'auto',
+          position: 'fixed',
+          marginTop: '64px',
+          boxSizing: 'border-box'
         },
       }}
     >

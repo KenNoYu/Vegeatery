@@ -113,6 +113,9 @@ const VouchersSystemAdd = () => {
 
     return (
         <Box sx={{
+            marginTop: '5em',
+            marginLeft: 'auto',
+            marginRight: 'auto',
             maxWidth: 1200,
             minHeight: 500,
             display: 'flex',
@@ -127,7 +130,6 @@ const VouchersSystemAdd = () => {
             overflowY: "auto",
             overflowX: "hidden",
             paddingBottom: '2rem',
-            marginTop: '2rem'
         }}>
             <Typography variant="h4" fontWeight="bold" mb={2}>Add New Voucher</Typography>
             {errorMessage && <Typography color="error">{errorMessage}</Typography>}

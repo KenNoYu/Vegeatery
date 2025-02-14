@@ -109,21 +109,17 @@ function UserOverview() {
   if (user) {
     return (
       <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
-        {/* Sidebar */}
-        <Box sx={{ marginTop: "0.5em", height: "200vh", backgroundColor: "#FFFFFF", borderRight: '0.5px solid #000000', borderTopLeftRadius: "1em", }}>
-          <Sidebar />
-        </Box>
-
-        {/* Main Content */}
+        <Sidebar />
         <Box
           sx={{
+            marginLeft: "240px",
             flexGrow: 1,
+            height: "100vh",
             paddingTop: "3em",
             paddingRight: "3em",
             paddingLeft: "3em",
             backgroundColor: "#FFFFFF",
             marginTop: "0.5em",
-            overflowX: "hidden",
             borderTopRightRadius: "1em",
           }}
         >

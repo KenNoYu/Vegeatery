@@ -59,20 +59,20 @@ const MyOrdersPage = () => {
     return (
         <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
             {/* Sidebar */}
-            <Box sx={{ marginTop: "0.5em", height: "120vh", backgroundColor: "#FFFFFF", borderRight: '0.5px solid #000000', borderTopLeftRadius: "1em",}}>
-                <Sidebar />
-            </Box>
+            <Sidebar />
             {/* Main Content */}
-            <Box sx={{ 
-                    flex: 1, 
-                    marginTop: "0.5em",
-                    padding: "2em", 
-                    backgroundColor: "#ffffff", 
-                    borderTopRightRadius: "1em", 
-                    borderBottomRightRadius: "1em", 
-                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",  
-                    flexDirection: "column", 
-                }}>
+            <Box sx={{
+                height: "100vh",
+                marginLeft: "240px",
+                flex: 1,
+                marginTop: "0.5em",
+                padding: "2em",
+                backgroundColor: "#ffffff",
+                borderTopRightRadius: "1em",
+                borderBottomRightRadius: "1em",
+                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                flexDirection: "column",
+            }}>
                 {/* Order History */}
                 <Typography variant="h3" sx={{ my: 2 }}>
                     Order History

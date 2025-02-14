@@ -77,6 +77,9 @@ const GeneralFeedback = () => {
 
     return (
         <Box sx={{
+            marginTop: '5em',
+            marginLeft: 'auto',
+            marginRight: 'auto',
             maxWidth: 1200,
             minHeight: 500,
             display: 'flex',
@@ -90,8 +93,7 @@ const GeneralFeedback = () => {
             overflow: "hidden",
             overflowY: "auto",
             overflowX: "hidden",
-            paddingBottom: '2rem',
-            marginTop: '2rem'
+            paddingBottom: '2rem'
         }}>
             <Typography variant="h4" fontWeight="bold" >General Feedback</Typography>
 
