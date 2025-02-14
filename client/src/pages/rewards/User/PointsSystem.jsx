@@ -21,7 +21,7 @@ const PointsSystem = () => {
     if (userId) {
       fetchVouchers(userId);
     }
-  }, [userId]); 
+  }, [userId]);
 
   const fetchUserData = async () => {
     try {
@@ -43,7 +43,7 @@ const PointsSystem = () => {
       console.error('Error updating user data:', error);
     }
   };
-  
+
   useEffect(() => {
     if (userId) {
       updateUserData();
@@ -67,7 +67,25 @@ const PointsSystem = () => {
 
 
   return (
-    <Box sx={{ maxWidth: 1200, minHeight: 500, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', padding: '2rem', boxShadow: 3, borderRadius: 2, overflow: "hidden", overflowY: "auto", overflowX: "hidden", paddingBottom: '2rem', marginTop: '2rem' }}>
+    <Box sx={{
+      marginTop: '5em',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      maxWidth: 1200,
+      minHeight: 500,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#FFFFFF',
+      padding: '2rem',
+      boxShadow: 3,
+      borderRadius: 2,
+      overflow: "hidden",
+      overflowY: "auto",
+      overflowX: "hidden",
+      paddingBottom: '2rem'
+    }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom textAlign="center">
         Sustainable Points
       </Typography>
