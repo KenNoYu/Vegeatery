@@ -37,29 +37,52 @@ namespace vegeatery.Controllers
                 return NotFound(new { Message = "Order not found" });
             }
 
-            decimal totalPrice = order.TotalPrice;
-			double? discountPercent = order.discountPercent;
+			decimal discountPercentDecimal = Convert.ToDecimal(order.discountPercent);
+			long discountAmount = (long)Math.Round(order.TotalPrice * discountPercentDecimal * 100);
 
 			var domain = _configuration["Stripe:Domain"];
-            var options = new SessionCreateOptions
+
+			var lineItems = new List<SessionLineItemOptions>();
+
+			// Add each product as a display-only line item
+			foreach (var item in order.OrderItems)
+			{
+				lineItems.Add(new SessionLineItemOptions
+				{
+					PriceData = new SessionLineItemPriceDataOptions
+					{
+						Currency = "sgd",
+						ProductData = new SessionLineItemPriceDataProductDataOptions
+						{
+							Name = item.ProductName ?? "Unknown",
+							Description = $"Price: ${item.Price:F2} x {item.Quantity}"
+						},
+						UnitAmount = (long)(item.Price * 100), // Display only (won't charge)
+					},
+					Quantity = item.Quantity
+				});
+			}
+
+			var couponOptions = new CouponCreateOptions
+			{
+				PercentOff = discountPercentDecimal,
+				Duration = "once"
+			};
+			var couponService = new CouponService();
+			var coupon = couponService.Create(couponOptions);
+
+
+			var options = new SessionCreateOptions
             {
-                PaymentMethodTypes = new List<string> { "card" },
-                LineItems = order.OrderItems.Select(item => new SessionLineItemOptions
-                {
-                    PriceData = new SessionLineItemPriceDataOptions
-                    {
-                        Currency = "sgd",
-                        ProductData = new SessionLineItemPriceDataProductDataOptions
-                        {
-                            Name = item.ProductName != null ? item.ProductName : "Unknown",
-                        },
-                        UnitAmount = (long)(item.Price * 100), // Stripe expects the amount in cents
-                    },
-                    Quantity = item.Quantity,
-                }).ToList(),
-                Mode = "payment",
+				PaymentMethodTypes = new List<string> { "card" },
+				LineItems = lineItems,
+				Discounts = new List<SessionDiscountOptions>
+				{
+					new SessionDiscountOptions { Coupon = coupon.Id }
+				},
+				Mode = "payment",
                 SuccessUrl = $"{domain}/orderconfirmation?orderId={orderId}&session_id={{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"{domain}/cancel",
+                CancelUrl = $"{domain}/orders",
             };
             var service = new SessionService();
             Session session = service.Create(options);
@@ -68,7 +91,7 @@ namespace vegeatery.Controllers
             order.SessionId = session.Id;
             _context.SaveChanges();
 
-            return Ok(new { SessionId = session.Id, TotalPrice = totalPrice, DiscountPercent = discountPercent });
+            return Ok(new { SessionId = session.Id});
         }
 
 		// webhook for stripe
