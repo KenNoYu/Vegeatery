@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Grid, TextField, Box, Typography } from "@mui/material";
+import { Button, Grid, TextField, Box, Typography, Container } from "@mui/material";
 import DateSelector from "./Components/DateSelector";
 import { useTheme } from '@mui/material/styles';
 import { styled } from "@mui/system";
@@ -238,6 +238,7 @@ const StaffAddReservation = () => {
   };
 
   return (
+    <Container>
 
     <Box
       sx={{
@@ -245,7 +246,7 @@ const StaffAddReservation = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: '40px',
+        marginTop: 15,
         boxShadow: 2,
         borderRadius: '20px',
         backgroundColor: 'white',
@@ -461,6 +462,7 @@ const StaffAddReservation = () => {
       </Box>
       <ToastContainer />
     </Box >
+    </Container>
   );
 };
 
