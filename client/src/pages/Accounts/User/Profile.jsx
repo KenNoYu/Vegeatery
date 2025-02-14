@@ -24,12 +24,12 @@ import RoleGuard from "../../../utils/RoleGuard";
 
 // Styling for the custom components
 const ProfileBox = styled(Box)(({ theme }) => ({
+  marginLeft: "240px",
+  width: "100%",
   flexGrow: 1,
   paddingTop: "3em",
   paddingRight: "3em",
   backgroundColor: "#FFFFFF",
-  marginTop: "0.5em",
-  overflowX: "hidden",
 }));
 
 const ProfileImage = styled(Avatar)(({ theme }) => ({
@@ -39,8 +39,6 @@ const ProfileImage = styled(Avatar)(({ theme }) => ({
 }));
 
 const ProfileDetailsBox = styled(Box)(({ theme }) => ({
-  width: "100%",
-  maxWidth: "800px",
   marginTop: theme.spacing(3),
   backgroundColor: "#ffffff",
   borderRadius: "8px",
@@ -272,432 +270,433 @@ export default function ProfilePage() {
   };
 
   return (
-    <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
-      {/* Sidebar */}
-      <Box sx={{ marginTop: "0.5em", height: "230vh", backgroundColor: "#FFFFFF", borderRight: '0.5px solid #000000', borderTopLeftRadius: "1em",}}>
+    <Box sx={{ display: "flex", height: "100%", marginTop: "2em", width: "100%" }}>
         <Sidebar />
-      </Box>
-      <ProfileBox>
-        {loading ? (
-          <Typography variant="body1">Loading profile...</Typography>
-        ) : error ? (
-          <Typography variant="body1" color="error">
-            Error fetching profile: {error}
-          </Typography>
-        ) : userId ? (
-          <>
+        <ProfileBox>
+          {loading ? (
+            <Typography variant="body1">Loading profile...</Typography>
+          ) : error ? (
+            <Typography variant="body1" color="error">
+              Error fetching profile: {error}
+            </Typography>
+          ) : userId ? (
+            <>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  width: "100%",
+                  padding: 3,
+                }}
+              >
+                {/* 1st Column: Profile Image and Upload Image Button */}
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    padding: 2,
+                    textAlign: "center",
+                    borderRight: 2,
+                    borderColor: "divider",
+                  }}
+                >
+                  <ProfileImage
+                    alt={user.username}
+                    src="/path-to-default-avatar.png"
+                    sx={{
+                      width: 120,
+                      height: 120,
+                      borderRadius: "50%",
+                      marginBottom: 2,
+                      border: "4px solid #fff",
+                      boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                    }}
+                  />
+
+                  {isEditing && (
+                    <Button
+                      sx={{
+                        backgroundColor: "green",
+                        color: "white",
+                        padding: 1,
+                        borderRadius: "5%",
+                        "&:hover": {
+                          backgroundColor: "darkgreen",
+                        },
+                        marginTop: 2,
+                      }}
+                    >
+                      <AddPhotoAlternateIcon />
+                      Change Profile
+                    </Button>
+                  )}
+                </Box>
+
+                {/* 2nd Column: Membership Info */}
+                <Box
+                  sx={{
+                    flex: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    paddingLeft: 3,
+                    textAlign: "left",
+                  }}
+                >
+                  <TierDisplay tierName={user.tierName} />
+                  <Typography variant="h3" fontWeight="bold" gutterBottom>
+                    {user.username}
+                  </Typography>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      width: "fit-content",
+                      backgroundColor: "#007BFF",
+                      color: "white",
+                      borderRadius: "12px",
+                      padding: "4px 12px",
+                      display: "inline-block",
+                      marginBottom: 3,
+                    }}
+                  >
+                    {user.roleName}
+                  </Typography>
+
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Joined on{" "}
+                    {new Date(user.createdAt).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </Typography>
+                  {/* <Typography variant="subtitle2" color="textSecondary">
+                  Expires: {user.membershipExpiration}
+                </Typography> */}
+                </Box>
+
+                {/* 3rd Column: Edit and Delete Profile Buttons */}
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: 2,
+                    marginTop: 3,
+                  }}
+                >
+                  <EditButton onClick={handleEditClick}>
+                    {isEditing ? "Cancel" : "Edit Profile"}
+                  </EditButton>
+
+                  <Button
+                    onClick={handleDeleteAccount}
+                    variant="outlined"
+                    color="error"
+                    sx={{
+                      width: "100%",
+                      borderColor: "error.main",
+                      color: "error.main",
+                      "&:hover": {
+                        backgroundColor: "red",
+                        color: "white",
+                      },
+                    }}
+                  >
+                    Delete Profile
+                  </Button>
+                </Box>
+              </Box>
+
+              {/* Personal Details Section */}
+              <ProfileDetailsBox sx={{
+                width: "90%",
+                marginLeft: "auto",
+                marginRight: "auto"
+              }}>
+                <ProfileSection>
+                  <Typography variant="h6" fontWeight="bold">
+                    Personal Details
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    label="Username"
+                    name="username"
+                    value={user.username}
+                    onChange={handleInputChange}
+                    margin="normal"
+                    disabled={!isEditing}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "&.Mui-focused": {
+                          fieldset: {
+                            borderColor: "#C6487E !important",
+                          },
+                        },
+                      },
+                      "& .MuiInputLabel-root": {
+                        // Target the label specifically
+                        color: "black", // Default label color
+                        "&.Mui-focused": {
+                          // Label styles when focused
+                          color: "black !important", // Black on focus
+                        },
+                      },
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Email Address"
+                    name="email"
+                    type="email"
+                    value={user.email}
+                    onChange={handleInputChange}
+                    margin="normal"
+                    disabled={!isEditing}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "&.Mui-focused": {
+                          fieldset: {
+                            borderColor: "#C6487E !important",
+                          },
+                        },
+                      },
+                      "& .MuiInputLabel-root": {
+                        // Target the label specifically
+                        color: "black", // Default label color
+                        "&.Mui-focused": {
+                          // Label styles when focused
+                          color: "black !important", // Black on focus
+                        },
+                      },
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Mobile Number"
+                    name="mobile"
+                    value={user.mobile}
+                    onChange={handleInputChange}
+                    margin="normal"
+                    disabled={!isEditing}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "&.Mui-focused": {
+                          fieldset: {
+                            borderColor: "#C6487E !important",
+                          },
+                        },
+                      },
+                      "& .MuiInputLabel-root": {
+                        // Target the label specifically
+                        color: "black", // Default label color
+                        "&.Mui-focused": {
+                          // Label styles when focused
+                          color: "black !important", // Black on focus
+                        },
+                      },
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Date of Birth"
+                    name="dob"
+                    value={new Date(user.dob).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                    onChange={handleInputChange}
+                    margin="normal"
+                    disabled={!isEditing}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "&.Mui-focused": {
+                          fieldset: {
+                            borderColor: "#C6487E !important",
+                          },
+                        },
+                      },
+                      "& .MuiInputLabel-root": {
+                        // Target the label specifically
+                        color: "black", // Default label color
+                        "&.Mui-focused": {
+                          // Label styles when focused
+                          color: "black !important", // Black on focus
+                        },
+                      },
+                    }}
+                  />
+                </ProfileSection>
+
+                <ProfileSection>
+                  <Typography variant="h6" fontWeight="bold">
+                    Gender
+                  </Typography>
+                  <RadioGroup
+                    row
+                    name="gender"
+                    value={user.gender || "prefer_not_say"}
+                    onChange={handleInputChange}
+                    sx={{
+                      "& .MuiRadio-root": {
+                        // Target all Radio components within the RadioGroup
+                        color: "inherit", // Default color (usually gray)
+                      },
+                      "& .MuiRadio-root.Mui-checked": {
+                        // Target checked Radio components
+                        color: "#C6487E !important", // Your desired checked color
+                      },
+                    }}
+                  >
+                    <FormControlLabel
+                      value="Male"
+                      control={<Radio />}
+                      label="Male"
+                      disabled={!isEditing}
+                    />
+                    <FormControlLabel
+                      value="Female"
+                      control={<Radio />}
+                      label="Female"
+                      disabled={!isEditing}
+                    />
+                    <FormControlLabel
+                      value="Others"
+                      control={<Radio />}
+                      label="Others"
+                      disabled={!isEditing}
+                    />
+                    <FormControlLabel
+                      value="Prefer not to say"
+                      control={<Radio />}
+                      label="Prefer not to say"
+                      disabled={!isEditing}
+                    />
+                  </RadioGroup>
+                </ProfileSection>
+                <hr
+                  style={{
+                    borderTop: "1px solid lightgrey",
+                    marginTop: "2em",
+                    marginBottom: "2em",
+                  }}
+                ></hr>
+                {/* Dietary Details Section */}
+                <ProfileSection>
+                  <Typography variant="h6" fontWeight="bold">
+                    Dietary Details
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    label="Dietary Preference"
+                    name="dietaryPreference"
+                    value={user.dietaryPreference}
+                    onChange={handleInputChange}
+                    margin="normal"
+                    disabled={!isEditing}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "&.Mui-focused": {
+                          fieldset: {
+                            borderColor: "#C6487E !important",
+                          },
+                        },
+                      },
+                      "& .MuiInputLabel-root": {
+                        // Target the label specifically
+                        color: "black", // Default label color
+                        "&.Mui-focused": {
+                          // Label styles when focused
+                          color: "black !important", // Black on focus
+                        },
+                      },
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Allergy Info"
+                    name="allergyInfo"
+                    value={user.allergyInfo}
+                    onChange={handleInputChange}
+                    margin="normal"
+                    disabled={!isEditing}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "&.Mui-focused": {
+                          fieldset: {
+                            borderColor: "#C6487E !important",
+                          },
+                        },
+                      },
+                      "& .MuiInputLabel-root": {
+                        // Target the label specifically
+                        color: "black", // Default label color
+                        "&.Mui-focused": {
+                          // Label styles when focused
+                          color: "black !important", // Black on focus
+                        },
+                      },
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Meal Types"
+                    name="mealTypes"
+                    value={user.mealTypes}
+                    onChange={handleInputChange}
+                    margin="normal"
+                    disabled={!isEditing}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "&.Mui-focused": {
+                          fieldset: {
+                            borderColor: "#C6487E !important",
+                          },
+                        },
+                      },
+                      "& .MuiInputLabel-root": {
+                        // Target the label specifically
+                        color: "black", // Default label color
+                        "&.Mui-focused": {
+                          // Label styles when focused
+                          color: "black !important", // Black on focus
+                        },
+                      },
+                    }}
+                  />
+                </ProfileSection>
+
+                {/* Save Button */}
+                {isEditing && (
+                  <Box textAlign="right">
+                    <EditButton onClick={handleSaveProfile}>
+                      Save Profile
+                    </EditButton>
+                  </Box>
+                )}
+              </ProfileDetailsBox>
+            </>
+          ) : (
             <Box
               sx={{
                 display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                width: "100%",
-                padding: 3,
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100vh",
               }}
             >
-              {/* 1st Column: Profile Image and Upload Image Button */}
-              <Box
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  padding: 2,
-                  textAlign: "center",
-                  borderRight: 2,
-                  borderColor: "divider",
-                }}
-              >
-                <ProfileImage
-                  alt={user.username}
-                  src="/path-to-default-avatar.png"
-                  sx={{
-                    width: 120,
-                    height: 120,
-                    borderRadius: "50%",
-                    marginBottom: 2,
-                    border: "4px solid #fff",
-                    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                  }}
-                />
-
-                {isEditing && (
-                  <Button
-                    sx={{
-                      backgroundColor: "green",
-                      color: "white",
-                      padding: 1,
-                      borderRadius: "5%",
-                      "&:hover": {
-                        backgroundColor: "darkgreen",
-                      },
-                      marginTop: 2,
-                    }}
-                  >
-                    <AddPhotoAlternateIcon />
-                    Change Profile
-                  </Button>
-                )}
-              </Box>
-
-              {/* 2nd Column: Membership Info */}
-              <Box
-                sx={{
-                  flex: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  paddingLeft: 3,
-                  textAlign: "left",
-                }}
-              >
-                <TierDisplay tierName={user.tierName} />
-                <Typography variant="h3" fontWeight="bold" gutterBottom>
-                  {user.username}
-                </Typography>
-                <Typography
-                  variant="subtitle2"
-                  sx={{
-                    width: "fit-content",
-                    backgroundColor: "#007BFF",
-                    color: "white",
-                    borderRadius: "12px",
-                    padding: "4px 12px",
-                    display: "inline-block",
-                    marginBottom: 3,
-                  }}
-                >
-                  {user.roleName}
-                </Typography>
-
-                <Typography variant="subtitle2" color="textSecondary">
-                  Joined on{" "}
-                  {new Date(user.createdAt).toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </Typography>
-                {/* <Typography variant="subtitle2" color="textSecondary">
-                  Expires: {user.membershipExpiration}
-                </Typography> */}
-              </Box>
-
-              {/* 3rd Column: Edit and Delete Profile Buttons */}
-              <Box
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: 2,
-                  marginTop: 3,
-                }}
-              >
-                <EditButton onClick={handleEditClick}>
-                  {isEditing ? "Cancel" : "Edit Profile"}
-                </EditButton>
-
-                <Button
-                  onClick={handleDeleteAccount}
-                  variant="outlined"
-                  color="error"
-                  sx={{
-                    width: "100%",
-                    borderColor: "error.main",
-                    color: "error.main",
-                    "&:hover": {
-                      backgroundColor: "red",
-                      color: "white",
-                    },
-                  }}
-                >
-                  Delete Profile
-                </Button>
-              </Box>
+              <CircularProgress sx={{ marginRight: 2 }} />
+              <Typography variant="body1">No user data available.</Typography>
             </Box>
-
-            {/* Personal Details Section */}
-            <ProfileDetailsBox sx={{ marginLeft: 2 }}>
-              <ProfileSection>
-                <Typography variant="h6" fontWeight="bold">
-                  Personal Details
-                </Typography>
-                <TextField
-                  fullWidth
-                  label="Username"
-                  name="username"
-                  value={user.username}
-                  onChange={handleInputChange}
-                  margin="normal"
-                  disabled={!isEditing}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused": {
-                        fieldset: {
-                          borderColor: "#C6487E !important",
-                        },
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      // Target the label specifically
-                      color: "black", // Default label color
-                      "&.Mui-focused": {
-                        // Label styles when focused
-                        color: "black !important", // Black on focus
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  label="Email Address"
-                  name="email"
-                  type="email"
-                  value={user.email}
-                  onChange={handleInputChange}
-                  margin="normal"
-                  disabled={!isEditing}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused": {
-                        fieldset: {
-                          borderColor: "#C6487E !important",
-                        },
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      // Target the label specifically
-                      color: "black", // Default label color
-                      "&.Mui-focused": {
-                        // Label styles when focused
-                        color: "black !important", // Black on focus
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  label="Mobile Number"
-                  name="mobile"
-                  value={user.mobile}
-                  onChange={handleInputChange}
-                  margin="normal"
-                  disabled={!isEditing}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused": {
-                        fieldset: {
-                          borderColor: "#C6487E !important",
-                        },
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      // Target the label specifically
-                      color: "black", // Default label color
-                      "&.Mui-focused": {
-                        // Label styles when focused
-                        color: "black !important", // Black on focus
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  label="Date of Birth"
-                  name="dob"
-                  value={new Date(user.dob).toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                  onChange={handleInputChange}
-                  margin="normal"
-                  disabled={!isEditing}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused": {
-                        fieldset: {
-                          borderColor: "#C6487E !important",
-                        },
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      // Target the label specifically
-                      color: "black", // Default label color
-                      "&.Mui-focused": {
-                        // Label styles when focused
-                        color: "black !important", // Black on focus
-                      },
-                    },
-                  }}
-                />
-              </ProfileSection>
-
-              <ProfileSection>
-                <Typography variant="h6" fontWeight="bold">
-                  Gender
-                </Typography>
-                <RadioGroup
-                  row
-                  name="gender"
-                  value={user.gender || "prefer_not_say"}
-                  onChange={handleInputChange}
-                  sx={{
-                    "& .MuiRadio-root": {
-                      // Target all Radio components within the RadioGroup
-                      color: "inherit", // Default color (usually gray)
-                    },
-                    "& .MuiRadio-root.Mui-checked": {
-                      // Target checked Radio components
-                      color: "#C6487E !important", // Your desired checked color
-                    },
-                  }}
-                >
-                  <FormControlLabel
-                    value="Male"
-                    control={<Radio />}
-                    label="Male"
-                    disabled={!isEditing}
-                  />
-                  <FormControlLabel
-                    value="Female"
-                    control={<Radio />}
-                    label="Female"
-                    disabled={!isEditing}
-                  />
-                  <FormControlLabel
-                    value="Others"
-                    control={<Radio />}
-                    label="Others"
-                    disabled={!isEditing}
-                  />
-                  <FormControlLabel
-                    value="Prefer not to say"
-                    control={<Radio />}
-                    label="Prefer not to say"
-                    disabled={!isEditing}
-                  />
-                </RadioGroup>
-              </ProfileSection>
-              <hr
-                style={{
-                  borderTop: "1px solid lightgrey",
-                  marginTop: "2em",
-                  marginBottom: "2em",
-                }}
-              ></hr>
-              {/* Dietary Details Section */}
-              <ProfileSection>
-                <Typography variant="h6" fontWeight="bold">
-                  Dietary Details
-                </Typography>
-                <TextField
-                  fullWidth
-                  label="Dietary Preference"
-                  name="dietaryPreference"
-                  value={user.dietaryPreference}
-                  onChange={handleInputChange}
-                  margin="normal"
-                  disabled={!isEditing}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused": {
-                        fieldset: {
-                          borderColor: "#C6487E !important",
-                        },
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      // Target the label specifically
-                      color: "black", // Default label color
-                      "&.Mui-focused": {
-                        // Label styles when focused
-                        color: "black !important", // Black on focus
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  label="Allergy Info"
-                  name="allergyInfo"
-                  value={user.allergyInfo}
-                  onChange={handleInputChange}
-                  margin="normal"
-                  disabled={!isEditing}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused": {
-                        fieldset: {
-                          borderColor: "#C6487E !important",
-                        },
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      // Target the label specifically
-                      color: "black", // Default label color
-                      "&.Mui-focused": {
-                        // Label styles when focused
-                        color: "black !important", // Black on focus
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  label="Meal Types"
-                  name="mealTypes"
-                  value={user.mealTypes}
-                  onChange={handleInputChange}
-                  margin="normal"
-                  disabled={!isEditing}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "&.Mui-focused": {
-                        fieldset: {
-                          borderColor: "#C6487E !important",
-                        },
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      // Target the label specifically
-                      color: "black", // Default label color
-                      "&.Mui-focused": {
-                        // Label styles when focused
-                        color: "black !important", // Black on focus
-                      },
-                    },
-                  }}
-                />
-              </ProfileSection>
-
-              {/* Save Button */}
-              {isEditing && (
-                <Box textAlign="right">
-                  <EditButton onClick={handleSaveProfile}>
-                    Save Profile
-                  </EditButton>
-                </Box>
-              )}
-            </ProfileDetailsBox>
-          </>
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100vh",
-            }}
-          >
-            <CircularProgress sx={{ marginRight: 2 }} />
-            <Typography variant="body1">No user data available.</Typography>
-          </Box>
-        )}
-      </ProfileBox>
-    </Box>
+          )}
+        </ProfileBox>
+      </Box>
   );
 }

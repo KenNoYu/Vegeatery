@@ -31,8 +31,9 @@ const AdminSidebar = () => {
           width: 240,
           height: '250vh',
           padding: '2em 0.5em',
-          position: 'sticky',
-          borderTopLeftRadius: "1em",
+          position: 'fixed',
+          marginTop: '64px',
+          boxSizing: 'border-box'
         },
       }}
     >
