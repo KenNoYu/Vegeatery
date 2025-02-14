@@ -239,7 +239,7 @@ const Orders = () => {
 
             setSelectedVoucher(voucher);
             setTotal(newTotal > 0 ? newTotal : 0);
-            setDiscountedTotal(discount);
+            setDiscountedTotal(total * discount);
             setOpenVouchers(false);
         }
     };
