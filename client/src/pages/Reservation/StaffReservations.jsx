@@ -7,7 +7,8 @@ import React, { useState, useEffect } from 'react'; import {
   CardContent,
   Stack,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  Container
 } from "@mui/material";
 import http from '../../http';
 import { useTheme } from '@mui/material/styles';
@@ -21,7 +22,7 @@ const StaffReservations = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+  const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString("en-CA"))
 
   const fetchReservations = async (date) => {
     try {
@@ -76,6 +77,7 @@ const StaffReservations = () => {
   };
 
   return (
+    <Container>
 
     <Box
       sx={{
@@ -83,9 +85,9 @@ const StaffReservations = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: '40px',
+        marginTop: 15,
         boxShadow: 2,
-        borderRadius: '20px'
+        borderRadius: '20px',
       }}
     >
       
@@ -273,6 +275,7 @@ const StaffReservations = () => {
     </Box>
     <ToastContainer />
     </Box >
+    </Container>
   );
 };
 
