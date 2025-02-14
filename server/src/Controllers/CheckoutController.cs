@@ -37,14 +37,17 @@ namespace vegeatery.Controllers
                 return NotFound(new { Message = "Order not found" });
             }
 
-            var domain = _configuration["Stripe:Domain"];
+            decimal totalPrice = order.TotalPrice;
+			double? discountPercent = order.discountPercent;
+
+			var domain = _configuration["Stripe:Domain"];
             var options = new SessionCreateOptions
             {
                 PaymentMethodTypes = new List<string> { "card" },
                 LineItems = order.OrderItems.Select(item => new SessionLineItemOptions
                 {
                     PriceData = new SessionLineItemPriceDataOptions
-                    { 
+                    {
                         Currency = "sgd",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
@@ -58,7 +61,6 @@ namespace vegeatery.Controllers
                 SuccessUrl = $"{domain}/orderconfirmation?orderId={orderId}&session_id={{CHECKOUT_SESSION_ID}}",
                 CancelUrl = $"{domain}/cancel",
             };
-
             var service = new SessionService();
             Session session = service.Create(options);
 
@@ -66,7 +68,7 @@ namespace vegeatery.Controllers
             order.SessionId = session.Id;
             _context.SaveChanges();
 
-            return Ok(new { SessionId = session.Id });
+            return Ok(new { SessionId = session.Id, TotalPrice = totalPrice, DiscountPercent = discountPercent });
         }
 
 		// webhook for stripe
