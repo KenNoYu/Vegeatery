@@ -12,7 +12,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import http from "../../../http";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
