@@ -134,7 +134,7 @@ function App() {
     <UserContext.Provider value={{ user, setUser }}>
       <Router>
         <ThemeProvider theme={user?.role === "Admin" || user?.role === "Staff" ? DarkTheme : MyTheme}>
-          <AppBar position="static" className="AppBar" >
+          <AppBar position="fixed" className="AppBar" >
             <Container>
               <Toolbar
                 disableGutters={true}
@@ -309,7 +309,12 @@ function App() {
               </Toolbar>
             </Container>
           </AppBar>
-          <Container>
+
+          {/* 
+          this is to make sure the img in homepage can take up the full width without awkward 
+          awkward padding, may affect other pages margins / paddings!!
+          */}
+          <Container maxWidth={false} disableGutters sx={{ padding: "0 !important", margin: "0 !important" }}>
             <Routes>
               <Route path="/" element={<Home />} />
 
