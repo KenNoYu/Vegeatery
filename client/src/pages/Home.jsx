@@ -17,8 +17,8 @@ const Home = () => {
         sx={{
           position: "relative",
           minHeight: "75vh",
-          width: "100vw",
-          backgroundImage: "url('/assets/hpHero.png')",
+          width: "100%",
+          backgroundImage: "url('/assets/homepage/hpHero.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -63,7 +63,7 @@ const Home = () => {
         {/* Circular Image Positioned at Top Right */}
         <Box
           component="img"
-          src="/assets/hpLemonPasta.png"
+          src="/assets/homepage/hpLemonPasta.png"
           alt="Lemon Olive Oil Pasta"
           sx={{
             position: "absolute",
@@ -83,7 +83,7 @@ const Home = () => {
           <Grid item xs={12} md={6}>
             <Box
               component="img"
-              src="/assets/hpTacos.png"
+              src="/assets/homepage/hpTacos.png"
               alt="Vegan Portobello Tacos"
               sx={{
                 width: "100%",
@@ -147,7 +147,7 @@ const Home = () => {
           <Grid item xs={12} md={6} mt={10}>
             <Box
               component="img"
-              src="/assets/hpJuice.png"
+              src="/assets/homepage/hpJuice.png"
               alt="Ginger-Beet Juice"
               sx={{
                 width: "100%",
@@ -191,7 +191,7 @@ const Home = () => {
       {/* Directly Display the SVG */}
       <Box
         component="img"
-        src="/assets/GrassMask.svg"
+        src="/assets/homepage/GrassMask.svg"
         alt="Masked Quote Section"
         sx={{
           width: "80%",
