@@ -7,6 +7,9 @@ public class User
 	[Key]
 	public int Id { get; set; }
 
+	[MaxLength(20)]
+	public string? ImageFile { get; set; }
+
 	[Required]
 	[MaxLength(50)]
 	public string? Username { get; set; }
