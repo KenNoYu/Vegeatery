@@ -33,12 +33,13 @@ import { useNavigate } from "react-router-dom";
 
 // Styling for the custom components
 const ProfileBox = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(4),
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  backgroundColor: "#f9f9f9",
-  marginTop: "0.3em",
+  marginLeft: "240px",
+  width: "100%",
+  height: "100%",
+  flexGrow: 1,
+  paddingTop: "3em",
+  paddingRight: "3em",
+  backgroundColor: "#FFFFFF",
 }));
 
 const ProfileImage = styled(Avatar)(({ theme }) => ({
@@ -48,8 +49,6 @@ const ProfileImage = styled(Avatar)(({ theme }) => ({
 }));
 
 const ProfileDetailsBox = styled(Box)(({ theme }) => ({
-  width: "100%",
-  maxWidth: "800px",
   marginTop: theme.spacing(3),
   backgroundColor: "#ffffff",
   borderRadius: "8px",
@@ -136,6 +135,7 @@ export default function UserProfileView() {
       const userData = response.data;
       console.log(userData);
       setUser({
+        profileImage: userData.imageFile,
         username: userData.username,
         email: userData.email,
         mobile: userData.contactNumber,
@@ -231,6 +231,37 @@ export default function UserProfileView() {
     }
   };
 
+  const StyledTierName = styled(Typography)(({ theme, tierColor }) => ({
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    textShadow: `2px 2px 4px rgba(0, 0, 0, 0.2)`,
+    letterSpacing: '0.1em',
+    color: tierColor,
+  }));
+
+  const TierDisplay = ({ tierName }) => {
+    const getTierColor = (tier) => {
+      switch (tier?.toLowerCase()) {
+        case "bronze":
+          return "#CD7F32"; // Bronze hex code
+        case "silver":
+          return "#C0C0C0"; // Silver hex code
+        case "gold":
+          return "#FFD700"; // Gold hex code
+        default:
+          return "textSecondary";
+      }
+    };
+
+    const tierColor = getTierColor(tierName);
+
+    return (
+      <StyledTierName variant="h5" tierColor={tierColor} gutterBottom>
+        {tierName}
+      </StyledTierName>
+    );
+  };
+
   return (
     <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
       {/* Sidebar */}
@@ -271,7 +302,11 @@ export default function UserProfileView() {
               >
                 <ProfileImage
                   alt={user.username}
-                  src="/path-to-default-avatar.png"
+                  src={
+                    user.profileImage
+                      ? `${import.meta.env.VITE_FILE_BASE_URL}${user.profileImage}`
+                      : '/path/to/default-image.jpg'  // Provide a fallback image if no profile image is set
+                  }
                   sx={{
                     width: 120,
                     height: 120,
@@ -282,7 +317,7 @@ export default function UserProfileView() {
                   }}
                 />
 
-                {isEditing && (
+                {/* {isEditing && (
                   <Button
                     sx={{
                       backgroundColor: "green",
@@ -298,7 +333,7 @@ export default function UserProfileView() {
                     <AddPhotoAlternateIcon />
                     Change Profile
                   </Button>
-                )}
+                )} */}
               </Box>
 
               {/* 2nd Column: Membership Info */}
@@ -312,12 +347,9 @@ export default function UserProfileView() {
                   textAlign: "left",
                 }}
               >
+                <TierDisplay tierName={user.tierName} />
                 <Typography variant="h3" fontWeight="bold" gutterBottom>
                   {user.username}
-                </Typography>
-                <Typography variant="h5" color="textSecondary" gutterBottom>
-                  BRONZE
-                  {/* Membership Tier: {user.membershipTier} */}
                 </Typography>
                 <Typography
                   variant="subtitle2"
@@ -383,7 +415,11 @@ export default function UserProfileView() {
             </Box>
 
             {/* Personal Details Section */}
-            <ProfileDetailsBox sx={{ marginLeft: 2 }}>
+            <ProfileDetailsBox sx={{
+              width: "90%",
+              marginLeft: "auto",
+              marginRight: "auto"
+            }}>
               <ProfileSection>
                 <Typography variant="h6" fontWeight="bold">
                   Personal Details
