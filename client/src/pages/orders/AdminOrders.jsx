@@ -145,12 +145,12 @@ const AdminOrders = () => {
                 alert("No orders available to export.");
                 return;
             }
-    
+
             // Construct CSV headers
             const headers = [
                 "Id,Name,Address,Pick-Up Time,Status,Products",
             ];
-    
+
             // Generate CSV rows
             const rows = orders.map((order) => {
                 // Safely retrieve product details and format them
@@ -160,25 +160,25 @@ const AdminOrders = () => {
                         const quantity = item.quantity || 0;
                         const price =
                             item.price != null ? `$${item.price.toFixed(2)}` : "$0.00";
-    
+
                         return `${itemName} x${quantity} @ ${price}`;
                     })
                     .join(" | ");
-    
+
                 // Safely format order details
                 const id = order.orderId || "Unknown ID";
                 const name = order.fullName || "Unknown Name";
                 const address = order.address || "Unknown Address";
                 const pickUpTime = order.timeSlot || "Unknown Time";
                 const status = order.status || "Unknown Status";
-    
+
                 return `"${id}","${name}","${address}","${pickUpTime}","${status}","${products}"`;
             });
-    
+
             // Combine headers and rows into the final CSV content
             const csvContent = [headers, ...rows].join("\n");
             const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    
+
             // Create and trigger download
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
@@ -187,7 +187,7 @@ const AdminOrders = () => {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-    
+
             console.log("CSV export successful.");
         } catch (error) {
             console.error("Error exporting CSV:", error);
@@ -202,18 +202,38 @@ const AdminOrders = () => {
         // If the clicked row is already expanded, collapse it. Otherwise, expand it.
         setExpandedRow(prevExpandedRow => (prevExpandedRow === id ? null : id));
     };
-    
+
 
     if (loading) {
         return (
-            <Box>
-                <Typography variant="h5" sx={{ my: 2 }}>
+            <Box sx={{ p: 2 }}>
+                <Typography variant="h5" gutterBottom>
                     Orders
                 </Typography>
-                <Tabs value={currentTab} onChange={handleTabChange} color="Accent">
-                    <Tab label="All Orders" />
-                    <Tab label="In-Progress" />
-                    <Tab label="Completed" />
+                <Tabs value={currentTab} onChange={handleTabChange} sx={{
+                    mb: 2,
+                    '& .MuiTabs-indicator': {
+                        backgroundColor: 'Accent.main', // Change the indicator color to Accent
+                    },
+                }} color="Accent.main">
+                    <Tab label="All Orders" sx={{
+                        color: currentTab === 0 ? 'Accent.main' : '', // Change text color for selected tab
+                        '&.Mui-selected': {
+                            color: 'Accent.main', // Ensure selected tab text color is Accent
+                        },
+                    }} />
+                    <Tab label="In-Progress" sx={{
+                        color: currentTab === 1 ? 'Accent.main' : '', // Change text color for selected tab
+                        '&.Mui-selected': {
+                            color: 'Accent.main', // Ensure selected tab text color is Accent
+                        },
+                    }} />
+                    <Tab label="Completed" sx={{
+                        color: currentTab === 2 ? 'Accent.main' : '', // Change text color for selected tab
+                        '&.Mui-selected': {
+                            color: 'Accent.main', // Ensure selected tab text color is Accent
+                        },
+                    }} />
                 </Tabs>
 
                 <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
@@ -260,13 +280,14 @@ const AdminOrders = () => {
                                 <TableCell>Id</TableCell>
                                 <TableCell>Name</TableCell>
                                 <TableCell>Address</TableCell>
+                                <TableCell>Order Date</TableCell>
                                 <TableCell>Pick-Up Time</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            <Box sx={{color: "Primary" }}><CircularProgress />;</Box>
+                            <Box sx={{ color: "Primary" }}><CircularProgress /></Box>
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -279,10 +300,30 @@ const AdminOrders = () => {
             <Typography variant="h5" gutterBottom>
                 Orders
             </Typography>
-            <Tabs value={currentTab} onChange={handleTabChange} sx={{ mb: 2 }} color="Accent">
-                <Tab label="All Orders" />
-                <Tab label="In-Progress" />
-                <Tab label="Completed" />
+            <Tabs value={currentTab} onChange={handleTabChange} sx={{
+                    mb: 2,
+                    '& .MuiTabs-indicator': {
+                        backgroundColor: 'Accent.main', // Change the indicator color to Accent
+                    },
+                }} color="Accent">
+                <Tab label="All Orders" sx={{
+                    color: currentTab === 0 ? 'Accent.main' : '', // Change text color for selected tab
+                    '&.Mui-selected': {
+                        color: 'Accent.main', // Ensure selected tab text color is Accent
+                    },
+                }} />
+                <Tab label="In-Progress" sx={{
+                    color: currentTab === 1 ? 'Accent.main' : '', // Change text color for selected tab
+                    '&.Mui-selected': {
+                        color: 'Accent.main', // Ensure selected tab text color is Accent
+                    },
+                }} />
+                <Tab label="Completed" sx={{
+                    color: currentTab === 2 ? 'Accent.main' : '', // Change text color for selected tab
+                    '&.Mui-selected': {
+                        color: 'Accent.main', // Ensure selected tab text color is Accent
+                    },
+                }} />
             </Tabs>
 
             <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
@@ -390,7 +431,7 @@ const AdminOrders = () => {
                             ))
                         ) : (
                             <Typography variant="body1">
-                                
+
                             </Typography>
                         )}
                     </TableBody>
@@ -413,7 +454,7 @@ const AdminOrders = () => {
                         {/* Left Half: Date Selector & Time Selector */}
                         <Box sx={{ flex: 1, p: 4 }}>
                             {/* Date Selector */}
-                            <AdminDateSelector selectedDate={startDate} onDateChange={handleStartDateSelect} allowPastDates={true}/>
+                            <AdminDateSelector selectedDate={startDate} onDateChange={handleStartDateSelect} allowPastDates={true} />
                         </Box>
                     </Box>
                 </DialogContent>

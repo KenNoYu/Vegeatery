@@ -103,13 +103,13 @@ const StaffOrders = () => {
     // convert back to 12 hour clock
     const convertTo12HourFormat = (timeStr) => {
         if (!timeStr) return null;
-    
+
         const [hours, minutes] = timeStr.split(":").map(Number);
         const period = hours >= 12 ? "PM" : "AM";
         let displayHours = hours % 12;
-    
+
         if (displayHours === 0) displayHours = 12; // Handle 12 AM/PM case
-    
+
         return `${displayHours}:${String(minutes).padStart(2, "0")}${period}`;
     };
 
@@ -117,12 +117,32 @@ const StaffOrders = () => {
         return (
             <Box>
                 <Typography variant="h5" sx={{ my: 2 }}>
-                    Orders
+                    Active Orders
                 </Typography>
-                <Tabs value={currentTab} onChange={handleTabChange}>
-                    <Tab label="New Orders" />
-                    <Tab label="In-Progress" />
-                    <Tab label="Ready" />
+                <Tabs value={currentTab} onChange={handleTabChange} sx={{
+                    mb: 2,
+                    '& .MuiTabs-indicator': {
+                        backgroundColor: 'Accent.main', // Change the indicator color to Accent
+                    },
+                }} textColor='Accent.main'>
+                    <Tab label="New Orders" sx={{
+                    color: currentTab === 0 ? 'Accent.main' : '', // Change text color for selected tab
+                    '&.Mui-selected': {
+                        color: 'Accent.main', // Ensure selected tab text color is Accent
+                    },
+                }} />
+                    <Tab label="In-Progress" sx={{
+                    color: currentTab === 1 ? 'Accent.main' : '', // Change text color for selected tab
+                    '&.Mui-selected': {
+                        color: 'Accent.main', // Ensure selected tab text color is Accent
+                    },
+                }} />
+                    <Tab label="Ready" sx={{
+                    color: currentTab === 2 ? 'Accent.main' : '', // Change text color for selected tab
+                    '&.Mui-selected': {
+                        color: 'Accent.main', // Ensure selected tab text color is Accent
+                    },
+                }} />
                 </Tabs>
                 <Box sx={{ mt: 2 }}><CircularProgress />;</Box>
             </Box>
@@ -136,10 +156,30 @@ const StaffOrders = () => {
             <Typography variant="h5" sx={{ my: 2 }}>
                 Active Orders
             </Typography>
-            <Tabs value={currentTab} onChange={handleTabChange}>
-                <Tab label="New Orders" />
-                <Tab label="In-Progress" />
-                <Tab label="Ready" />
+            <Tabs value={currentTab} onChange={handleTabChange} sx={{
+                    mb: 2,
+                    '& .MuiTabs-indicator': {
+                        backgroundColor: 'Accent.main', // Change the indicator color to Accent
+                    },
+                }} textColor='Accent.main'>
+                <Tab label="New Orders" sx={{
+                    color: currentTab === 0 ? 'Accent.main' : '', // Change text color for selected tab
+                    '&.Mui-selected': {
+                        color: 'Accent.main', // Ensure selected tab text color is Accent
+                    },
+                }} />
+                <Tab label="In-Progress" sx={{
+                    color: currentTab === 1 ? 'Accent.main' : '', // Change text color for selected tab
+                    '&.Mui-selected': {
+                        color: 'Accent.main', // Ensure selected tab text color is Accent
+                    },
+                }} />
+                <Tab label="Ready"sx={{
+                    color: currentTab === 2 ? 'Accent.main' : '', // Change text color for selected tab
+                    '&.Mui-selected': {
+                        color: 'Accent.main', // Ensure selected tab text color is Accent
+                    },
+                }} />
             </Tabs>
             <Grid container spacing={2}>
                 {orders.length > 0 ? (
