@@ -1,6 +1,6 @@
 // src/pages/StaffReservations.js
 import React, { useState, useEffect } from 'react';
-import { Box, Drawer, Typography, ToggleButtonGroup, ToggleButton, Stack, Card, CardContent, Container } from '@mui/material';
+import { Box, Drawer, Typography, ToggleButtonGroup, ToggleButton, Stack, Card, CardContent, } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import http from '../../http';
 import { useTheme } from '@mui/material/styles';
@@ -30,7 +30,6 @@ const StaffReserveLogs = () => {
   }, []);
 
   return (
-    <Container>
 
     <Box
       sx={{
@@ -38,7 +37,7 @@ const StaffReserveLogs = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 15,
+        marginTop: 7,
         boxShadow: 2,
         borderRadius: '20px'
       }}
@@ -161,7 +160,6 @@ const StaffReserveLogs = () => {
 
       </Box>
     </Box>
-    </Container>
   );
 };
 

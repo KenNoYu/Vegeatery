@@ -7,8 +7,7 @@ import React, { useState, useEffect } from 'react'; import {
   CardContent,
   Stack,
   ToggleButtonGroup,
-  ToggleButton,
-  Container
+  ToggleButton
 } from "@mui/material";
 import http from '../../http';
 import { useTheme } from '@mui/material/styles';
@@ -77,7 +76,6 @@ const StaffReservations = () => {
   };
 
   return (
-    <Container>
 
     <Box
       sx={{
@@ -85,7 +83,7 @@ const StaffReservations = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 15,
+        marginTop: 7,
         boxShadow: 2,
         borderRadius: '20px',
       }}
@@ -275,7 +273,6 @@ const StaffReservations = () => {
     </Box>
     <ToastContainer />
     </Box >
-    </Container>
   );
 };
 

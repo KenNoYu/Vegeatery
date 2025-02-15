@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Drawer, Typography, Button, Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Container } from '@mui/material';
+import { Box, Drawer, Typography, Button, Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import http from '../../http';
 import { useTheme } from '@mui/material/styles';
@@ -212,7 +212,6 @@ const StaffFocusedReservation = () => {
   }
 
   return (
-    <Container>
 
       <Box
         sx={{
@@ -220,7 +219,7 @@ const StaffFocusedReservation = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          marginTop: 15,
+          marginTop: 7,
           boxShadow: 2,
           borderRadius: '20px',
           backgroundColor: 'white',
@@ -285,6 +284,7 @@ const StaffFocusedReservation = () => {
                   <Button key={time} 
                   variant="outlined" 
                   sx={{ 
+                    borderColor: selectedTime === time ? "none" : "black",
                     backgroundColor: selectedTime === time ? '#C6487E' : "primary", 
                     width: "90px", 
                     color: selectedTime === time ? "white" : "black", 
@@ -450,7 +450,6 @@ const StaffFocusedReservation = () => {
       </Dialog>
 
       </Box>
-    </Container>
   );
 };
 
