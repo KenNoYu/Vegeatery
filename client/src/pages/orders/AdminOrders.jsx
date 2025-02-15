@@ -171,8 +171,9 @@ const AdminOrders = () => {
                 const address = order.address || "Unknown Address";
                 const pickUpTime = order.timeSlot || "Unknown Time";
                 const status = order.status || "Unknown Status";
+                const totalPrice = order.totalPrice || "Unknown Price";
 
-                return `"${id}","${name}","${address}","${pickUpTime}","${status}","${products}"`;
+                return `"${id}","${name}","${address}","${pickUpTime}","${status}","${totalPrice}","${products}"`;
             });
 
             // Combine headers and rows into the final CSV content
@@ -283,6 +284,7 @@ const AdminOrders = () => {
                                 <TableCell>Order Date</TableCell>
                                 <TableCell>Pick-Up Time</TableCell>
                                 <TableCell>Status</TableCell>
+                                <TableCell>Total Price</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
@@ -373,6 +375,7 @@ const AdminOrders = () => {
                             <TableCell>Order Date</TableCell>
                             <TableCell>Pick-Up Time</TableCell>
                             <TableCell>Status</TableCell>
+                            <TableCell>Total Price</TableCell>
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
@@ -396,6 +399,7 @@ const AdminOrders = () => {
                                         <TableCell sx={{ flex: 1 }}>{order.orderDate}</TableCell>
                                         <TableCell sx={{ flex: 1 }}>{order.timeSlot}</TableCell>
                                         <TableCell sx={{ flex: 1 }}>{order.status}</TableCell>
+                                        <TableCell sx={{ flex: 1 }}>{order.totalPrice}</TableCell>
                                         <TableCell sx={{ flex: 1 }}>
                                             <Button
                                                 variant="outlined"
