@@ -188,7 +188,25 @@ const UserRegistrationsGraph = () => {
       <Box width="80%" margin="auto">
         <Line
           data={data}
-          options={{ responsive: true, plugins: { legend: { display: true } } }}
+          options={{
+            responsive: true,
+            plugins: {
+              legend: {
+                display: true,
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true, // Ensure y-axis starts from 0
+                ticks: {
+                  stepSize: 1, // Display only whole numbers
+                  callback: function(value) {
+                    return Number.isInteger(value) ? value : ''; // Display only whole numbers
+                  }
+                }
+              }
+            }
+          }}
         />
       </Box>
       {responseMessage && (
