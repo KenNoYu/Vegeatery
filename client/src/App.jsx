@@ -19,7 +19,7 @@ import DarkTheme from "./themes/DarkTheme"
 import http from "./http";
 import UserContext from "./contexts/UserContext";
 import logoLight from "./assets/logo/vegeateryMain.png";
-import logoDark from "./assets/logo/vegeateryWhite.png"
+import logoDark from "./assets/logo/vegeateryWhite.png";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 // PRODUCTS
@@ -84,11 +84,6 @@ function App() {
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [cartOpen, setCartOpen] = useState(false);
-
-  const toggleCart = (open) => () => {
-    setCartOpen(open);
-  };
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -134,7 +129,7 @@ function App() {
     <UserContext.Provider value={{ user, setUser }}>
       <Router>
         <ThemeProvider theme={user?.role === "Admin" || user?.role === "Staff" ? DarkTheme : MyTheme}>
-          <AppBar position="fixed" className="AppBar" >
+            <AppBar position="fixed" className="AppBar" sx={{ height: '64px' }}>
             <Container>
               <Toolbar
                 disableGutters={true}
@@ -310,14 +305,11 @@ function App() {
             </Container>
           </AppBar>
 
-          {/* 
-          this is to make sure the img in homepage can take up the full width without awkward 
-          awkward padding, may affect other pages margins / paddings!!
-          */}
-          <Container maxWidth={false} disableGutters sx={{ padding: "0 !important", margin: "0 !important" }}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
+          <Container sx={{ paddingTop: '64px' }}>
+            <Routes>  
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
