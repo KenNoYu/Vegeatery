@@ -42,7 +42,8 @@ namespace vegeatery.Models
         [Column(TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
 
-		public Double? discountPercent { get; set; }
+		[Column(TypeName = "decimal(18,2)")]
+		public Decimal? discountPercent { get; set; }
 
 		// Foreign Key
 		public int? VoucherId { get; set; }

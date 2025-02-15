@@ -16,6 +16,7 @@ const Orders = () => {
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [discountedTotal, setDiscountedTotal] = useState(0);
+    const [discountedPercent, setDiscountedPercent] = useState(0);
     const [points, setPoints] = useState(0);
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
@@ -149,7 +150,7 @@ const Orders = () => {
                 orderDate: convertToISODateTime(selectedDate, selectedTime),
                 timeSlot: convertToTimeOnly(selectedTime),
                 status: "Pending",
-                discountPercent: discountedTotal ?? null,
+                discountPercent: discountedPercent ?? null,
                 voucherId: selectedVoucher?.voucherId ?? null,
                 // autofill session and customer id next time
                 customerId: user.data.id,
@@ -239,7 +240,8 @@ const Orders = () => {
 
             setSelectedVoucher(voucher);
             setTotal(newTotal > 0 ? newTotal : 0);
-            setDiscountedTotal(discount);
+            setDiscountedTotal(total * discount);
+            setDiscountedPercent(discount);
             setOpenVouchers(false);
         }
     };
