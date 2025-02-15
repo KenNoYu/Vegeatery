@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Grid2 as Grid, Button, CircularProgress, Drawer, IconButton, List, ListItem, ListItemText, Divider, TextField } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import http from '../../http';
 import RoleGuard from '../../utils/RoleGuard';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -27,11 +27,9 @@ const Cart = () => {
         http
             .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
             .then((res) => {
-                console.log(res);
                 setUser(res);
             })
             .catch((err) => {
-                console.error("Failed to fetch user data", err);
                 setLoading(false);
             });
     }, []);
@@ -125,10 +123,15 @@ const Cart = () => {
     const navigate = useNavigate();
 
     const handleCheckout = () => {
+        console.log("Cart Items:", cartItems); // Debug
+        if (!Array.isArray(cartItems) || cartItems.length === 0) {
+            toast.error("Your cart is empty. Please add items before checking out.");
+            return;
+        }
         setCartOpen(false);
-        // Redirect to the /orders page
         navigate("/orders");
     };
+    
 
     if (loading) {
         return (
@@ -138,6 +141,7 @@ const Cart = () => {
                 </IconButton>
 
                 <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)} ModalProps={{ keepMounted: true, }}>
+                    {ToastContainer}
                     <Box
                         sx={{
                             width: 350, // Set to a smaller width
@@ -165,7 +169,7 @@ const Cart = () => {
                             <Typography variant="body1">Points:</Typography>
                             <Typography variant="body1">{total}</Typography>
                         </Box>
-                        <Button variant="contained" color="Accent" fullWidth onClick={handleCheckout}>
+                        <Button variant="contained" color="Accent" fullWidth onClick={handleCheckout} >
                             Checkout
                         </Button>
                     </Box>
@@ -213,7 +217,7 @@ const Cart = () => {
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                         <IconButton
-                                            onClick={() => UpdateCartItems(user.data.cartId, product.productId, product.quantity-1)}
+                                            onClick={() => UpdateCartItems(user.data.cartId, product.productId, product.quantity - 1)}
                                             color="Accent"
                                             size="small"
                                             disabled={product.quantity === 1}
@@ -227,7 +231,7 @@ const Cart = () => {
                                             variant="outlined"
                                         />
                                         <IconButton
-                                            onClick={() => UpdateCartItems(user.data.cartId, product.productId, product.quantity+1)}
+                                            onClick={() => UpdateCartItems(user.data.cartId, product.productId, product.quantity + 1)}
                                             color="Accent"
                                             size="small"
                                             disabled={product.quantity === 10}
@@ -259,11 +263,13 @@ const Cart = () => {
                         <Typography variant="body1">Points:</Typography>
                         <Typography variant="body1">{total}</Typography>
                     </Box>
-                    <Button variant="contained" color="Accent" fullWidth onClick={handleCheckout}>
+                    <Button variant="contained" color="Accent" fullWidth onClick={handleCheckout} disabled={cartItems.length <= 0}>
                         Checkout
                     </Button>
+                    {ToastContainer}
                 </Box>
             </Drawer>
+            <ToastContainer position="top-center" autoClose={3000} />
         </>
     );
 };

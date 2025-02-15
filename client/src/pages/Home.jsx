@@ -9,7 +9,8 @@ const Home = () => {
   return (
     <Box sx={{ 
       pb: 5,
-      margin: "auto"
+      width: "100%",
+      position: "relative"
       }}>
 
       {/* Hero Section */}
@@ -28,7 +29,6 @@ const Home = () => {
           textAlign: "center",
           color: "white",
           px: 0,
-          margin: "auto",
           overflow: "hidden",
           "& .MuiContainer-root": {
             paddingLeft: "0px !important",

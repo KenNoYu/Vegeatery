@@ -10,7 +10,7 @@
 		public decimal TotalPrice { get; set; }
 		public DateTime OrderDate { get; set; }
 		public TimeOnly TimeSlot { get; set; }
-		public Double? discountPercent { get; set; }
+		public Decimal? discountPercent { get; set; }
 		public string Status { get; set; }
         public int? VoucherId { get; set; }
         public int? CustomerId { get; set; }
