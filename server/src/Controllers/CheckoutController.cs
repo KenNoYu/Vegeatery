@@ -65,7 +65,7 @@ namespace vegeatery.Controllers
 
 			var couponOptions = new CouponCreateOptions
 			{
-				PercentOff = discountPercentDecimal,
+				PercentOff = order.discountPercent * 100,
 				Duration = "once"
 			};
 			var couponService = new CouponService();
