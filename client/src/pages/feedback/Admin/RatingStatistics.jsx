@@ -95,13 +95,12 @@ const RatingStatistics = () => {
 
             <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden" }}>
                 {/* Sidebar */}
-                <Box sx={{ width: "20%" }}>
-                    <FeedbackSidebar />
-                </Box>
-
+                <FeedbackSidebar />
                 {/* Main Content */}
                 <Box
                     sx={{
+                        marginLeft: "240px",
+                        flexGrow: 1,
                         width: "80%",
                         padding: 5,
                         backgroundColor: "#FFFFFF",
