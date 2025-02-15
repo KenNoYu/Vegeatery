@@ -98,6 +98,9 @@ const AdminVouchersSystemEdit = () => {
 
     return (
         <Box sx={{
+            marginTop: '5em',
+            marginLeft: 'auto',
+            marginRight: 'auto',
             maxWidth: 1200,
             minHeight: 500,
             display: 'flex',
@@ -112,7 +115,6 @@ const AdminVouchersSystemEdit = () => {
             overflowY: "auto",
             overflowX: "hidden",
             paddingBottom: '2rem',
-            marginTop: '2rem'
         }}>
             <Typography variant="h4" fontWeight="bold" mb={2}>Edit Voucher</Typography>
             {errorMessage && <Typography color="error">{errorMessage}</Typography>} 

@@ -23,6 +23,7 @@ const PointsSystem = () => {
       fetchVouchers(userId);
     }
   }, [userId]);
+  }, [userId]);
 
   const fetchUserData = async () => {
     try {
