@@ -13,12 +13,8 @@ const RoleGuard = (requiredRole) => {
       .get('/auth/role', { withCredentials: true })  // withCredentials ensures cookies are sent with the request
       .then((res) => {
         const userRole = res.data.roleName; // Assuming the server returns the role in response
-        console.log(userRole);
         setRole(userRole);
-        console.log(res);
-
-        console.log(userRole);
-        console.log(requiredRole);
+        
         if (Array.isArray(requiredRole)) {
           if (!requiredRole.includes(userRole)) { // Use includes() for array check
             navigate('/unauthorized');
