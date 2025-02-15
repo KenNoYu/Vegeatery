@@ -17,7 +17,10 @@ import {
   Card,
   CardContent,
   Chip,
+  Grid,
+  Pagination
 } from "@mui/material";
+import { styled } from "@mui/system";
 import PersonIcon from "@mui/icons-material/Person";
 import http from "../../../http";
 import RoleGuard from "../../../utils/RoleGuard";
@@ -88,13 +91,13 @@ export default function Accounts() {
     setSortBy(event.target.value);
   };
 
-  // Filter users based on search term
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10; // 2 columns * 5 rows = 10 users per page
   const filteredUsers = users
-    // 1. Filtering the users based on search term or specific role
     .filter((user) => {
       const matchesSearchTerm =
-        user.username.toLowerCase().includes(searchTerm) || // Search by username
-        user.roleName.toLowerCase().includes(searchTerm); // Search by roleName
+        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.roleName.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesRole =
         selectedRole && selectedRole !== "All Roles"
@@ -103,15 +106,24 @@ export default function Accounts() {
 
       return matchesSearchTerm && matchesRole;
     })
-    // 2. Sorting by username or createdAt
     .sort((a, b) => {
       if (sortBy === "username") {
-        return a.username.localeCompare(b.username); // Sort alphabetically by username
+        return a.username.localeCompare(b.username);
       } else if (sortBy === "createdAt") {
-        return new Date(a.createdAt) - new Date(b.createdAt); // Sort by creation date
+        return new Date(a.createdAt) - new Date(b.createdAt);
       }
-      return 0; // No sorting applied
+      return 0;
     });
+
+  // Pagination logic
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
+  };
 
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
@@ -119,11 +131,16 @@ export default function Accounts() {
 
   const UserProfileCard = ({ user }) => {
     const navigate = useNavigate();
-
-    // Function to handle navigation to the user's profile page
+    
     const handleViewProfile = () => {
       navigate(`/user/profile/${user.id}`); // Navigate to the profile page with the userId in the URL
     };
+
+    const ProfileImage = styled(Avatar)(({ theme }) => ({
+      width: theme.spacing(12),
+      height: theme.spacing(12),
+      marginBottom: theme.spacing(2),
+    }));
     return (
       <Card
         sx={{
@@ -141,17 +158,23 @@ export default function Accounts() {
         {/* Left section - Avatar and Info */}
         <Box display="flex" alignItems="center">
           {/* Avatar Icon */}
-          <Avatar
-            sx={{
-              width: 64,
-              height: 64,
-              marginRight: "16px",
-              backgroundColor: "#f5f5f5",
-            }}
-          >
-            <PersonIcon sx={{ fontSize: 40, color: "#333" }} />
-          </Avatar>
-
+          <ProfileImage
+                  alt={user.username}
+                  src={
+                    user.imageFile
+                      ? `${import.meta.env.VITE_FILE_BASE_URL}${user.imageFile}`
+                      : '/path/to/default-image.jpg'  // Provide a fallback image if no profile image is set
+                  }
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: "50%",
+                    marginBottom: 2,
+                    marginRight: 2,
+                    border: "4px solid #fff",
+                    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                  }}
+                />
           {/* User Info */}
           <CardContent
             sx={{ padding: "0", paddingLeft: "16px", marginTop: "1em" }}
@@ -179,8 +202,13 @@ export default function Accounts() {
           <Chip
             label={user.roleName}
             sx={{
+              color:
+                user.roleName.toLowerCase() === "user"
+                  ? "#007AFF" // Blue text color for 'User'
+                  : user.roleName.toLowerCase() === "admin"
+                    ? "#DC2626" // Red text color for 'Admin'
+                    : "#16A34A", // Green text color for 'Staff'
               backgroundColor: "#E0F2FE", // Light blue background for 'User'
-              color: "#007AFF", // Blue text color
               fontWeight: "bold",
               marginBottom: "8px",
             }}
@@ -213,14 +241,14 @@ export default function Accounts() {
       <Box
         sx={{
           marginLeft: "240px",
-          // flexGrow: 1,
+          flexGrow: 1,
           backgroundColor: "#FFFFFF",
           padding: "3em",
           borderTopRightRadius: "1em",
-          height: "245vh",
+          height: "100%",
         }}
       >
-        <Box sx={{ marginBottom: "7em", marginTop: "1.5em" }}>
+        <Box sx={{ marginBottom: "7em", marginTop: "1.5em", marginLeft: "auto", marginRight: "auto" }}>
           <UserRegistrationsGraph />
         </Box>
         <Box>
@@ -297,18 +325,44 @@ export default function Accounts() {
           ></hr>
           {!!users.length ? (
             <Box>
-              <Typography variant="h5">
-                Platform Users
-              </Typography>
+              <Typography variant="h5">Platform Users</Typography>
               {filteredUsers.length > 0 ? (
-                filteredUsers.map((user) => (
-                  <UserProfileCard key={user.id} user={user} />
-                ))
+                <>
+                  <Grid container spacing={2}>
+                    {currentUsers.map((user) => (
+                      <Grid
+                        item
+                        sm={12} // 2 columns on small screens
+                        md={6}
+                        lg={6}  // 4 columns on large screens
+                        key={user.id}
+                      >
+                        <Box
+                          sx={{
+                            width: "100%", // Ensure the card takes up the full width of the grid item
+                            maxWidth: "100%", // Prevent overflow
+                            height: "100%", // Ensure consistent height
+                            display: "flex",
+                            justifyContent: "center", // Center the card horizontally
+                          }}
+                        >
+                          <UserProfileCard user={user} />
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                  <Box display="flex" justifyContent="center" mt={3}>
+                    <Pagination
+                      count={totalPages}
+                      page={currentPage}
+                      onChange={handlePageChange}
+                      color="primary"
+                    />
+                  </Box>
+                </>
               ) : (
                 <Box textAlign="center" mt={5}>
-                  <PersonOffOutlinedIcon
-                    style={{ fontSize: 60, color: "grey" }}
-                  />
+                  <PersonOffOutlinedIcon style={{ fontSize: 60, color: "grey" }} />
                   <Typography variant="h6" mt={2} color="textSecondary">
                     Account does not exist
                   </Typography>
