@@ -64,7 +64,7 @@ public class User
 	// Navigation property
 	public Cart Cart { get; set; }
     public int OrderCount { get; set; } = 0;
-    public DateTime? OrderPeriodStart { get; set; }
+    public DateTime? OrderPeriodStartDate { get; set; } = null;
 
     // 🔹 Relationship: A User can have multiple feedbacks
     public virtual ICollection<GeneralFeedback>? Feedbacks { get; set; }
