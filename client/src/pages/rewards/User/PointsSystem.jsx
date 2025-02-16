@@ -54,19 +54,18 @@ const PointsSystem = () => {
   const fetchVouchers = async () => {
     try {
       const { data } = await http.get(`/vouchers/user/${userId.id}`);
-      setVouchers(data);
-    } catch (error) {
-      console.error('Error fetching vouchers:', error);
-    }
-  };
+      // Filter vouchers that are not in cooldown (LastUsedAt + 7 days <= today)
+      const filteredVouchers = data.filter(voucher => 
+        !voucher.LastUsedAt || dayjs(voucher.LastUsedAt).add(7, 'day').isBefore(dayjs())
+    );
 
-  const isVoucherInCooldown = (voucher) => {
-    if (!voucher.LastUsedDate) return false;
-    const cooldownPeriod = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-    const now = new Date();
-    const lastUsedDate = new Date(voucher.LastUsedDate);
-    return (now - lastUsedDate) < cooldownPeriod;
-  };
+    setVouchers(filteredVouchers);
+} catch (error) {
+    console.error('Error fetching vouchers:', error);
+}
+};
+
+
 
   if (!userId) return <Typography>Loading...</Typography>;
 
@@ -131,14 +130,8 @@ const PointsSystem = () => {
                     <Typography variant="caption" display="block" textAlign="center" gutterBottom>
                       Cool down period of 1 week after use!
                     </Typography>
-                    <Button
-                      onClick={() => navigate('/user/store')}
-                      variant="contained"
-                      fullWidth
-                      sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}
-                      disabled={isVoucherInCooldown(voucher)}
-                    >
-                      {isVoucherInCooldown(voucher) ? 'IN COOLDOWN' : 'BUY NOW'}
+                    <Button onClick={() => navigate('/user/store')} variant="contained" fullWidth sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}>
+                      BUY NOW
                     </Button>
                   </CardContent>
                 </Card>
