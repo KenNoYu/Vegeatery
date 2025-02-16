@@ -36,11 +36,6 @@ namespace vegeatery.Controllers
                 return BadRequest("Discounts must be between 1 and 100.");
             }
 
-            if (voucher.ExpiryDate <= DateTime.UtcNow)
-            {
-                return BadRequest("Expiry date must be in the future.");
-            }
-
             // Check if the tier exists
             var tier = await _context.Tiers.FirstOrDefaultAsync(t => t.TierId == voucher.TierId);
             if (tier == null)
@@ -70,8 +65,10 @@ namespace vegeatery.Controllers
             var vouchers = await _context.Vouchers
                 .Where(v => v.TierId == user.TierId)
                 .ToListAsync();
+            // Filter out vouchers that are in the cool-down period
+            var availableVouchers = vouchers.Where(v => v.LastUsedDate == null || (DateTime.UtcNow - v.LastUsedDate.Value).TotalDays >= 7).ToList();
 
-            return Ok(vouchers);
+            return Ok(availableVouchers);
         }
 
 
@@ -135,10 +132,6 @@ namespace vegeatery.Controllers
                 return BadRequest("Voucher name and discounts are required.");
             }
 
-            if (voucher.ExpiryDate <= DateTime.UtcNow)
-            {
-                return BadRequest("Expiry date must be in the future.");
-            }
 
             // Check if the voucher exists
             var existingVoucher = await _context.Vouchers
@@ -160,7 +153,6 @@ namespace vegeatery.Controllers
             // Update voucher properties
             existingVoucher.VoucherName = voucher.VoucherName;
             existingVoucher.DiscountPercentage = voucher.DiscountPercentage;
-            existingVoucher.ExpiryDate = voucher.ExpiryDate;
             existingVoucher.TierId = voucher.TierId;
             existingVoucher.Tier = tier;
 

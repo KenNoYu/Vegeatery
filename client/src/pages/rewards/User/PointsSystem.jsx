@@ -5,6 +5,7 @@ import http from '../../../http';
 import dayjs from 'dayjs';
 import RoleGuard from '../../../utils/RoleGuard';
 import { useNavigate } from 'react-router-dom';
+import RewardsSidebar from "./RewardsSidebar.jsx";
 
 const PointsSystem = () => {
   RoleGuard('User');
@@ -59,6 +60,14 @@ const PointsSystem = () => {
     }
   };
 
+  const isVoucherInCooldown = (voucher) => {
+    if (!voucher.LastUsedDate) return false;
+    const cooldownPeriod = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+    const now = new Date();
+    const lastUsedDate = new Date(voucher.LastUsedDate);
+    return (now - lastUsedDate) < cooldownPeriod;
+  };
+
   if (!userId) return <Typography>Loading...</Typography>;
 
   // Calculate progress capped at 100% when points are 777 or more
@@ -67,68 +76,77 @@ const PointsSystem = () => {
 
 
   return (
-    <Box sx={{
-      marginTop: '5em',
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      maxWidth: 1200,
-      minHeight: 500,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#FFFFFF',
-      padding: '2rem',
-      boxShadow: 3,
-      borderRadius: 2,
-      overflow: "hidden",
-      overflowY: "auto",
-      overflowX: "hidden",
-      paddingBottom: '2rem'
-    }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom textAlign="center">
-        Sustainable Points
-      </Typography>
 
-      <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', color: '#C2185B' }}>
-        {userId.tierName} Member <StarIcon sx={{ marginLeft: '0.5rem' }} />
-      </Typography>
-
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', maxWidth: 500, mb: 2 }}>
-        <Typography variant="h6" fontWeight="bold">
-          {userId.totalPoints} pts
-        </Typography>
-        <LinearProgress variant="determinate" value={progress} sx={{ flexGrow: 1, height: '10px', borderRadius: '5px', backgroundColor: '#E0E0E0', '& .MuiLinearProgress-bar': { backgroundColor: '#C2185B' } }} />
-        <Typography>777 pts</Typography>
+    <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden" }}>
+      {/* Sidebar */}
+      <Box sx={{ width: "20%" }}>
+        <RewardsSidebar />
       </Box>
 
-      <Typography variant="body2" sx={{ marginBottom: '2rem' }}>
-        * {userId.totalPoints} pts will be expired on <b>01/06/2025</b>
-      </Typography>
+      {/* Main Content */}
+      <Box
+        sx={{
+          width: "80%",
+          padding: 5,
+          backgroundColor: "#FFFFFF",
+          marginTop: "5px",
+          paddingLeft: "3em",
+          overflowX: "hidden",
+        }}
+      >
 
-      <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '1rem' }}>
-        Rewards Vouchers
-      </Typography>
+        <Box sx={{ maxWidth: 1200, minHeight: 500, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', padding: '2rem', boxShadow: 3, borderRadius: 2, overflow: "hidden", overflowY: "auto", overflowX: "hidden", paddingBottom: '2rem', marginTop: '2rem' }}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom textAlign="center">
+            Sustainable Points
+          </Typography>
 
-      <Grid container spacing={3} justifyContent="center">
-        {vouchers.map((voucher) => (
-          <Grid item xs={12} sm={6} md={4} key={voucher.voucherId} display="flex" justifyContent="center">
-            <Card sx={{ backgroundColor: '#E3F2FD', boxShadow: 3, width: '100%', maxWidth: 300 }}>
-              <CardContent>
-                <Typography variant="h6" fontWeight="bold" textAlign="center" gutterBottom>
-                  {voucher.voucherName}
-                </Typography>
-                <Typography variant="caption" display="block" textAlign="center" gutterBottom>
-                  Expires on {dayjs(voucher.ExpiryDate).format('DD/MM/YYYY')}
-                </Typography>
-                <Button onClick={() => navigate('/user/store')} variant="contained" fullWidth sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}>
-                  BUY NOW
-                </Button>
-              </CardContent>
-            </Card>
+          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', color: '#C2185B' }}>
+            {userId.tierName} Member <StarIcon sx={{ marginLeft: '0.5rem' }} />
+          </Typography>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', maxWidth: 500, mb: 2 }}>
+            <Typography variant="h6" fontWeight="bold">
+              {userId.totalPoints} pts
+            </Typography>
+            <LinearProgress variant="determinate" value={progress} sx={{ flexGrow: 1, height: '10px', borderRadius: '5px', backgroundColor: '#E0E0E0', '& .MuiLinearProgress-bar': { backgroundColor: '#C2185B' } }} />
+            <Typography>777 pts</Typography>
+          </Box>
+
+          <Typography variant="body2" sx={{ marginBottom: '2rem' }}>
+            * {userId.totalPoints} pts will be expired on <b>01/06/2025</b>
+          </Typography>
+
+          <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '1rem' }}>
+            Rewards Vouchers
+          </Typography>
+
+          <Grid container spacing={3} justifyContent="center">
+            {vouchers.map((voucher) => (
+              <Grid item xs={12} sm={6} md={4} key={voucher.voucherId} display="flex" justifyContent="center">
+                <Card sx={{ backgroundColor: '#E3F2FD', boxShadow: 3, width: '100%', maxWidth: 300 }}>
+                  <CardContent>
+                    <Typography variant="h6" fontWeight="bold" textAlign="center" gutterBottom>
+                      {voucher.voucherName}
+                    </Typography>
+                    <Typography variant="caption" display="block" textAlign="center" gutterBottom>
+                      Cool down period of 1 week after use!
+                    </Typography>
+                    <Button
+                      onClick={() => navigate('/user/store')}
+                      variant="contained"
+                      fullWidth
+                      sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}
+                      disabled={isVoucherInCooldown(voucher)}
+                    >
+                      {isVoucherInCooldown(voucher) ? 'IN COOLDOWN' : 'BUY NOW'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 };

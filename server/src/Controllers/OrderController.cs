@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using vegeatery.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 namespace vegeatery.Controllers
 {
     [ApiController]
@@ -22,6 +25,7 @@ namespace vegeatery.Controllers
                     {
                         return NotFound(new { Message = "Cart cannot be empty or it dosen't exist" });
                     }
+
                     // Create the order
                     var order = new Order
                     {
@@ -44,6 +48,19 @@ namespace vegeatery.Controllers
                     // save order
                     _context.Order.Add(order);
                     _context.SaveChanges();
+
+                    // Update the voucher's LastUsedDate if a voucher is used
+                    if (request.VoucherId.HasValue)
+                    {
+                        var voucher = _context.Vouchers.Find(request.VoucherId.Value);
+                        if (voucher != null)
+                        {
+                            voucher.LastUsedDate = DateTime.UtcNow;
+                            _context.Vouchers.Update(voucher);
+                            _context.SaveChanges();
+                        }
+                    }
+
                     // Create the order items from cart items
                     foreach (var cartItem in cart.CartItems)
                     {
@@ -71,6 +88,47 @@ namespace vegeatery.Controllers
                     return StatusCode(500, new { Message = "An error occurred while creating the order.", Details = errorMessage });
                 }
             }
+        }
+
+        [HttpPut("updatePoints/{userId}")]
+        public async Task<IActionResult> UpdateUserPoints(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found." });
+            }
+
+            var currentDate = DateTime.UtcNow;
+
+            // Check if the order period has started
+            if (user.OrderPeriodStartDate == null)
+            {
+                user.OrderPeriodStartDate = currentDate;
+            }
+
+            // Check if 7 days have passed since the start date
+            if ((currentDate - user.OrderPeriodStartDate.Value).TotalDays > 7)
+            {
+                user.OrderCount = 0;
+                user.OrderPeriodStartDate = currentDate;
+            }
+
+            // Increment the order count
+            user.OrderCount++;
+
+            // Check if the user has ordered 7 times within 7 days
+            if (user.OrderCount >= 7)
+            {
+                user.TotalPoints += 10;
+                user.OrderCount = 0;
+                user.OrderPeriodStartDate = null;
+            }
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "User points updated successfully.", TotalPoints = user.TotalPoints });
         }
 
         // Get Order By ID

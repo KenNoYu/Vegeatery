@@ -26,7 +26,7 @@ const AdminVouchersSystemEdit = () => {
     const navigate = useNavigate();
 
     const [voucher, setVoucher] = useState({
-        voucherName: '', discountPercentage: 1.0, expiryDate: '', tierId: '',
+        voucherName: '', discountPercentage: 1.0, tierId: '',
         tier: { tierId: '', tierName: '', minPoints: 0 } // Added tier object
       });
 
@@ -65,16 +65,6 @@ const AdminVouchersSystemEdit = () => {
 
         if (!voucher.voucherName.trim()) {
             setErrorMessage("Voucher name cannot be empty.");
-            return;
-        }
-
-        
-
-        const currentDate = new Date();
-        const expiryDate = new Date(voucher.expiryDate);
-        
-        if (expiryDate <= currentDate) {
-            setErrorMessage("Expiry date must be in the future.");
             return;
         }
 
@@ -141,17 +131,6 @@ const AdminVouchersSystemEdit = () => {
                                 discountPercentage: parseFloat(e.target.value) || 0
                             })}
                             inputProps={{ step: "0.01", min: "1", max: "100" }}
-                        />
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            label="Expiry Date"
-                            type="date"
-                            value={dayjs(voucher.expiryDate).format('YYYY-MM-DD')}
-                            onChange={(e) => setVoucher({ ...voucher, expiryDate: e.target.value })}
-                            InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
 
