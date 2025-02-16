@@ -37,9 +37,19 @@ const Orders = () => {
         http
             .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
             .then((res) => {
-                console.log(res);
                 setUser(res);
-                fetchVouchers(res.data.id)
+                fetchVouchers(res.data.id);
+                setFullName(res.data.username);
+                setEmail(res.data.email);
+                setPnumber(res.data.contactNumber);
+                setAddress(res.data.address);
+                // Update formik values with the fetched user data
+                formik.setValues({
+                    fullname: res.data.username,
+                    email: res.data.email,
+                    address: res.data.address,
+                    pnumber: res.data.contactNumber,
+                });
                 setLoading(false);
             })
             .catch((err) => {
@@ -96,7 +106,7 @@ const Orders = () => {
     // get cart item
     const GetCartItems = () => {
         // autofill cartId next time
-        http.get(`/ordercart?cartId=${1}`).then((res) => {
+        http.get(`/ordercart?cartId=${user.data.cartId}`).then((res) => {
             console.log("API Response:", res.data);
             setCartItems(res.data);
             calculateTotal(res.data);
@@ -108,8 +118,10 @@ const Orders = () => {
     };
 
     useEffect(() => {
-        GetCartItems();
-    }, []);
+        if (user?.data.cartId) {
+            GetCartItems();
+        }
+    }, [user]);
 
     // calculate total
     const calculateTotal = (cartItems) => {
