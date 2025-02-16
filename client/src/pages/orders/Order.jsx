@@ -113,9 +113,11 @@ const Orders = () => {
             })
     };
 
-    if (user?.data.cartId) {
-        GetCartItems();
-    }
+    useEffect(() => {
+        if (user?.data.cartId) {
+            GetCartItems();
+        }
+    }, [user]);
 
     // calculate total
     const calculateTotal = (cartItems) => {
