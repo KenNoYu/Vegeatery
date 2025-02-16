@@ -18,10 +18,10 @@ import {
   CardContent,
   Chip,
   Grid,
-  Pagination
+  Pagination,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import PersonIcon from "@mui/icons-material/Person";
+import { ToastContainer, toast } from "react-toastify";
 import http from "../../../http";
 import RoleGuard from "../../../utils/RoleGuard";
 import AdminSidebar from "./AdminSidebar";
@@ -47,7 +47,7 @@ export default function RoleModify() {
     User: 1,
     Staff: 2,
     Admin: 3,
-  }
+  };
   useEffect(() => {
     const fetchUsers = async () => {
       setIsLoading(true);
@@ -96,27 +96,25 @@ export default function RoleModify() {
     const newRole = event.target.value;
     setModalSelectedRole(newRole);
     console.log(newRole);
-  }
+  };
 
   const handleSubmit = (user, newRole) => {
     var userId = user.id;
     var roleId = roleMapping[newRole];
-      console.log("User Id", user.id);
-    console.log("New Role", roleId);
-    http.put('/Auth/roleModify',
-      { userId, roleId },
-      { withCredentials: true }
-    )
-      .then(response => {
+    http
+      .put("/Auth/roleModify", { userId, roleId }, { withCredentials: true })
+      .then((response) => {
         // Update UI after role modification
-        setUsers(users.map(user =>
-          user.id === userId ? { ...user, role: newRole } : user
-        ));
-        handleCloseModal();  // Close modal after success
+        setUsers(
+          users.map((user) =>
+            user.id === userId ? { ...user, role: newRole } : user
+          )
+        );
+        handleCloseModal(); // Close modal after success
         alert("User role updated successfully!");
         window.location.reload();
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         alert("Error updating role");
       });
@@ -235,7 +233,7 @@ export default function RoleModify() {
             src={
               user.imageFile
                 ? `${import.meta.env.VITE_FILE_BASE_URL}${user.imageFile}`
-                : '/path/to/default-image.jpg'  // Provide a fallback image if no profile image is set
+                : "/path/to/default-image.jpg" // Provide a fallback image if no profile image is set
             }
             sx={{
               width: 64,
@@ -278,8 +276,8 @@ export default function RoleModify() {
                 user.roleName.toLowerCase() === "user"
                   ? "#007AFF" // Blue text color for 'User'
                   : user.roleName.toLowerCase() === "admin"
-                    ? "#DC2626" // Red text color for 'Admin'
-                    : "#16A34A", // Green text color for 'Staff'
+                  ? "#DC2626" // Red text color for 'Admin'
+                  : "#16A34A", // Green text color for 'Staff'
               backgroundColor: "#E0F2FE", // Light blue background for 'User'
               fontWeight: "bold",
               marginBottom: "8px",
@@ -321,7 +319,12 @@ export default function RoleModify() {
         }}
       >
         <Box>
-          <Typography variant="h4" gutterBottom fontWeight="bold" sx={{ marginTop: "0.5em" }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            fontWeight="bold"
+            sx={{ marginTop: "0.5em" }}
+          >
             Accounts Role Modification
           </Typography>
 
@@ -403,7 +406,7 @@ export default function RoleModify() {
                         item
                         sm={12} // 2 columns on small screens
                         md={6}
-                        lg={6}  // 4 columns on large screens
+                        lg={6} // 4 columns on large screens
                         key={user.id}
                       >
                         <Box
@@ -426,12 +429,28 @@ export default function RoleModify() {
                       page={currentPage}
                       onChange={handlePageChange}
                       color="primary"
+                      sx={{
+                        "& .MuiPaginationItem-root.Mui-selected": {
+                          // Target the selected page item
+                          backgroundColor: "#C6487E", // Or any color you want
+                          color: "white", // Text color for selected item
+                          borderRadius: "4px", // Optional: Add rounded corners
+                        },
+                        "& .MuiPaginationItem-root": {
+                          // Target all page items
+                          "&:hover": {
+                            backgroundColor: "000", // Example hover effect
+                          },
+                        },
+                      }}
                     />
                   </Box>
                 </>
               ) : (
                 <Box textAlign="center" mt={5}>
-                  <PersonOffOutlinedIcon style={{ fontSize: 60, color: "grey" }} />
+                  <PersonOffOutlinedIcon
+                    style={{ fontSize: 60, color: "grey" }}
+                  />
                   <Typography variant="h6" mt={2} color="textSecondary">
                     Account does not exist
                   </Typography>
