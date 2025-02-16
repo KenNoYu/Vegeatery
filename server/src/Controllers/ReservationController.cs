@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using vegeatery.Models;
 using vegeatery;
+using SendGrid.Helpers.Mail;
 
 namespace vegeatery.Controllers
 {
@@ -303,5 +304,41 @@ namespace vegeatery.Controllers
 
         return Ok(new { message = "Reservation updated successfully", reservation });
     }
-  }
+
+        // get upcoming reservations
+        [HttpGet("UserPending/{userId}")]
+        public async Task<IActionResult> GetPendingReservationsByUserId(int userId)
+        {
+            var reservations = await _dbContext.Reservations
+              .Include(r => r.Tables)
+              .Where(r => r.UserId == userId && r.Status == "Pending")
+              .OrderBy(r => r.ReservationDate)
+              .ToListAsync();
+
+            if (reservations == null || reservations.Count == 0)
+            {
+                return NotFound(new { message = "No pending reservations found for this user" });
+            }
+
+            return Ok(reservations);
+        }
+
+        // get past reservations
+        [HttpGet("UserPast/{userId}")]
+        public async Task<IActionResult> GetSeatedReservationsByUserId(int userId)
+        {
+            var reservations = await _dbContext.Reservations
+              .Include(r => r.Tables)
+              .Where(r => r.UserId == userId && r.Status == "seated")
+              .OrderByDescending(r => r.ReservationDate)
+              .ToListAsync();
+
+            if (reservations == null || reservations.Count == 0)
+            {
+                return NotFound(new { message = "No seated reservations found for this user" });
+            }
+
+            return Ok(reservations);
+        }
+    }
 }
