@@ -141,7 +141,6 @@ const Cart = () => {
                 </IconButton>
 
                 <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)} ModalProps={{ keepMounted: true, }}>
-                    {ToastContainer}
                     <Box
                         sx={{
                             width: 350, // Set to a smaller width
@@ -185,7 +184,8 @@ const Cart = () => {
                 <ShoppingCartIcon />
             </IconButton>
 
-            <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)} ModalProps={{ keepMounted: true, disableEnforceFocus: true, disableBackdropClick: true, }}>
+            <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)} ModalProps={{ keepMounted: true, disableEnforceFocus: true}}>
+                {ToastContainer}
                 <Box
                     sx={{
                         width: 350, // Set to a smaller width
@@ -203,7 +203,7 @@ const Cart = () => {
                     <List>
                         {cartItems.length > 0 ? (
                             cartItems.map((product, index) => (
-                                <ListItem key={index} sx={{
+                                <ListItem key={product.productId} sx={{
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
