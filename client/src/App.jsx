@@ -377,36 +377,18 @@ function App() {
               <Route path="/user/rewards" element={<PointsSystem />} />
               <Route path="/user/pointshistory" element={<PointsHistory />} />
               <Route path="/admin/rewards" element={<AdminVouchersSystem />} />
-              <Route
-                path="/rewards/admin/voucherssystem/edit/:id"
-                element={<AdminVouchersSystemEdit />}
-              />
-              <Route
-                path="/admin/voucherssystemadd"
-                element={<VouchersSystemAdd />}
-              />
+              <Route path="/rewards/admin/voucherssystem/edit/:id" element={<AdminVouchersSystemEdit />}/>
+              <Route path="/admin/voucherssystemadd" element={<VouchersSystemAdd />}/>
               <Route path="/admin/pointsrange" element={<PointsRange />} />
               <Route path="/user/feedback" element={<GeneralFeedback />} />
-              <Route
-                path="/user/generalfeedbackadd"
-                element={<GeneralFeedbackAdd />}
-              />
-              <Route
-                path="/admin/feedback"
-                element={<AdminGeneralFeedback />}
-              />
-              <Route
-                path="/admin/ratingstatistics"
-                element={<RatingStatistics />}
-              />
+              <Route path="/user/generalfeedbackadd" element={<GeneralFeedbackAdd />}/>
+              <Route path="/admin/feedback" element={<AdminGeneralFeedback />}/>
+              <Route path="/admin/ratingstatistics" element={<RatingStatistics />}/>
 
               {/* ORDERS */}
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
-              <Route
-                path={"/orderconfirmation"}
-                element={<OrderConfirmation />}
-              />
+              <Route path={"/orderconfirmation"} element={<OrderConfirmation />}/>
               <Route path={"/staff/vieworders"} element={<StaffOrders />} />
               <Route path={"/admin/orders"} element={<AdminOrders />} />
             </Routes>
