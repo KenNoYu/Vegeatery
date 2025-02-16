@@ -8,6 +8,7 @@ using Stripe.Checkout;
 using Stripe;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Cors;
+using static Azure.Core.HttpHeader;
 
 namespace vegeatery.Controllers
 {
@@ -37,9 +38,6 @@ namespace vegeatery.Controllers
                 return NotFound(new { Message = "Order not found" });
             }
 
-			decimal discountPercentDecimal = Convert.ToDecimal(order.discountPercent);
-			long discountAmount = (long)Math.Round(order.TotalPrice * discountPercentDecimal * 100);
-
 			var domain = _configuration["Stripe:Domain"];
 
 			var lineItems = new List<SessionLineItemOptions>();
@@ -63,27 +61,32 @@ namespace vegeatery.Controllers
 				});
 			}
 
-			var couponOptions = new CouponCreateOptions
-			{
-				PercentOff = order.discountPercent * 100,
-				Duration = "once"
-			};
-			var couponService = new CouponService();
-			var coupon = couponService.Create(couponOptions);
-
-
 			var options = new SessionCreateOptions
-            {
+			{
 				PaymentMethodTypes = new List<string> { "card" },
 				LineItems = lineItems,
-				Discounts = new List<SessionDiscountOptions>
+				Mode = "payment",
+				SuccessUrl = $"{domain}/orderconfirmation?orderId={orderId}&session_id={{CHECKOUT_SESSION_ID}}",
+				CancelUrl = $"{domain}/orders",
+			};
+
+			// Apply discount only if discountPercent is greater than 0
+			if (order.discountPercent > 0)
+			{
+				var couponOptions = new CouponCreateOptions
+				{
+					PercentOff = order.discountPercent * 100,
+					Duration = "once"
+				};
+				var couponService = new CouponService();
+				var coupon = couponService.Create(couponOptions);
+
+				options.Discounts = new List<SessionDiscountOptions>
 				{
 					new SessionDiscountOptions { Coupon = coupon.Id }
-				},
-				Mode = "payment",
-                SuccessUrl = $"{domain}/orderconfirmation?orderId={orderId}&session_id={{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"{domain}/orders",
-            };
+				};
+			}
+
             var service = new SessionService();
             Session session = service.Create(options);
 
