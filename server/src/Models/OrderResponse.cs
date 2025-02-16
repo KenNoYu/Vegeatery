@@ -12,6 +12,7 @@
 		public int? VoucherId { get; set; }
 		public decimal TotalPrice { get; set; }
 		public int TotalPoints { get; set; }
+		public bool isUpdated { get; set; }
 		public List<OrderItemResponse> OrderItems { get; set; }
 	}
 }

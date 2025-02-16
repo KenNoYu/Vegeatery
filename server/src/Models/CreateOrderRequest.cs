@@ -12,7 +12,8 @@
 		public TimeOnly TimeSlot { get; set; }
 		public Decimal? discountPercent { get; set; }
 		public string Status { get; set; }
-        public int? VoucherId { get; set; }
+        public bool isUpdated { get; set; }
+		public int? VoucherId { get; set; }
         public int? CustomerId { get; set; }
         public string? SessionId { get; set; }
     }
