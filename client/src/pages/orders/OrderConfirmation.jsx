@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import http from '../../http';
 import { Box, Typography, CircularProgress, Divider } from '@mui/material';
@@ -14,7 +14,7 @@ const OrderConfirmation = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const orderId = searchParams.get('orderId');
-    console.log("ID", orderId)
+    const hasUpdated = useRef(false);
 
     useEffect(() => {
         if (orderId) {
@@ -37,17 +37,21 @@ const OrderConfirmation = () => {
     }, []);
 
     useEffect(() => {
-        if (order && Array.isArray(cartItems)) {
+        if (order && order.isUpdated == false) {
+            hasUpdated.current = true;
             UpdateOrderAsNew(order.orderId);
             //sendEmail();
             updateUserPoints();
-    
+        }
+    }, [order]);
+
+    useEffect(() => {
+        if (Array.isArray(cartItems)){
             cartItems.forEach((item) => {
-                console.log(item.productId);
                 deleteCartItems(user.data.cartId, item.productId);
             });
         }
-    }, [order, cartItems]);
+    }, [cartItems]);
 
     // Update order status
     const UpdateOrderAsNew = (orderId) => {
@@ -67,7 +71,6 @@ const OrderConfirmation = () => {
     const deleteCartItems = (cartId, productId) => {
         http.delete(`/ordercart?CartId=${cartId}&ProductId=${productId}`)
             .then((res) => {
-                console.log("Product delete from cart successfully", res.data);
             })
             .catch((error) => {
                 console.error("Error fetching orders:", error);
@@ -132,6 +135,7 @@ const OrderConfirmation = () => {
         const userPoints = {
             points: order.totalPoints
         }
+        console.log("Total points", order.totalPoints)
 
         http.put(`/Account/${user.data.id}/points`, userPoints)
             .then((res) => {

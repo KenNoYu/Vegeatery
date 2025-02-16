@@ -45,6 +45,8 @@ namespace vegeatery.Models
 		[Column(TypeName = "decimal(18,2)")]
 		public Decimal? discountPercent { get; set; }
 
+        public bool IsUpdated { get; set; } = false;
+
 		// Foreign Key
 		public int? VoucherId { get; set; }
         public int? CustomerId { get; set; } // Nullable for guest users
