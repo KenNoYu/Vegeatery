@@ -1,6 +1,6 @@
 // src/pages/StaffReservations.js
 import React, { useState, useEffect } from 'react';
-import { Box, Drawer, Typography, ToggleButtonGroup, ToggleButton, Stack, Card, CardContent } from '@mui/material';
+import { Box, Drawer, Typography, ToggleButtonGroup, ToggleButton, Stack, Card, CardContent, } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import http from '../../http';
 import { useTheme } from '@mui/material/styles';
@@ -37,7 +37,7 @@ const StaffReserveLogs = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: '40px',
+        marginTop: 7,
         boxShadow: 2,
         borderRadius: '20px'
       }}
@@ -112,7 +112,7 @@ const StaffReserveLogs = () => {
                       ? "#90EE90"
                       : logs.action === "seated"
                         ? theme.palette.secondary.main
-                        : logs.action === "edited"
+                        : logs.action === "updated"
                           ? "#FBE970"
                           : "#E7ABC5"
                 }}
@@ -124,7 +124,7 @@ const StaffReserveLogs = () => {
                     day: '2-digit', 
                     month: 'short', 
                     year: 'numeric' 
-                }).format(new Date(logs.reservation.reservationDate))
+                }).format(new Date(logs.reservationDate))
                   }
                   </Typography>
                   <Typography variant="body2">
@@ -135,7 +135,7 @@ const StaffReserveLogs = () => {
                   </Typography>
                 </CardContent>
                 <Typography variant="h6" sx={{ marginRight: "20px", textAlign: "center" }}>
-                  {logs.reservation.timeSlot} <br />
+                  {logs.timeSlot} <br />
                   <Typography variant="body2">
                     {logs.action} by {logs.doneBy} <br/> 
                     {formatDistanceToNowStrict (new Date(logs.logDate), { addSuffix: true })}

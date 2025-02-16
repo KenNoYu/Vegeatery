@@ -262,5 +262,35 @@ namespace vegeatery.Controllers
         return StatusCode(500, new { message = "An error occurred while fetching reservation logs", error = ex.Message });
       }
     }
-  }
+
+        [HttpPut("UpdateReservation/{id}")]
+        public async Task<IActionResult> UpdateReservation(int id, [FromBody] ReservationRequest updatedReservation)
+        {
+            var reservation = await _dbContext.Reservations
+                                              .Include(r => r.Tables)
+                                              .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                return NotFound(new { message = "Reservation not found." });
+            }
+
+            reservation.ReservationDate = updatedReservation.ReservationDate;
+            reservation.TimeSlot = updatedReservation.TimeSlot;
+            reservation.CustomerName = updatedReservation.CustomerName;
+            reservation.CustomerEmail = updatedReservation.CustomerEmail;
+            reservation.CustomerPhone = updatedReservation.CustomerPhone;
+            reservation.Status = updatedReservation.Status;
+
+            var selectedTables = await _dbContext.Tables
+                                         .Where(t => updatedReservation.TableIds.Contains(t.Id))
+                                         .ToListAsync();
+
+            reservation.Tables = selectedTables;
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Reservation updated successfully", reservation });
+        }
+    }
 }

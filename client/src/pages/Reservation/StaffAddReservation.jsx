@@ -238,14 +238,13 @@ const StaffAddReservation = () => {
   };
 
   return (
-
     <Box
       sx={{
         flexGrow: 1,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: '40px',
+        marginTop: 7,
         boxShadow: 2,
         borderRadius: '20px',
         backgroundColor: 'white',
@@ -314,6 +313,7 @@ const StaffAddReservation = () => {
                   variant="outlined"
                   onClick={() => !isPast && handleTimeSelect(time)} // Only handle click if time is not in the past
                   sx={{
+                    borderColor: selectedTime === time ? "none" : "black",
                     backgroundColor: selectedTime === time ? '#C6487E' : "white",
                     width: "90px",
                     opacity: isPast ? 0.5 : 1, // Grey out past times
