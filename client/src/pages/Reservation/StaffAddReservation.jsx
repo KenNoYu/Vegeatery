@@ -36,6 +36,7 @@ const StaffAddReservation = () => {
   RoleGuard('Staff');
   const theme = useTheme();
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   const [view, setView] = useState("details"); // 'details' or 'seats'
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -76,7 +77,36 @@ const StaffAddReservation = () => {
 
   }, [selectedDate, selectedTime]); // Runs when selectedDate or selectedTime changes
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true); // Start loading when fetching starts
 
+      try {
+        let userData = null;
+
+        // Try fetching user data
+        try {
+          const userResponse = await http.get("/Auth/current-user", { withCredentials: true });
+          if (userResponse.data) {
+            setUser(userResponse.data);
+            userData = userResponse.data;
+          }
+        } catch (userError) {
+          console.warn("User not logged in or authentication failed.");
+          setUser(null); // Ensure user state is cleared if no user is found
+        }
+
+      } catch (error) {
+        console.error("Error fetching data", error);
+        toast.error("Failed to load data.");
+      } finally {
+        setLoading(false); // Stop loading state in all cases
+      }
+    };
+
+    fetchUser(); // Invoke the function
+
+  }, []);
 
   // Mock data for times
   const times = [
@@ -205,7 +235,7 @@ const StaffAddReservation = () => {
         "reservationDate": selectedDate,
         "timeSlot": selectedTime,
         "tables": selectedTables.join(", "),
-        "doneBy": "staff"
+        "doneBy": user.username
       }
 
       const logResponse = await http.post("/Reservation/CreateReservationLog", logData);
@@ -286,7 +316,7 @@ const StaffAddReservation = () => {
             Back
           </Button>
 
-          
+
 
           {/* Date Selector */}
           <DateSelector
