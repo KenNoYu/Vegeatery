@@ -157,8 +157,8 @@ const UserOverview = () => {
                     : '/path/to/default-image.jpg'  // Provide a fallback image if no profile image is set
                 }
                 sx={{
-                  width: 120,
-                  height: 120,
+                  width: 160,
+                  height: 160,
                   borderRadius: "50%",
                   marginBottom: 2,
                   border: "4px solid #fff",
@@ -228,7 +228,7 @@ const UserOverview = () => {
                 sx={{
                   backgroundColor: "#C6487E",
                   color: "#fff",
-                  width: "100%",
+                  width: "60%",
                   marginBottom: 2,
                   "&:hover": {
                     backgroundColor: "#A83866",
