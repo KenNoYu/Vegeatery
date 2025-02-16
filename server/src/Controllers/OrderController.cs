@@ -37,8 +37,7 @@ namespace vegeatery.Controllers
                         TotalPoints = request.TotalPoints,
                         TimeSlot = request.TimeSlot,
                         Status = request.Status,
-						IsUpdated = false,
-						CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         VoucherId = request?.VoucherId,
                         discountPercent = request?.discountPercent,
@@ -49,14 +48,19 @@ namespace vegeatery.Controllers
                     _context.Order.Add(order);
                     _context.SaveChanges();
 
-                    // Update the voucher's LastUsedDate if a voucher is used
+                    // If a voucher is used, set its cooldown
                     if (request.VoucherId.HasValue)
                     {
-                        var voucher = _context.Vouchers.Find(request.VoucherId.Value);
+                        var voucher = _context.Vouchers.FirstOrDefault(v => v.VoucherId == request.VoucherId);
                         if (voucher != null)
                         {
-                            voucher.LastUsedDate = DateTime.UtcNow;
-                            _context.Vouchers.Update(voucher);
+                            voucher.LastUsedAt = DateTime.UtcNow;
+                            _context.VoucherRedemptions.Add(new VoucherRedemption
+                            {
+                                UserId = request.CustomerId.Value,
+                                VoucherId = voucher.VoucherId,
+                                RedeemedAt = DateTime.UtcNow
+                            });
                             _context.SaveChanges();
                         }
                     }
@@ -159,7 +163,6 @@ namespace vegeatery.Controllers
                     TimeSlot = order.TimeSlot,
                     TotalPrice = order.TotalPrice,
 					TotalPoints = order.TotalPoints,
-                    isUpdated = order.IsUpdated,
                     discountPercent = order?.discountPercent,
                     VoucherId = order?.VoucherId,
 					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
@@ -220,8 +223,8 @@ namespace vegeatery.Controllers
 			}
 		}
 
-		// Get all orders (for admin)
-		[HttpGet("all")]
+			// Get all orders (for admin)
+			[HttpGet("all")]
         public IActionResult GetAll()
         {
             try
@@ -319,9 +322,8 @@ namespace vegeatery.Controllers
                 // Update order status
                 order.Status = request.Status;
                 order.UpdatedAt = DateTime.UtcNow;
-                order.IsUpdated = true;
-				// Save changes
-				_context.SaveChanges();
+                // Save changes
+                _context.SaveChanges();
                 return Ok(new { Message = "Order status updated successfully." });
             }
             catch (Exception ex)
