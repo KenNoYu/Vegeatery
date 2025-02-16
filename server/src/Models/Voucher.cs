@@ -10,7 +10,7 @@ namespace vegeatery.Models
 		public Decimal DiscountPercentage { get; set; }
         public int TierId { get; set; } // Foreign key for Tier
         public Tier Tier { get; set; } // Navigation property
-        public DateTime? LastUsedDate { get; set; }
+        public DateTime? LastUsedAt { get; set; }
 
     }
 }
