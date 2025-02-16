@@ -8,6 +8,7 @@ import emailjs from "@emailjs/browser";
 const OrderConfirmation = () => {
     RoleGuard('User');
     const [order, setOrder] = useState(null);
+    const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
     const location = useLocation();
@@ -76,6 +77,22 @@ const OrderConfirmation = () => {
                 console.error("Error fetching orders:", error);
             })
     }
+
+    const GetCartItems = () => {
+        // autofill cartId next time
+        http.get(`/ordercart?cartId=${user.data.cartId}`).then((res) => {
+            setCartItems(res.data);
+        })
+            .catch((error) => {
+                console.error("Error fetching cart items:", error);
+            })
+    };
+
+    useEffect(() => {
+        if (user?.data.cartId) {
+            GetCartItems();
+        }
+    }, [user]);
 
     const sendEmail = async () => {
         const emailParams = {
