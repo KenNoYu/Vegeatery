@@ -153,7 +153,6 @@ export default function ProfilePage() {
       setLoading(false);
     }
   };
-  console.log(user.profileImage);
   
   // Use useEffect to fetch user info when the component loads
   useEffect(() => {
