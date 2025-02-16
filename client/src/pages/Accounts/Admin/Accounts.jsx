@@ -253,7 +253,7 @@ export default function Accounts() {
         </Box>
         <Box>
           <Typography variant="h4" gutterBottom fontWeight="bold">
-            Accounts
+            User Accounts
           </Typography>
 
           <Box display="flex" alignItems="center" mb={2}>
