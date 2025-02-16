@@ -14,12 +14,13 @@ const StaffFocusedReservation = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const { id } = useParams();
+  const [user, setUser] = useState(null);
   const [reservation, setReservation] = useState(null);
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedTables, setSelectedTables] = useState([]);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -49,9 +50,9 @@ const StaffFocusedReservation = () => {
   ];
 
   const isDateTimeBeforeNow = (date, time) => {
-      const formattedDate = parse(time, 'h:mma', new Date(date)); // Parse the time into a date object
-      return isBefore(formattedDate, new Date()); // Compare it with the current date and time
-    };
+    const formattedDate = parse(time, 'h:mma', new Date(date)); // Parse the time into a date object
+    return isBefore(formattedDate, new Date()); // Compare it with the current date and time
+  };
 
   const fetchReservationById = async () => {
     setLoading(true);
@@ -75,9 +76,15 @@ const StaffFocusedReservation = () => {
       console.log("Tables fetched:", response.data);
       setTables(response.data);
       reservation.tables.forEach((table) => {
-        console.log(table.id)
-        handleTableClick(table.id); 
+        handleTableClick(table.id, "selected");
       });
+
+      response.data.forEach((table) => {
+        if (table.status === "unavailable") {
+          handleTableClick(table.id, "unavailable");
+        }
+      });
+
     } catch (error) {
       console.error("Error fetching tables:", error);
       toast.error("Failed to load tables.");
@@ -85,6 +92,10 @@ const StaffFocusedReservation = () => {
   };
 
   const onUnreserveConfirm = async (reservationId) => {
+    if (!user) {
+      toast.error("User is not authenticated.");
+      return;
+    }
     try {
       const response = await http.put("/Reservation/Unreserve", null, {
         params: { reservationId },
@@ -97,7 +108,7 @@ const StaffFocusedReservation = () => {
         "reservationDate": reservation.reservationDate,
         "timeSlot": reservation.timeSlot,
         "tables": reservation.tables.map(table => table.id).join(", "),
-        "doneBy": "staff"
+        "doneBy": user.username
       }
 
       console.log(logData)
@@ -106,7 +117,7 @@ const StaffFocusedReservation = () => {
       console.log("Reservation log created:", logResponse.data);
 
       toast.success("Reservation cancelled!");
-      navigate("/staff/viewreservations")
+      navigate("/staff/reservationlogs")
     } catch (error) {
       console.error("Error cancelling reservation:", error);
       toast.error("Failed to cancel reservation.");
@@ -114,6 +125,10 @@ const StaffFocusedReservation = () => {
   };
 
   const onConfirmChanges = async () => {
+    if (!selectedTables || selectedTables.length === 0) {
+      toast.warn("Please select 1 or 2 tables")
+      return;
+    }
     try {
       const updatedData = {
         customerName: reservation.customerName,
@@ -134,14 +149,14 @@ const StaffFocusedReservation = () => {
         reservationDate: selectedDate,
         "timeSlot": reservation.timeSlot + " → " + selectedTime,
         "tables": reservation.tables.map(table => table.id).join(", ") + " → " + selectedTables,
-        doneBy: "staff"
+        doneBy: user.username
       };
 
       await http.post("/Reservation/CreateReservationLog", logData);
-      
+
       toast.success("Reservation updated successfully!");
       setConfirmChangesOpen(false);
-      setReservation(response.data); // Update the reservation in the state
+      navigate('/staff/reservationlogs')
     } catch (error) {
       console.error("Error updating reservation:", error);
       toast.error("Failed to update reservation.");
@@ -154,9 +169,44 @@ const StaffFocusedReservation = () => {
 
   useEffect(() => {
     if (reservation) {
-      fetchTables(reservation.reservationDate, reservation.timeSlot, reservation.id);
+      fetchTables(selectedDate, selectedTime, reservation.id);
     }
+  }, [reservation, selectedDate, selectedTime]);
+
+  useEffect(() => {
+    if (reservation) {
+      const fetchUser = async () => {
+        setLoading(true); // Start loading when fetching starts
+
+        try {
+          let userData = null;
+
+          // Try fetching user data
+          try {
+            const userResponse = await http.get("/Auth/current-user", { withCredentials: true });
+            if (userResponse.data) {
+              setUser(userResponse.data);
+              userData = userResponse.data;
+            }
+          } catch (userError) {
+            console.warn("User not logged in or authentication failed.");
+            setUser(null); // Ensure user state is cleared if no user is found
+          }
+
+        } catch (error) {
+          console.error("Error fetching data", error);
+          toast.error("Failed to load data.");
+        } finally {
+          setLoading(false); // Stop loading state in all cases
+        }
+      };
+
+      fetchUser(); // Invoke the function
+    }
+
+
   }, [reservation]);
+  
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
@@ -171,40 +221,44 @@ const StaffFocusedReservation = () => {
     setSelectedTime(time);
   };
 
-  const handleTableClick = (id) => {
-      setTables((prevTables) => {
-        let updatedTables = [...prevTables];
-        let newSelectedTables = [...selectedTables];
-  
-        // Find the table being selected
-        const tableIndex = updatedTables.findIndex((table) => table.id === id);
-        if (tableIndex !== -1) {
-          const table = updatedTables[tableIndex];
-  
-          if (selectedTables.includes(id)) {
-            
-            // Deselect the table
-            newSelectedTables = newSelectedTables.filter(tableId => tableId !== id);
-            updatedTables[tableIndex] = { ...table, status: "available" };
-          } else {
-            
-            if (selectedTables.length >= 2) {
-              toast.warning("You can only select up to 2 tables.");
-              return prevTables;
-            }
-  
-            // Select the table
-            
+  const handleTableClick = (id, status = "available") => { 
+    let newSelectedTables = [...selectedTables];
+    
+    setTables((prevTables) => {
+      // Create a new array to maintain immutability
+      let updatedTables = prevTables.map((table) => {
+        if (table.id === id) {
+          if (status === "unavailable") {
+            return { ...table, status: "unavailable" };
+          } else if (status === "selected") {
             newSelectedTables.push(id);
-            updatedTables[tableIndex] = { ...table, status: "selected" };
+            return { ...table, status: "selected" };
+          } else {
+            if (selectedTables.includes(id)) {
+              // Deselect the table
+              newSelectedTables = newSelectedTables.filter(tableId => tableId !== id);
+              return { ...table, status: "available" };
+            } else {
+              if (selectedTables.length >= 2) {
+                toast.warning("You can only select up to 2 tables.");
+                return table;
+              }
+              // Select the table
+              newSelectedTables.push(id);
+              return { ...table, status: "selected" };
+            }
           }
         }
-  
-        setSelectedTables(newSelectedTables);
-        return updatedTables;
+        return table;
       });
-
-    };
+  
+      return updatedTables;
+    });
+  
+    // Move this outside of setTables to ensure it gets the latest value
+    setSelectedTables(newSelectedTables);
+    console.log("Updated Selected Tables:", newSelectedTables);
+  };
 
   if (loading) {
     toast.info("Loading reservation...");
@@ -213,211 +267,210 @@ const StaffFocusedReservation = () => {
 
   return (
 
+    <Box
+      sx={{
+        flexGrow: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 7,
+        boxShadow: 2,
+        borderRadius: '20px',
+        backgroundColor: 'white',
+        overflow: 'auto',
+      }}
+    >
       <Box
         sx={{
-          flexGrow: 1,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 7,
-          boxShadow: 2,
-          borderRadius: '20px',
           backgroundColor: 'white',
-          overflow: 'auto',
+          width: '80%',
+          height: '80vh',
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          flexDirection: 'row',
+          borderTopRightRadius: '20px',
+          borderBottomRightRadius: '20px',
         }}
       >
+
         <Box
           sx={{
-            backgroundColor: 'white',
-            width: '80%',
-            height: '80vh',
-            display: 'flex',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            flexDirection: 'row',
-            borderTopRightRadius: '20px',
-            borderBottomRightRadius: '20px',
+            flex: 1,
+            p: 4,
           }}
         >
-
-          <Box
+          <Button
+            onClick={() => navigate('/staff/viewreservations')}
             sx={{
-              flex: 1,
-              p: 4,
+              textTransform: 'none',
+              color: 'black',
+              marginTop: '-50px',
+              marginBottom: '50px',
+              '&:hover': {
+                color: 'grey',
+              },
             }}
           >
-            <Button
-              onClick={() => navigate('/staff/viewreservations')}
-              sx={{
-                textTransform: 'none',
-                color: 'black',
-                marginTop: '-50px',
-                marginBottom: '50px',
-                '&:hover': {
-                  color: 'grey',
-                },
-              }}
-            >
-              Back
-            </Button>
+            Back
+          </Button>
 
-            {/* Date Selector */}
-            <DateSelector
-              selectedDate={selectedDate}
-              onDateChange={handleDateSelect}
-            />
+          {/* Date Selector */}
+          <DateSelector
+            selectedDate={selectedDate}
+            onDateChange={handleDateSelect}
+          />
 
-            {/* Time Selector */}
-            <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 1,
-                justifyContent: "center",
-                mt: 3,
-                mb: 3,
-              }}
-            >
-              {times.map((time) => {
-                const isPast = isDateTimeBeforeNow(selectedDate, time);
-                return (
-                  <Button key={time} 
-                  variant="outlined" 
-                  sx={{ 
+          {/* Time Selector */}
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 1,
+              justifyContent: "center",
+              mt: 3,
+              mb: 3,
+            }}
+          >
+            {times.map((time) => {
+              const isPast = isDateTimeBeforeNow(selectedDate, time);
+              return (
+                <Button key={time}
+                  variant="outlined"
+                  sx={{
                     borderColor: selectedTime === time ? "none" : "black",
-                    backgroundColor: selectedTime === time ? '#C6487E' : "primary", 
-                    width: "90px", 
-                    color: selectedTime === time ? "white" : "black", 
+                    backgroundColor: selectedTime === time ? '#C6487E' : "primary",
+                    width: "90px",
+                    color: selectedTime === time ? "white" : "black",
                     cursor: isPast ? "not-allowed" : "pointer",
                     opacity: isPast ? 0.5 : 1,
                     pointerEvents: isPast ? "none" : "auto",
-                    "&:hover": { backgroundColor: selectedTime === time ? "none" : "#E7ABC5" } 
-                  }} 
+                    "&:hover": { backgroundColor: selectedTime === time ? "none" : "#E7ABC5" }
+                  }}
                   onClick={() => !isPast && handleTimeSelect(time)}>
                   {time}
                 </Button>
-                );
+              );
+            })}
+          </Box>
+        </Box>
+
+        <Box
+          sx={{
+            flex: 1,
+            p: 4,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+
+          <Typography variant="h5" gutterBottom>
+            {reservation.customerName} <br />
+            <Typography>
+              {reservation.customerPhone} | {reservation.customerEmail}
+            </Typography>
+          </Typography>
+          <Box sx={{ textAlign: "center", marginTop: "20px" }}>
+            <Grid container spacing={2} justifyContent="center">
+              {tables.map((table) => {
+                return (
+                  <Grid item xs={6} lg={4} key={table.id}>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        padding: "20px",
+                        backgroundColor:
+                          table.status === "selected" ? '#C6487E' :
+                            table.status === "available" ? "white" :
+                              '#585858',
+                        color: table.status === "selected" || table.status === "unavailable" ? "#fff" : "#000",
+                        cursor: table.status !== "unavailable" ? "pointer" : "not-allowed",
+                      }}
+                      onClick={() =>
+                        table.status !== "unavailable" && handleTableClick(table.id)
+                      }
+                    >
+                      Table {table.id}<br />
+                      {table.pax} Pax
+                    </Button>
+                  </Grid>
+                )
               })}
+            </Grid>
+            <Box sx={{ mt: 3, display: "flex", justifyContent: "space-around" }}>
+              <Button
+                variant="outlined"
+                onClick={() => handleUnreserveOpen()}
+                sx={{
+                  mr: 2,
+                  border: "1px solid black",
+                  color: "black",
+                  "&:hover": {
+                    backgroundColor: "#E7ABC5"
+                  }
+                }}
+              >
+                Unreserve
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleConfirmChangesOpen}
+                sx={{
+                  backgroundColor: '#C6487E',
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#E7ABC5"
+                  }
+                }}
+
+              >Confirm Changes</Button>
             </Box>
           </Box>
+        </Box>
 
-          <Box
+      </Box>
+      <ToastContainer />
+
+      {/* Modals */}
+
+      {/* Unreserve Confirmation Modal */}
+      <Dialog
+        open={unreserveOpen}
+        onClose={handleUnreserveClose}
+        aria-labelledby="confirmation-dialog-title"
+        aria-describedby="confirmation-dialog-description"
+      >
+        <DialogTitle id="confirmation-dialog-title">
+          Are you sure you want to cancel this reservation?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="confirmation-dialog-description">
+            This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          {/* Cancel Button */}
+          <Button onClick={handleUnreserveClose} sx={{ color: 'gray' }}>
+            No, Keep It
+          </Button>
+          {/* Confirm Button */}
+          <Button
+            onClick={handleUnreserveConfirm}
             sx={{
-              flex: 1,
-              p: 4,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              color: 'white',
+              backgroundColor: '#C6487E',
+              '&:hover': {
+                backgroundColor: '#E7ABC5',
+              },
             }}
           >
+            Yes, Unreserve
+          </Button>
+        </DialogActions>
+      </Dialog>
 
-            <Typography variant="h5" gutterBottom>
-              {reservation.customerName} <br />
-              <Typography>
-                {reservation.customerPhone} | {reservation.customerEmail}
-              </Typography>
-            </Typography>
-            <Box sx={{ textAlign: "center", marginTop: "20px" }}>
-              <Grid container spacing={2} justifyContent="center">
-                {tables.map((table) => {
-
-                  return (
-                    <Grid item xs={6} lg={4} key={table.id}>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          padding: "20px",
-                          backgroundColor:
-                            table.status === "selected" ? '#C6487E' :
-                              table.status === "available" ? "white" :
-                                '#585858',
-                          color: table.status === "selected" || table.status === "unavailable" ? "#fff" : "#000",
-                          cursor: table.status !== "unavailable" ? "pointer" : "not-allowed",
-                        }}
-                        onClick={() =>
-                          table.status !== "unavailable" && handleTableClick(table.id)
-                        }
-                      >
-                        Table {table.id}<br />
-                        {table.pax} Pax
-                      </Button>
-                    </Grid>
-                  )
-                })}
-              </Grid>
-              <Box sx={{ mt: 3, display: "flex", justifyContent: "space-around" }}>
-                <Button
-                  variant="outlined"
-                  onClick={() => handleUnreserveOpen()}
-                  sx={{
-                    mr: 2,
-                    border: "1px solid black",
-                    color: "black",
-                    "&:hover": {
-                      backgroundColor: "#E7ABC5"
-                    }
-                  }}
-                >
-                  Unreserve
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleConfirmChangesOpen}
-                  sx={{
-                    backgroundColor: '#C6487E',
-                    color: "white",
-                    "&:hover": {
-                      backgroundColor: "#E7ABC5"
-                    }
-                  }}
-
-                >Confirm Changes</Button>
-              </Box>
-            </Box>
-          </Box>
-
-        </Box>
-        <ToastContainer />
-
-        {/* Modals */}
-
-        {/* Unreserve Confirmation Modal */}
-        <Dialog
-          open={unreserveOpen}
-          onClose={handleUnreserveClose}
-          aria-labelledby="confirmation-dialog-title"
-          aria-describedby="confirmation-dialog-description"
-        >
-          <DialogTitle id="confirmation-dialog-title">
-            Are you sure you want to cancel this reservation?
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="confirmation-dialog-description">
-              This action cannot be undone.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            {/* Cancel Button */}
-            <Button onClick={handleUnreserveClose} sx={{ color: 'gray' }}>
-              No, Keep It
-            </Button>
-            {/* Confirm Button */}
-            <Button
-              onClick={handleUnreserveConfirm}
-              sx={{
-                color: 'white',
-                backgroundColor: '#C6487E',
-                '&:hover': {
-                  backgroundColor: '#E7ABC5',
-                },
-              }}
-            >
-              Yes, Unreserve
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Confirm Changes Modal */}
+      {/* Confirm Changes Modal */}
       <Dialog
         open={confirmChangesOpen}
         onClose={handleConfirmChangesClose}
@@ -449,7 +502,7 @@ const StaffFocusedReservation = () => {
         </DialogActions>
       </Dialog>
 
-      </Box>
+    </Box>
   );
 };
 
