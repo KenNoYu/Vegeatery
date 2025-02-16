@@ -76,6 +76,47 @@ namespace vegeatery.Controllers
             }
         }
 
+        [HttpPut("updatePoints/{userId}")]
+        public async Task<IActionResult> UpdateUserPoints(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found." });
+            }
+
+            var currentDate = DateTime.UtcNow;
+
+            // Check if the order period has started
+            if (user.OrderPeriodStartDate == null)
+            {
+                user.OrderPeriodStartDate = currentDate;
+            }
+
+            // Check if 7 days have passed since the start date
+            if ((currentDate - user.OrderPeriodStartDate.Value).TotalDays > 7)
+            {
+                user.OrderCount = 0;
+                user.OrderPeriodStartDate = currentDate;
+            }
+
+            // Increment the order count
+            user.OrderCount++;
+
+            // Check if the user has ordered 7 times within 7 days
+            if (user.OrderCount >= 7)
+            {
+                user.TotalPoints += 10;
+                user.OrderCount = 0;
+                user.OrderPeriodStartDate = null;
+            }
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "User points updated successfully.", TotalPoints = user.TotalPoints });
+        }
+
         // Get Order By ID
         [HttpGet("orderId")]
         public IActionResult GetOrderById(int orderId)
@@ -309,63 +350,6 @@ namespace vegeatery.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { Message = "An error occurred while getting your order.", Details = ex.Message });
-            }
-        }
-
-        // Add bonus points after successful payment
-        [HttpPut("addBonusPoints")]
-        public IActionResult AddBonusPoints([FromBody] AddBonusPointsRequest request)
-        {
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                try
-                {
-                    // Retrieve the user
-                    var user = _context.Users.FirstOrDefault(u => u.Id == request.CustomerId);
-                    if (user == null)
-                    {
-                        return NotFound(new { Message = "User not found" });
-                    }
-
-                    // Check if the order period has expired
-                    if (user.OrderPeriodStart.HasValue && (DateTime.UtcNow - user.OrderPeriodStart.Value).TotalDays > 7)
-                    {
-                        user.OrderCount = 0;
-                        user.OrderPeriodStart = null;
-                    }
-
-                    // Increment the order count
-                    user.OrderCount++;
-
-                    // If this is the first order in the period, set the start date
-                    if (user.OrderCount == 1)
-                    {
-                        user.OrderPeriodStart = DateTime.UtcNow;
-                    }
-
-                    // Check if the user has reached 7 orders within 7 days
-                    if (user.OrderCount >= 7)
-                    {
-                        // Award 10 points
-                        user.TotalPoints += 10;
-
-                        // Reset the counters
-                        user.OrderCount = 0;
-                        user.OrderPeriodStart = null;
-                    }
-
-                    // Save changes
-                    _context.SaveChanges();
-                    transaction.Commit();
-                    return Ok(new { Message = "Bonus points added successfully." });
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    // Log the full exception details, including the inner exception
-                    var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                    return StatusCode(500, new { Message = "An error occurred while adding bonus points.", Details = errorMessage });
-                }
             }
         }
 
