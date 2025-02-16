@@ -8,6 +8,7 @@ import emailjs from "@emailjs/browser";
 const OrderConfirmation = () => {
     RoleGuard('User');
     const [order, setOrder] = useState(null);
+    const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
     const location = useLocation();
@@ -26,7 +27,6 @@ const OrderConfirmation = () => {
         http
             .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
             .then((res) => {
-                console.log(res);
                 setUser(res);
                 setLoading(false);
             })
@@ -37,14 +37,19 @@ const OrderConfirmation = () => {
     }, []);
 
     useEffect(() => {
-        if (order) {
+        if (order && Array.isArray(cartItems)) {
             UpdateOrderAsNew(order.orderId);
-            sendEmail();
+            //sendEmail();
             updateUserPoints();
+    
+            cartItems.forEach((item) => {
+                console.log(item.productId);
+                deleteCartItems(user.data.cartId, item.productId);
+            });
             addBonusPoints();
 
         }
-    }, [order]);
+    }, [order, cartItems]);
 
     // Update order status
     const UpdateOrderAsNew = (orderId) => {
@@ -54,12 +59,39 @@ const OrderConfirmation = () => {
         }
         http.put("/order/UpdateStatus", updateData)
             .then((res) => {
-                console.log("Update API Response:", res.data);
             })
             .catch((error) => {
                 console.error("Error fetching orders:", error);
             })
     }
+
+    // Delete items in cart
+    const deleteCartItems = (cartId, productId) => {
+        http.delete(`/ordercart?CartId=${cartId}&ProductId=${productId}`)
+            .then((res) => {
+                console.log("Product delete from cart successfully", res.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching orders:", error);
+            })
+    }
+
+    // get cart item
+    const GetCartItems = () => {
+        // autofill cartId next time
+        http.get(`/ordercart?cartId=${user.data.cartId}`).then((res) => {
+            setCartItems(res.data);
+        })
+            .catch((error) => {
+                console.error("Error fetching cart items:", error);
+            })
+    };
+
+    useEffect(() => {
+        if (user?.data.cartId) {
+            GetCartItems();
+        }
+    }, [user]);
 
     const sendEmail = async () => {
         const emailParams = {
