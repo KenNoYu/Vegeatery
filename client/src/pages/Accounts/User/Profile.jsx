@@ -54,7 +54,7 @@ const ProfileSection = styled(Box)(({ theme }) => ({
 const EditButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#C6487E",
   color: "#fff",
-  width: "100%",
+  width: "60%",
   marginBottom: theme.spacing(2),
   "&:hover": {
     backgroundColor: "#A83866",
@@ -93,7 +93,7 @@ const updateProfileSchema = yup.object().shape({
       /^[a-zA-Z0-9.,\s-]*$/,
       "Allergy info can only contain letters, numbers, periods, commas, spaces, and hyphens"
     ),
-  meal: yup.string(), // Optional field, so no validation required
+  meal: yup.string(),
 });
 
 export default function ProfilePage() {
@@ -339,8 +339,8 @@ export default function ProfilePage() {
                   alt={user.username}
                   src={imageFile ? `${import.meta.env.VITE_FILE_BASE_URL}${imageFile}` : `${import.meta.env.VITE_FILE_BASE_URL}${user.profileImage}`}
                   sx={{
-                    width: 120,
-                    height: 120,
+                    width: 160,
+                    height: 160,
                     borderRadius: "50%",
                     marginBottom: 2,
                     border: "4px solid #fff",
@@ -422,7 +422,7 @@ export default function ProfilePage() {
                   variant="outlined"
                   color="error"
                   sx={{
-                    width: "100%",
+                    width: "60%",
                     borderColor: "error.main",
                     color: "error.main",
                     "&:hover": {
