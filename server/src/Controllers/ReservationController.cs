@@ -205,14 +205,18 @@ namespace vegeatery.Controllers
       try
       {
         // Find the reservation by its ID
-        var reservation = await _dbContext.Reservations.FindAsync(reservationId);
+        var reservation = await _dbContext.Reservations
+                                      .Include(r => r.Tables) // Includes the tables linked to this reservation
+                                      .FirstOrDefaultAsync(r => r.Id == reservationId);
 
         if (reservation == null)
         {
           return NotFound(new { message = "Reservation not found." });
         }
 
-        // Update the status to "Seated"
+        reservation.Tables.Clear();
+
+        // Update the status to "cancelled"
         reservation.Status = "cancelled";
 
         // Save changes to the database
@@ -268,34 +272,36 @@ namespace vegeatery.Controllers
       }
     }
 
-        [HttpPut("UpdateReservation/{id}")]
-        public async Task<IActionResult> UpdateReservation(int id, [FromBody] ReservationRequest updatedReservation)
+    [HttpPut("UpdateReservation/{id}")]
+    public async Task<IActionResult> UpdateReservation(int id, [FromBody] ReservationRequest updatedReservation)
+    {
+        var reservation = await _dbContext.Reservations
+                                            .Include(r => r.Tables)
+                                            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (reservation == null)
         {
-            var reservation = await _dbContext.Reservations
-                                              .Include(r => r.Tables)
-                                              .FirstOrDefaultAsync(r => r.Id == id);
-
-            if (reservation == null)
-            {
-                return NotFound(new { message = "Reservation not found." });
-            }
-
-            reservation.ReservationDate = updatedReservation.ReservationDate;
-            reservation.TimeSlot = updatedReservation.TimeSlot;
-            reservation.CustomerName = updatedReservation.CustomerName;
-            reservation.CustomerEmail = updatedReservation.CustomerEmail;
-            reservation.CustomerPhone = updatedReservation.CustomerPhone;
-            reservation.Status = updatedReservation.Status;
-
-            var selectedTables = await _dbContext.Tables
-                                         .Where(t => updatedReservation.TableIds.Contains(t.Id))
-                                         .ToListAsync();
-
-            reservation.Tables = selectedTables;
-
-            await _dbContext.SaveChangesAsync();
-
-            return Ok(new { message = "Reservation updated successfully", reservation });
+            return NotFound(new { message = "Reservation not found." });
         }
+
+        reservation.ReservationDate = updatedReservation.ReservationDate;
+        reservation.TimeSlot = updatedReservation.TimeSlot;
+        reservation.CustomerName = updatedReservation.CustomerName;
+        reservation.CustomerEmail = updatedReservation.CustomerEmail;
+        reservation.CustomerPhone = updatedReservation.CustomerPhone;
+        reservation.Status = updatedReservation.Status;
+
+        reservation.Tables.Clear();
+
+        var selectedTables = await _dbContext.Tables
+                                        .Where(t => updatedReservation.TableIds.Contains(t.Id))
+                                        .ToListAsync();
+
+        reservation.Tables = selectedTables;
+
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new { message = "Reservation updated successfully", reservation });
     }
+  }
 }
