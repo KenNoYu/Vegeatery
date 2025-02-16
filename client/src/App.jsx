@@ -19,7 +19,7 @@ import DarkTheme from "./themes/DarkTheme"
 import http from "./http";
 import UserContext from "./contexts/UserContext";
 import logoLight from "./assets/logo/vegeateryMain.png";
-import logoDark from "./assets/logo/vegeateryWhite.png"
+import logoDark from "./assets/logo/vegeateryWhite.png";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 // PRODUCTS
@@ -85,11 +85,6 @@ function App() {
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [cartOpen, setCartOpen] = useState(false);
-
-  const toggleCart = (open) => () => {
-    setCartOpen(open);
-  };
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -134,191 +129,190 @@ function App() {
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <Router>
-        <ThemeProvider theme={user?.role === "Admin" || user?.role === "Staff" ? DarkTheme : MyTheme}>
-          <AppBar position="fixed" className="AppBar" >
-            <Container>
-              <Toolbar
-                disableGutters={true}
-                sx={{ width: "100%", justifyContent: "space-between" }}
-              >
-                {/* Left side: 3 directories */}
-                <Box sx={{ display: "flex", gap: 3 }}>
-                  {/* Conditional Rendering based on user.role */}
-                  {loading ? (
-                    <CircularProgress color="inherit" />
-                  ) : user ? (
-                    <>
-                      {/* Show navigation for 'admin' role */}
-                      {user.role === "Admin" && (
-                        <>
-                          <Link to="/admin/overview">
-                            <Typography>Overview</Typography>
-                          </Link>
-                          <Link to="/admin/store">
-                            <Typography>Store</Typography>
-                          </Link>
-                          <Link to="/admin/rewards">
-                            <Typography>Rewards</Typography>
-                          </Link>
-                        </>
-                      )}
-
-                      {/* Show navigation for 'staff' role */}
-                      {user.role === "Staff" && (
-                        <>
-                          <Link to="/staff/vieworders">
-                            <Typography>Orders</Typography>
-                          </Link>
-                          <Link to="/staff/viewproducts">
-                            <Typography>Products</Typography>
-                          </Link>
-                          <Link to="/staff/viewreservations">
-                            <Typography>Reservations</Typography>
-                          </Link>
-                        </>
-                      )}
-
-                      {/* Show navigation for 'customer' role */}
-                      {user.role === "User" && (
-                        <>
-                          <Link to="/user/store">
-                            <Typography>Store</Typography>
-                          </Link>
-                          <Link to="/user/rewards">
-                            <Typography>Rewards</Typography>
-                          </Link>
-                          <Link to="/user/feedback">
-                            <Typography>Feedback</Typography>
-                          </Link>
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    // Show default navigation for unauthenticated users
-                    <>
-                      <Link to="/user/store">
-                        <Typography>Store</Typography>
-                      </Link>
-                      <Link to="/rewards">
-                        <Typography>Rewards</Typography>
-                      </Link>
-                      <Link to="/feedback">
-                        <Typography>Feedback</Typography>
-                      </Link>
-                    </>
-                  )}
-                </Box>
-
-                {/* Center logo (now an image) */}
-                <Box
-                  sx={{
-                    flexGrow: 1,
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
+        <ThemeProvider theme={MyTheme}>
+          <ThemeProvider theme={currentThemeIsDark ? DarkTheme : MyTheme}>
+            <AppBar position="fixed" className="AppBar" >
+              <Container>
+                <Toolbar
+                  disableGutters={true}
+                  sx={{ width: "100%", justifyContent: "space-between" }}
                 >
-                  <Link to="/">
-                    <img
-                      src={currentLogo}
-                      alt="Vegeatery Logo"
-                      style={{ height: "50px", width: "auto" }}
-                    />
-                  </Link>
-                </Box>
+                  {/* Left side: 3 directories */}
+                  <Box sx={{ display: "flex", gap: 3 }}>
+                    {/* Conditional Rendering based on user.role */}
+                    {loading ? (
+                      <CircularProgress color="inherit" />
+                    ) : user ? (
+                      <>
+                        {/* Show navigation for 'admin' role */}
+                        {user.role === "Admin" && (
+                          <>
+                            <Link to="/admin/overview">
+                              <Typography>Overview</Typography>
+                            </Link>
+                            <Link to="/admin/store">
+                              <Typography>Store</Typography>
+                            </Link>
+                            <Link to="/admin/rewards">
+                              <Typography>Rewards</Typography>
+                            </Link>
+                          </>
+                        )}
 
-                {/* Right side: 2 directories and sign-in button */}
-                <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
-                  {loading ? (
-                    <CircularProgress color="inherit" />
-                  ) : user ? (
-                    <>
-                      {/* Show navigation for 'admin' role */}
-                      {user.role === "Admin" && (
-                        <>
-                          <Link to="/admin/accounts">
-                            <Typography>Accounts</Typography>
-                          </Link>
-                          <Link to="/admin/feedback">
-                            <Typography>Feedback</Typography>
-                          </Link>
-                        </>
-                      )}
+                        {/* Show navigation for 'staff' role */}
+                        {user.role === "Staff" && (
+                          <>
+                            <Link to="/staff/vieworders">
+                              <Typography>Orders</Typography>
+                            </Link>
+                            <Link to="/staff/viewproducts">
+                              <Typography>Products</Typography>
+                            </Link>
+                            <Link to="/staff/viewreservations">
+                              <Typography>Reservations</Typography>
+                            </Link>
+                          </>
+                        )}
 
-                      {/* Show navigation for 'staff' role */}
-                      {user.role === "Staff" && <></>}
+                        {/* Show navigation for 'customer' role */}
+                        {user.role === "User" && (
+                          <>
+                            <Link to="/user/store">
+                              <Typography>Store</Typography>
+                            </Link>
+                            <Link to="/user/rewards">
+                              <Typography>Rewards</Typography>
+                            </Link>
+                            <Link to="/user/feedback">
+                              <Typography>Feedback</Typography>
+                            </Link>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      // Show default navigation for unauthenticated users
+                      <>
+                        <Link to="/user/store">
+                          <Typography>Store</Typography>
+                        </Link>
+                        <Link to="/rewards">
+                          <Typography>Rewards</Typography>
+                        </Link>
+                        <Link to="/feedback">
+                          <Typography>Feedback</Typography>
+                        </Link>
+                      </>
+                    )}
+                  </Box>
 
-                      {/* Show navigation for 'customer' role */}
-                      {user.role === "User" && (
-                        <>
-                          <Link to="/reserve">
-                            <Typography>Reserve</Typography>
-                          </Link>
-                          <Cart />
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    // Show default navigation for unauthenticated users
-                    <>
-                      <Link to="/reserve">
-                        <Typography>Reserve</Typography>
-                      </Link>
-                    </>
-                  )}
+                  {/* Center logo (now an image) */}
+                  <Box
+                    sx={{
+                      flexGrow: 1,
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Link to="/">
+                      <img
+                        src={currentLogo}
+                        alt="Vegeatery Logo"
+                        style={{ height: "50px", width: "auto" }}
+                      />
+                    </Link>
+                  </Box>
 
-                  {loading ? ( // Show loading spinner until user state is set
-                    <CircularProgress color="inherit" />
-                  ) : user ? (
-                    <>
-                      {/* Profile Icon and Menu */}
-                      <IconButton onClick={handleMenuClick} color="inherit">
-                        <AccountCircle />
-                      </IconButton>
+                  {/* Right side: 2 directories and sign-in button */}
+                  <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
+                    {loading ? (
+                      <CircularProgress color="inherit" />
+                    ) : user ? (
+                      <>
+                        {/* Show navigation for 'admin' role */}
+                        {user.role === "Admin" && (
+                          <>
+                            <Link to="/admin/accounts">
+                              <Typography>Accounts</Typography>
+                            </Link>
+                            <Link to="/admin/feedback">
+                              <Typography>Feedback</Typography>
+                            </Link>
+                          </>
+                        )}
 
-                      {/* Menu for profile options */}
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                      >
-                        <MenuItem onClick={handleMenuClose}>
-                          <Link
-                            to="/overview"
-                            style={{ textDecoration: "none", color: "black" }}
-                          >
-                            Account Overview
-                          </Link>
-                        </MenuItem>
-                        <MenuItem onClick={logout}>Logout</MenuItem>
-                      </Menu>
-                    </>
-                  ) : (
-                    <>
-                      <Link to="/register">
-                        <Typography color="Accent">
-                          <b>Register</b>
-                        </Typography>
-                      </Link>
-                      <Link to="/login">
-                        <Typography color="Accent">
-                          <b>Login</b>
-                        </Typography>
-                      </Link>
-                    </>
-                  )}
-                </Box>
-              </Toolbar>
-            </Container>
-          </AppBar>
+                        {/* Show navigation for 'staff' role */}
+                        {user.role === "Staff" && <></>}
 
-          {/* 
-          this is to make sure the img in homepage can take up the full width without awkward 
-          awkward padding, may affect other pages margins / paddings!!
-          */}
-          <Container maxWidth={false} disableGutters sx={{ padding: "0 !important", margin: "0 !important" }}>
-            <Routes>
-              <Route path="/" element={<Home />} />
+                        {/* Show navigation for 'customer' role */}
+                        {user.role === "User" && (
+                          <>
+                            <Link to="/reserve">
+                              <Typography>Reserve</Typography>
+                            </Link>
+                            <Cart />
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      // Show default navigation for unauthenticated users
+                      <>
+                        <Link to="/reserve">
+                          <Typography>Reserve</Typography>
+                        </Link>
+                      </>
+                    )}
 
+                    {loading ? ( // Show loading spinner until user state is set
+                      <CircularProgress color="inherit" />
+                    ) : user ? (
+                      <>
+                        {/* Profile Icon and Menu */}
+                        <IconButton onClick={handleMenuClick} color="inherit">
+                          <AccountCircle />
+                        </IconButton>
+
+                        {/* Menu for profile options */}
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={handleMenuClose}
+                        >
+                          <MenuItem onClick={handleMenuClose}>
+                            <Link
+                              to="/overview"
+                              style={{ textDecoration: "none", color: "black" }}
+                            >
+                              Account Overview
+                            </Link>
+                          </MenuItem>
+                          <MenuItem onClick={logout}>Logout</MenuItem>
+                        </Menu>
+                      </>
+                    ) : (
+                      <>
+                        <Link to="/register">
+                          <Typography color="Accent">
+                            <b>Register</b>
+                          </Typography>
+                        </Link>
+                        <Link to="/login">
+                          <Typography color="Accent">
+                            <b>Login</b>
+                          </Typography>
+                        </Link>
+                      </>
+                    )}
+                  </Box>
+                </Toolbar>
+              </Container>
+            </AppBar>
+          </ThemeProvider>
+
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
+          <Container sx={{ paddingTop: '64px' }}>
+            <Routes>  
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
