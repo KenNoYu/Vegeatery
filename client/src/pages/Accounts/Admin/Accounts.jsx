@@ -18,7 +18,7 @@ import {
   CardContent,
   Chip,
   Grid,
-  Pagination
+  Pagination,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import PersonIcon from "@mui/icons-material/Person";
@@ -33,7 +33,7 @@ export default function Accounts() {
   RoleGuard("Admin");
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -53,24 +53,13 @@ export default function Accounts() {
         })
         .then((res) =>
           setUsers(
-            res.data
-              .filter((user) => {
-                const searchText = searchTerm.toLowerCase();
-                return (
-                  user.username.toLowerCase().includes(searchText) ||
-                  user.email.toLowerCase().includes(searchText)
-                );
-              })
-              .sort((a, b) => {
-                if (sortBy === "username") {
-                  return a.username.localeCompare(b.username);
-                } else if (sortBy === "email") {
-                  return a.email.localeCompare(b.email);
-                } else if (sortBy === "role") {
-                  return a.role.localeCompare(b.role);
-                }
-                return 0;
-              })
+            res.data.filter((user) => {
+              const searchText = searchTerm.toLowerCase();
+              return (
+                user.username.toLowerCase().includes(searchText) ||
+                user.email.toLowerCase().includes(searchText)
+              );
+            })
           )
         )
         .catch((err) => {
@@ -85,10 +74,6 @@ export default function Accounts() {
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value.toLowerCase());
-  };
-
-  const handleSortByChange = (event) => {
-    setSortBy(event.target.value);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -107,10 +92,20 @@ export default function Accounts() {
       return matchesSearchTerm && matchesRole;
     })
     .sort((a, b) => {
-      if (sortBy === "username") {
-        return a.username.localeCompare(b.username);
-      } else if (sortBy === "createdAt") {
-        return new Date(a.createdAt) - new Date(b.createdAt);
+      if (sortBy === "createdAt" || sortBy === "createdAtReverse") {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+
+        // Check if the createdAt fields are valid dates
+        if (isNaN(dateA) || isNaN(dateB)) {
+          console.error("Invalid dates:", a.createdAt, b.createdAt);
+          return 0; // Return 0 if date parsing fails
+        }
+
+        const compare = dateA - dateB; // Ascending order by default
+
+        // Reverse the order if 'createdAtReverse' is selected
+        return sortBy === "createdAtReverse" ? -compare : compare;
       }
       return 0;
     });
@@ -131,7 +126,7 @@ export default function Accounts() {
 
   const UserProfileCard = ({ user }) => {
     const navigate = useNavigate();
-    
+
     const handleViewProfile = () => {
       navigate(`/user/profile/${user.id}`); // Navigate to the profile page with the userId in the URL
     };
@@ -159,22 +154,22 @@ export default function Accounts() {
         <Box display="flex" alignItems="center">
           {/* Avatar Icon */}
           <ProfileImage
-                  alt={user.username}
-                  src={
-                    user.imageFile
-                      ? `${import.meta.env.VITE_FILE_BASE_URL}${user.imageFile}`
-                      : '/path/to/default-image.jpg'  // Provide a fallback image if no profile image is set
-                  }
-                  sx={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: "50%",
-                    marginBottom: 2,
-                    marginRight: 2,
-                    border: "4px solid #fff",
-                    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                  }}
-                />
+            alt={user.username}
+            src={
+              user.imageFile
+                ? `${import.meta.env.VITE_FILE_BASE_URL}${user.imageFile}`
+                : "/path/to/default-image.jpg" // Provide a fallback image if no profile image is set
+            }
+            sx={{
+              width: 64,
+              height: 64,
+              borderRadius: "50%",
+              marginBottom: 2,
+              marginRight: 2,
+              border: "4px solid #fff",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+            }}
+          />
           {/* User Info */}
           <CardContent
             sx={{ padding: "0", paddingLeft: "16px", marginTop: "1em" }}
@@ -206,8 +201,8 @@ export default function Accounts() {
                 user.roleName.toLowerCase() === "user"
                   ? "#007AFF" // Blue text color for 'User'
                   : user.roleName.toLowerCase() === "admin"
-                    ? "#DC2626" // Red text color for 'Admin'
-                    : "#16A34A", // Green text color for 'Staff'
+                  ? "#DC2626" // Red text color for 'Admin'
+                  : "#16A34A", // Green text color for 'Staff'
               backgroundColor: "#E0F2FE", // Light blue background for 'User'
               fontWeight: "bold",
               marginBottom: "8px",
@@ -248,7 +243,14 @@ export default function Accounts() {
           height: "100%",
         }}
       >
-        <Box sx={{ marginBottom: "7em", marginTop: "1.5em", marginLeft: "auto", marginRight: "auto" }}>
+        <Box
+          sx={{
+            marginBottom: "7em",
+            marginTop: "1.5em",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
           <UserRegistrationsGraph />
         </Box>
         <Box>
@@ -281,6 +283,37 @@ export default function Accounts() {
                 },
               }}
             />
+            <FormControl
+              sx={{
+                minWidth: 120,
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused": {
+                    fieldset: {
+                      borderColor: "#C6487E !important", // Keep your border color
+                    },
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  // Target the label specifically
+                  color: "black", // Default label color
+                  "&.Mui-focused": {
+                    // Label styles when focused
+                    color: "black !important", // Black on focus
+                  },
+                },
+              }}
+            >
+              <Select
+                labelId="sort-by-label"
+                id="sort-by-select"
+                value={sortBy || "createdAt"}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <MenuItem value="createdAt">Newest to Oldest</MenuItem>
+                <MenuItem value="createdAtReverse">Oldest to Newest</MenuItem>
+              </Select>
+            </FormControl>
+
             <FormControl
               sx={{
                 minWidth: 120,
@@ -334,7 +367,7 @@ export default function Accounts() {
                         item
                         sm={12} // 2 columns on small screens
                         md={6}
-                        lg={6}  // 4 columns on large screens
+                        lg={6} // 4 columns on large screens
                         key={user.id}
                       >
                         <Box
@@ -357,12 +390,28 @@ export default function Accounts() {
                       page={currentPage}
                       onChange={handlePageChange}
                       color="primary"
+                      sx={{
+                        "& .MuiPaginationItem-root.Mui-selected": {
+                          // Target the selected page item
+                          backgroundColor: "#C6487E", // Or any color you want
+                          color: "white", // Text color for selected item
+                          borderRadius: "4px", // Optional: Add rounded corners
+                        },
+                        "& .MuiPaginationItem-root": {
+                          // Target all page items
+                          "&:hover": {
+                            backgroundColor: "000", // Example hover effect
+                          },
+                        },
+                      }}
                     />
                   </Box>
                 </>
               ) : (
                 <Box textAlign="center" mt={5}>
-                  <PersonOffOutlinedIcon style={{ fontSize: 60, color: "grey" }} />
+                  <PersonOffOutlinedIcon
+                    style={{ fontSize: 60, color: "grey" }}
+                  />
                   <Typography variant="h6" mt={2} color="textSecondary">
                     Account does not exist
                   </Typography>
