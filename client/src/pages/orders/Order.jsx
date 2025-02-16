@@ -37,9 +37,15 @@ const Orders = () => {
         http
             .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
             .then((res) => {
-                console.log(res);
                 setUser(res);
-                fetchVouchers(res.data.id)
+                fetchVouchers(res.data.id);
+                // Update formik values with the fetched user data
+                formik.setValues({
+                    fullname: res.data.username,
+                    email: res.data.email,
+                    address: res.data.address,
+                    pnumber: res.data.contactNumber,
+                });
                 setLoading(false);
             })
             .catch((err) => {
