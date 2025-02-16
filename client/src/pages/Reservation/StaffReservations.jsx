@@ -21,7 +21,7 @@ const StaffReservations = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+  const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString("en-CA"))
 
   const fetchReservations = async (date) => {
     try {
@@ -83,9 +83,9 @@ const StaffReservations = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: '40px',
+        marginTop: 7,
         boxShadow: 2,
-        borderRadius: '20px'
+        borderRadius: '20px',
       }}
     >
       

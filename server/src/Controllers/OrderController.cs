@@ -141,6 +141,7 @@ namespace vegeatery.Controllers
 						Order.OrderDate,
 						Order.TimeSlot,
 						Order.Status,
+                        Order.TotalPrice,
 						Items = Order.OrderItems.Select(item => new
 						{
 							item.ProductName,
@@ -224,6 +225,7 @@ namespace vegeatery.Controllers
                         Order.OrderDate,
                         Order.TimeSlot,
                         Order.Status,
+                        Order.TotalPrice,
                         Items = Order.OrderItems.Select(item => new
                         {
                             item.ProductName,
