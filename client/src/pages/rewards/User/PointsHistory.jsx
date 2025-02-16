@@ -86,7 +86,6 @@ const PointsHistory = () => {
                         </Grid>
                     </Box>
                 </Container>
-                );
             </Box>
         </Box>
     );
