@@ -46,7 +46,6 @@ const OrderConfirmation = () => {
                 console.log(item.productId);
                 deleteCartItems(user.data.cartId, item.productId);
             });
-            addBonusPoints();
 
         }
     }, [order, cartItems]);
@@ -138,23 +137,17 @@ const OrderConfirmation = () => {
         http.put(`/Account/${user.data.id}/points`, userPoints)
             .then((res) => {
                 console.log("Update API Response:", res.data);
+                // Call the new function to update points based on order count
+                http.put(`/order/updatePoints/${user.data.id}`)
+                    .then((res) => {
+                        console.log("Points updated based on order count:", res.data);
+                    })
+                    .catch((error) => {
+                        console.error("Error updating points based on order count:", error);
+                    });
             })
             .catch((error) => {
                 console.error("Error fetching orders:", error);
-            })
-    }
-
-    const addBonusPoints = async () => {
-        const bonusPointsRequest = {
-            customerId: user.data.id
-        }
-
-        http.put("/order/addBonusPoints", bonusPointsRequest)
-            .then((res) => {
-                console.log("Bonus points added successfully:", res.data);
-            })
-            .catch((error) => {
-                console.error("Error adding bonus points:", error);
             })
     }
 
