@@ -41,6 +41,8 @@ const OrderConfirmation = () => {
             UpdateOrderAsNew(order.orderId);
             sendEmail();
             updateUserPoints();
+            addBonusPoints();
+
         }
     }, [order]);
 
@@ -107,6 +109,20 @@ const OrderConfirmation = () => {
             })
             .catch((error) => {
                 console.error("Error fetching orders:", error);
+            })
+    }
+
+    const addBonusPoints = async () => {
+        const bonusPointsRequest = {
+            customerId: user.data.id
+        }
+
+        http.put("/order/addBonusPoints", bonusPointsRequest)
+            .then((res) => {
+                console.log("Bonus points added successfully:", res.data);
+            })
+            .catch((error) => {
+                console.error("Error adding bonus points:", error);
             })
     }
 
