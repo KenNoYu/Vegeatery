@@ -102,7 +102,7 @@ const Orders = () => {
     // get cart item
     const GetCartItems = () => {
         // autofill cartId next time
-        http.get(`/ordercart?cartId=${1}`).then((res) => {
+        http.get(`/ordercart?cartId=${user.data.cartId}`).then((res) => {
             console.log("API Response:", res.data);
             setCartItems(res.data);
             calculateTotal(res.data);
@@ -113,9 +113,9 @@ const Orders = () => {
             })
     };
 
-    useEffect(() => {
+    if (user?.data.cartId) {
         GetCartItems();
-    }, []);
+    }
 
     // calculate total
     const calculateTotal = (cartItems) => {
