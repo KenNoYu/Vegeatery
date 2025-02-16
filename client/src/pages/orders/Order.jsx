@@ -39,6 +39,10 @@ const Orders = () => {
             .then((res) => {
                 setUser(res);
                 fetchVouchers(res.data.id);
+                setFullName(res.data.username);
+                setEmail(res.data.email);
+                setPnumber(res.data.contactNumber);
+                setAddress(res.data.address);
                 // Update formik values with the fetched user data
                 formik.setValues({
                     fullname: res.data.username,
