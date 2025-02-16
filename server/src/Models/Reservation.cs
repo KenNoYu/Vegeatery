@@ -1,4 +1,6 @@
-﻿namespace vegeatery.Models
+﻿using System.Text.Json.Serialization;
+
+namespace vegeatery.Models
 {
     public class Reservation
     {
@@ -10,6 +12,12 @@
         public string CustomerPhone { get; set; } // Phone number of the customer
         public string Status { get; set; } // e.g., "Pending", "Seated", "Cancelled", "No-Show"
         public ICollection<Table> Tables { get; set; } = new List<Table>();
+
+        public int? UserId { get; set; }
+
+        // Navigation Property
+        [JsonIgnore]
+        public User? User { get; set; }
 
     }
 }
