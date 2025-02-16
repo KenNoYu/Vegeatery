@@ -82,7 +82,7 @@ const SaveButton = styled(Button)(({ theme }) => ({
 }));
 
 const updateProfileSchema = yup.object().shape({
-  profileImage: yup.string().nullable().notRequired(),
+  profileImage: yup.string().nullable(),
   username: yup
     .string()
     .trim()
@@ -213,7 +213,7 @@ export default function UserProfileView() {
   // Handle save profile - Axios PUT request
   const handleSaveProfile = () => {
     const updateUserDto = {
-      profileImage: imageFile || null,
+      profileImage: imageFile || user.profileImage,
       username: user.username,
       email: user.email,
       dob: user.dob,
@@ -249,21 +249,24 @@ export default function UserProfileView() {
 
   const handleDeleteAccount = async () => {
     const confirm = window.confirm(
-      "Are you sure you want to delete your account? This action is irreversible."
+      "Are you sure you want to delete this account? This action is irreversible."
     );
     if (!confirm) return;
-
+  
     try {
       const response = await http.delete(`/Account/${userId}`, {
         withCredentials: true,
       });
-
-      // Handle successful deletion (e.g., redirect to login page)
-      alert("Account has been deleted successfully.");
-      navigate("/admin/accounts");
+  
+      alert("Account has been deleted successfully."); // Success toast
+      navigate("/admin/accounts"); // React Router navigation
     } catch (error) {
       console.error("Error deleting account:", error);
-      alert("Error deleting your account, please try again.");
+  
+      // More informative error handling:
+      const errorMessage = error.response?.data?.message || "Error deleting your account, please try again.";
+      console.error(errorMessage); // Error toast with potentially more details
+      toast.error("Error deleting your account, please try again.");
     }
   };
 
@@ -734,6 +737,7 @@ export default function UserProfileView() {
           </Box>
         )}
       </ProfileBox>
+      <ToastContainer />
     </Box>
   );
 }
