@@ -60,6 +60,14 @@ const PointsSystem = () => {
     }
   };
 
+  const isVoucherInCooldown = (voucher) => {
+    if (!voucher.LastUsedDate) return false;
+    const cooldownPeriod = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+    const now = new Date();
+    const lastUsedDate = new Date(voucher.LastUsedDate);
+    return (now - lastUsedDate) < cooldownPeriod;
+  };
+
   if (!userId) return <Typography>Loading...</Typography>;
 
   // Calculate progress capped at 100% when points are 777 or more
@@ -121,10 +129,16 @@ const PointsSystem = () => {
                       {voucher.voucherName}
                     </Typography>
                     <Typography variant="caption" display="block" textAlign="center" gutterBottom>
-                      Expires on {dayjs(voucher.ExpiryDate).format('DD/MM/YYYY')}
+                      Cool down period of 1 week after use!
                     </Typography>
-                    <Button onClick={() => navigate('/user/store')} variant="contained" fullWidth sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}>
-                      BUY NOW
+                    <Button
+                      onClick={() => navigate('/user/store')}
+                      variant="contained"
+                      fullWidth
+                      sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}
+                      disabled={isVoucherInCooldown(voucher)}
+                    >
+                      {isVoucherInCooldown(voucher) ? 'IN COOLDOWN' : 'BUY NOW'}
                     </Button>
                   </CardContent>
                 </Card>
