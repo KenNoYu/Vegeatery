@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
-import { Card, CardContent, Typography, Box, Grid2 as Grid} from '@mui/material';
+import { Card, CardContent, Typography, Box, Grid2 as Grid } from '@mui/material';
 import { User, Calendar, Package } from 'lucide-react';
 import http from '../../http';
 
@@ -35,27 +35,29 @@ const OrderDashboard = () => {
     return (
         <Box p={3}>
             {/* Sales Summary and Quick Stats */}
-            <Grid container spacing={3}>
+            <Grid container spacing={5}>
                 {/* Sales Chart */}
-                <Grid item xs={12} md={12}>
-                    <Card>
+                <Grid item xs={12} md={9} lg={10}>
+                    <Card sx={{ height: 350, width:{xs: '80vw', md: '60vw', lg: '46vw'} }}>
                         <CardContent>
                             <Typography variant="h6" fontWeight="bold">Sales Summary</Typography>
-                            <ResponsiveContainer width="100%" height={250}>
-                                <LineChart data={salesSummary.salesData}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="date" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Line type="monotone" dataKey="sales" stroke="#3f51b5" strokeWidth={2} />
-                                </LineChart>
-                            </ResponsiveContainer>
+                            <Box sx={{ width: '100%', height: 280 }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={salesSummary.salesData}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="date" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Line type="monotone" dataKey="sales" stroke="#3f51b5" strokeWidth={2} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </Box>
                         </CardContent>
                     </Card>
                 </Grid>
 
                 {/* Quick Stats */}
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={3} lg={2}>
                     {stats.map((stat, index) => (
                         <Card key={index} sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', p: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
