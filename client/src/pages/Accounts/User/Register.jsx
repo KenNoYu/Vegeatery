@@ -145,7 +145,16 @@ function Register() {
         borderRadius: "8px",
       }}
     >
-      <Typography variant="h5" sx={{ fontSize: "2rem", fontWeight: "bold", mb: 3, mt: 7, alignSelf: "center" }}>
+      <Typography
+        variant="h5"
+        sx={{
+          fontSize: "2rem",
+          fontWeight: "bold",
+          mb: 3,
+          mt: 7,
+          alignSelf: "center",
+        }}
+      >
         Register
       </Typography>
       <Box
