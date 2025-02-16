@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import http from '../../http';
 import { Box, Typography, CircularProgress, Divider } from '@mui/material';
@@ -13,7 +13,7 @@ const OrderConfirmation = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const orderId = searchParams.get('orderId');
-    console.log("ID", orderId)
+    const hasUpdated = useRef(false);
 
     useEffect(() => {
         if (orderId) {
@@ -37,12 +37,21 @@ const OrderConfirmation = () => {
     }, []);
 
     useEffect(() => {
-        if (order) {
+        if (order && order.isUpdated == false) {
+            hasUpdated.current = true;
             UpdateOrderAsNew(order.orderId);
             sendEmail();
             updateUserPoints();
         }
     }, [order]);
+
+    useEffect(() => {
+        if (Array.isArray(cartItems)){
+            cartItems.forEach((item) => {
+                deleteCartItems(user.data.cartId, item.productId);
+            });
+        }
+    }, [cartItems]);
 
     // Update order status
     const UpdateOrderAsNew = (orderId) => {
@@ -52,7 +61,16 @@ const OrderConfirmation = () => {
         }
         http.put("/order/UpdateStatus", updateData)
             .then((res) => {
-                console.log("Update API Response:", res.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching orders:", error);
+            })
+    }
+
+    // Delete items in cart
+    const deleteCartItems = (cartId, productId) => {
+        http.delete(`/ordercart?CartId=${cartId}&ProductId=${productId}`)
+            .then((res) => {
             })
             .catch((error) => {
                 console.error("Error fetching orders:", error);
@@ -100,6 +118,7 @@ const OrderConfirmation = () => {
         const userPoints = {
             points: order.totalPoints
         }
+        console.log("Total points", order.totalPoints)
 
         http.put(`/Account/${user.data.id}/points`, userPoints)
             .then((res) => {

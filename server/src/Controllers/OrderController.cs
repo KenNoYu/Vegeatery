@@ -37,7 +37,8 @@ namespace vegeatery.Controllers
                         TotalPoints = request.TotalPoints,
                         TimeSlot = request.TimeSlot,
                         Status = request.Status,
-                        CreatedAt = DateTime.UtcNow,
+						IsUpdated = false,
+						CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         VoucherId = request?.VoucherId,
                         discountPercent = request?.discountPercent,
@@ -158,6 +159,7 @@ namespace vegeatery.Controllers
                     TimeSlot = order.TimeSlot,
                     TotalPrice = order.TotalPrice,
 					TotalPoints = order.TotalPoints,
+                    isUpdated = order.IsUpdated,
                     discountPercent = order?.discountPercent,
                     VoucherId = order?.VoucherId,
 					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
@@ -218,8 +220,8 @@ namespace vegeatery.Controllers
 			}
 		}
 
-			// Get all orders (for admin)
-			[HttpGet("all")]
+		// Get all orders (for admin)
+		[HttpGet("all")]
         public IActionResult GetAll()
         {
             try
@@ -317,8 +319,9 @@ namespace vegeatery.Controllers
                 // Update order status
                 order.Status = request.Status;
                 order.UpdatedAt = DateTime.UtcNow;
-                // Save changes
-                _context.SaveChanges();
+                order.IsUpdated = true;
+				// Save changes
+				_context.SaveChanges();
                 return Ok(new { Message = "Order status updated successfully." });
             }
             catch (Exception ex)
