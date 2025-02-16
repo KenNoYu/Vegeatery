@@ -30,6 +30,7 @@ import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { useParams } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import { useNavigate } from "react-router-dom";
+import RoleGuard from "../../../utils/RoleGuard";
 
 // Styling for the custom components
 const ProfileBox = styled(Box)(({ theme }) => ({
@@ -63,6 +64,16 @@ const ProfileSection = styled(Box)(({ theme }) => ({
 const EditButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#C6487E",
   color: "#fff",
+  width: "60%",
+  marginBottom: theme.spacing(2),
+  "&:hover": {
+    backgroundColor: "#A83866",
+  },
+}));
+
+const SaveButton = styled(Button)(({ theme }) => ({
+  backgroundColor: "#C6487E",
+  color: "#fff",
   width: "100%",
   marginBottom: theme.spacing(2),
   "&:hover": {
@@ -71,6 +82,7 @@ const EditButton = styled(Button)(({ theme }) => ({
 }));
 
 const updateProfileSchema = yup.object().shape({
+  profileImage: yup.string().nullable().notRequired(),
   username: yup
     .string()
     .trim()
@@ -79,23 +91,17 @@ const updateProfileSchema = yup.object().shape({
     .matches(
       /^[a-zA-Z0-9_-]+$/,
       "Username can only contain letters, numbers, underscores, and hyphens"
-    )
-    .required("Username is required"),
+    ),
   email: yup
     .string()
     .trim()
     .email("Enter a valid email")
-    .max(50, "Email must be at most 50 characters")
-    .required("Email is required"),
-  dob: yup
-    .date()
-    .required("Date of birth is required")
-    .max(new Date(), "Date of birth must be in the past"),
+    .max(50, "Email must be at most 50 characters"),
+  dob: yup.date().max(new Date(), "Date of birth must be in the past"),
   contact: yup
     .string()
     .trim()
-    .matches(/^\d{10}$/, "Contact number must be 10 digits long") // Example: 10 digits for illustration
-    .required("Contact number is required"),
+    .matches(/^\d{8}$/, "Contact number must be 10 digits long"), // Example: 10 digits for illustration
   gender: yup.string(), // Optional field, so no validation required
   diet: yup.string(), // Optional field, so no validation required
   allergy: yup
@@ -105,14 +111,17 @@ const updateProfileSchema = yup.object().shape({
       /^[a-zA-Z0-9.,\s-]*$/,
       "Allergy info can only contain letters, numbers, periods, commas, spaces, and hyphens"
     ),
-  meal: yup.string(), // Optional field, so no validation required
+  meal: yup.string(),
 });
 
 export default function UserProfileView() {
+  RoleGuard("Admin");
   const navigate = useNavigate();
+  const [imageFile, setImageFile] = useState(null);
   const { userId } = useParams();
   console.log(userId);
   const [user, setUser] = useState({
+    profileImage: "",
     username: "",
     email: "",
     mobile: "",
@@ -176,9 +185,35 @@ export default function UserProfileView() {
     setUser({ ...user, [name]: value });
   };
 
+  const onFileChange = (e) => {
+    let file = e.target.files[0];
+    if (file) {
+      if (file.size > 1024 * 1024) {
+        toast.error("Maximum file size is 1MB");
+        return;
+      }
+
+      let formData = new FormData();
+      formData.append("file", file);
+      http
+        .post("/file/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          setImageFile(res.data.filename);
+        })
+        .catch(function (error) {
+          console.log(error.response);
+        });
+    }
+  };
+
   // Handle save profile - Axios PUT request
   const handleSaveProfile = () => {
     const updateUserDto = {
+      profileImage: imageFile || null,
       username: user.username,
       email: user.email,
       dob: user.dob,
@@ -204,6 +239,7 @@ export default function UserProfileView() {
         console.log("Profile updated successfully:", response.data.message);
         alert("Profile updated successfully!");
         setIsEditing(false); // Disable edit mode after saving
+        // window.location.reload();
       })
       .catch((error) => {
         console.error("Error updating profile:", error);
@@ -232,10 +268,10 @@ export default function UserProfileView() {
   };
 
   const StyledTierName = styled(Typography)(({ theme, tierColor }) => ({
-    textTransform: 'uppercase',
-    fontWeight: 'bold',
+    textTransform: "uppercase",
+    fontWeight: "bold",
     textShadow: `2px 2px 4px rgba(0, 0, 0, 0.2)`,
-    letterSpacing: '0.1em',
+    letterSpacing: "0.1em",
     color: tierColor,
   }));
 
@@ -302,14 +338,10 @@ export default function UserProfileView() {
               >
                 <ProfileImage
                   alt={user.username}
-                  src={
-                    user.profileImage
-                      ? `${import.meta.env.VITE_FILE_BASE_URL}${user.profileImage}`
-                      : '/path/to/default-image.jpg'  // Provide a fallback image if no profile image is set
-                  }
+                  src={imageFile ? `${import.meta.env.VITE_FILE_BASE_URL}${imageFile}` : `${import.meta.env.VITE_FILE_BASE_URL}${user.profileImage}`}
                   sx={{
-                    width: 120,
-                    height: 120,
+                    width: 160,
+                    height: 160,
                     borderRadius: "50%",
                     marginBottom: 2,
                     border: "4px solid #fff",
@@ -317,23 +349,26 @@ export default function UserProfileView() {
                   }}
                 />
 
-                {/* {isEditing && (
-                  <Button
-                    sx={{
-                      backgroundColor: "green",
-                      color: "white",
-                      padding: 1,
-                      borderRadius: "5%",
-                      "&:hover": {
-                        backgroundColor: "darkgreen",
-                      },
-                      marginTop: 2,
-                    }}
-                  >
-                    <AddPhotoAlternateIcon />
-                    Change Profile
-                  </Button>
-                )} */}
+                {isEditing && (
+                  <div>
+                    {" "}
+                    {/* Added a wrapping div */}
+                    <Button
+                      variant="contained"
+                      component="label"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      Change Image
+                      <input
+                        hidden
+                        accept="image/*"
+                        multiple
+                        type="file"
+                        onChange={onFileChange}
+                      />
+                    </Button>
+                  </div> // Close the wrapping div
+                )}
               </Box>
 
               {/* 2nd Column: Membership Info */}
@@ -400,7 +435,7 @@ export default function UserProfileView() {
                   variant="outlined"
                   color="error"
                   sx={{
-                    width: "100%",
+                    width: "60%",
                     borderColor: "error.main",
                     color: "error.main",
                     "&:hover": {
@@ -415,11 +450,13 @@ export default function UserProfileView() {
             </Box>
 
             {/* Personal Details Section */}
-            <ProfileDetailsBox sx={{
-              width: "90%",
-              marginLeft: "auto",
-              marginRight: "auto"
-            }}>
+            <ProfileDetailsBox
+              sx={{
+                width: "90%",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+            >
               <ProfileSection>
                 <Typography variant="h6" fontWeight="bold">
                   Personal Details
@@ -676,9 +713,9 @@ export default function UserProfileView() {
               {/* Save Button */}
               {isEditing && (
                 <Box textAlign="right">
-                  <EditButton onClick={handleSaveProfile}>
+                  <SaveButton onClick={handleSaveProfile}>
                     Save Profile
-                  </EditButton>
+                  </SaveButton>
                 </Box>
               )}
             </ProfileDetailsBox>
