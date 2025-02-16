@@ -32,13 +32,15 @@ const OrderDashboard = () => {
         { icon: <User />, label: 'Total Users', value: '' }
     ];
 
+    
+
     return (
         <Box p={3}>
             {/* Sales Summary and Quick Stats */}
             <Grid container spacing={5}>
                 {/* Sales Chart */}
-                <Grid item xs={12} md={9} lg={10}>
-                    <Card sx={{ height: 350, width:{xs: '80vw', md: '60vw', lg: '46vw'} }}>
+                <Grid item xs={12} md={9} lg={9}>
+                    <Card sx={{ height: 350, width:{xs: '80vw', md: '60vw', lg: '45vw'} }}>
                         <CardContent>
                             <Typography variant="h6" fontWeight="bold">Sales Summary</Typography>
                             <Box sx={{ width: '100%', height: 280 }}>
@@ -57,7 +59,7 @@ const OrderDashboard = () => {
                 </Grid>
 
                 {/* Quick Stats */}
-                <Grid item xs={12} md={3} lg={2}>
+                <Grid item xs={12} md={3} lg={3}>
                     {stats.map((stat, index) => (
                         <Card key={index} sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', p: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
