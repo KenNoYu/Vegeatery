@@ -45,7 +45,10 @@ namespace vegeatery
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-      //Reservation
+
+      base.OnModelCreating(modelBuilder);
+
+      // Reservation Relationships
       modelBuilder.Entity<ReservationLog>()
         .HasOne(r => r.Reservation)
         .WithMany() // Assuming a Reservation has many logs
@@ -57,7 +60,10 @@ namespace vegeatery
         .WithMany(t => t.Reservations)
         .UsingEntity(j => j.ToTable("ReservationTables"));
 
-      base.OnModelCreating(modelBuilder);
+      modelBuilder.Entity<Reservation>()
+          .HasOne(r => r.User)
+          .WithMany(u => u.Reservations)
+          .HasForeignKey(r => r.UserId);
 
       // Seed Tier
       modelBuilder.Entity<Tier>().HasData(
