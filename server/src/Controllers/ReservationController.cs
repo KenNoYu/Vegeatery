@@ -39,6 +39,10 @@ namespace vegeatery.Controllers
         return BadRequest("Invalid reservation request. Tables must be selected.");
       }
 
+        // Check if a user exists with the given email
+      var user = await _dbContext.Users
+                                 .FirstOrDefaultAsync(u => u.Email == request.CustomerEmail);
+
       var reservation = new Reservation
       {
         ReservationDate = request.ReservationDate,
@@ -46,7 +50,8 @@ namespace vegeatery.Controllers
         CustomerName = request.CustomerName,
         CustomerEmail = request.CustomerEmail,
         CustomerPhone = request.CustomerPhone,
-        Status = "Pending"
+        Status = "Pending",
+        UserId = user?.Id
       };
 
       // Get the tables from the database based on the IDs sent in the request
