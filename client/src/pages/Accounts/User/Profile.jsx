@@ -51,6 +51,16 @@ const ProfileSection = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(4),
 }));
 
+const SaveButton = styled(Button)(({ theme }) => ({
+  backgroundColor: "#C6487E",
+  color: "#fff",
+  width: "100%",
+  marginBottom: theme.spacing(2),
+  "&:hover": {
+    backgroundColor: "#A83866",
+  },
+}));
+
 const EditButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#C6487E",
   color: "#fff",
@@ -62,7 +72,7 @@ const EditButton = styled(Button)(({ theme }) => ({
 }));
 
 const updateProfileSchema = yup.object().shape({
-  profileImage: yup.string().nullable().notRequired(),
+  profileImage: yup.string().nullable(),
   username: yup
     .string()
     .trim()
@@ -83,9 +93,9 @@ const updateProfileSchema = yup.object().shape({
   contact: yup
     .string()
     .trim()
-    .matches(/^\d{8}$/, "Contact number must be 8 digits long"), // Example: 10 digits for illustration
-  gender: yup.string(), // Optional field, so no validation required
-  diet: yup.string(), // Optional field, so no validation required
+    .matches(/^\d{8}$/, "Contact number must be 8 digits long"),
+  gender: yup.string(),
+  diet: yup.string(),
   allergy: yup
     .string()
     .max(100, "Allergy info should not exceed 100 characters")
@@ -143,6 +153,7 @@ export default function ProfilePage() {
       setLoading(false);
     }
   };
+  console.log(user.profileImage);
   
   // Use useEffect to fetch user info when the component loads
   useEffect(() => {
@@ -198,7 +209,7 @@ export default function ProfilePage() {
   // Handle save profile - Axios PUT request
   const handleSaveProfile = async () => {
     const updateUserDto = {
-      profileImage: imageFile || null,
+      profileImage: imageFile || user.profileImage,
       username: user.username,
       email: user.email,
       dob: user.dob,
@@ -217,14 +228,11 @@ export default function ProfilePage() {
       http
       .put(`/Account/${userId}`, updateUserDto)
       .then((response) => {
-        console.log("Profile updated successfully:", response.data.message);
-        alert("Profile updated successfully!");
+        toast.success("Profile updated successfully!");
         setIsEditing(false); // Disable edit mode after saving
-        window.location = "/user/profile";
       })
       .catch((error) => {
-        console.error("Error updating profile:", error);
-        alert("Error updating profile, please try again.");
+        toast.error("Error updating profile. Please try again.");
       });
     } catch (error) {
       if (error.inner) {
@@ -698,9 +706,9 @@ export default function ProfilePage() {
               {/* Save Button */}
               {isEditing && (
                 <Box textAlign="right">
-                  <EditButton onClick={handleSaveProfile}>
+                  <SaveButton onClick={handleSaveProfile}>
                     Save Profile
-                  </EditButton>
+                  </SaveButton>
                 </Box>
               )}
             </ProfileDetailsBox>
@@ -719,6 +727,7 @@ export default function ProfilePage() {
           </Box>
         )}
       </ProfileBox>
+      <ToastContainer />
     </Box>
   );
 }
