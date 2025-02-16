@@ -217,5 +217,45 @@ namespace vegeatery.Controllers
 
             return Ok(filteredProducts.ToList());
         }
-    }
+
+        [HttpPut("UpdateTotalBought")]
+        public IActionResult UpdateBoughtQuantity(UpdateProductBoughtRequest Request)
+        {
+			// check if product exists
+			var product = _context.Product.FirstOrDefault(p => p.ProductId == Request.ProductId);
+			if (product == null)
+			{
+				return NotFound(new { Message = "Product does not exist." });
+			}
+
+            product.quantityBought += Request.quantity;
+			_context.SaveChanges();
+
+            return Ok(new { message = "Product bought updated successfully" });
+		}
+
+        [HttpGet("TopOrders")]
+		public IActionResult GetTopOrders([FromQuery] int count = 5)
+        {
+			var topOrders = _context.Product
+				.OrderByDescending(p => p.quantityBought)
+				.Take(count)
+				.Select(p => new
+				{
+					p.ProductId,
+					p.ProductName,
+					p.quantityBought,
+					p.ProductPrice
+				})
+				.ToList();
+
+			if (!topOrders.Any())
+			{
+				return NotFound("No orders found.");
+			}
+
+			return Ok(topOrders);
+		}
+
+	}
 }

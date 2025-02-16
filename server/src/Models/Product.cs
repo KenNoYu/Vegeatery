@@ -57,5 +57,8 @@ namespace vegeatery.Models
 
         [Column(TypeName = "datetime")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+		[Column(TypeName = "decimal(18,2)")]
+		public decimal quantityBought { get; set; }
     }
 }
