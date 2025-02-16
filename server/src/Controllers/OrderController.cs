@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using vegeatery.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 namespace vegeatery.Controllers
 {
     [ApiController]
@@ -22,6 +25,42 @@ namespace vegeatery.Controllers
                     {
                         return NotFound(new { Message = "Cart cannot be empty or it dosen't exist" });
                     }
+
+                    //For adding bonus points for user (based on their order count)
+                    // Retrieve the user
+                    var user = _context.Users.FirstOrDefault(u => u.Id == request.CustomerId);
+                    if (user == null)
+                    {
+                        return NotFound(new { Message = "User not found" });
+                    }
+
+                    // Check if the order period has expired
+                    if (user.OrderPeriodStart.HasValue && (DateTime.UtcNow - user.OrderPeriodStart.Value).TotalDays > 7)
+                    {
+                        user.OrderCount = 0;
+                        user.OrderPeriodStart = null;
+                    }
+
+                    // Increment the order count
+                    user.OrderCount++;
+
+                    // If this is the first order in the period, set the start date
+                    if (user.OrderCount == 1)
+                    {
+                        user.OrderPeriodStart = DateTime.UtcNow;
+                    }
+
+                    // Check if the user has reached 7 orders within 7 days
+                    if (user.OrderCount >= 7)
+                    {
+                        // Award 10 points
+                        user.TotalPoints += 10;
+
+                        // Reset the counters
+                        user.OrderCount = 0;
+                        user.OrderPeriodStart = null;
+                    }
+
                     // Create the order
                     var order = new Order
                     {
