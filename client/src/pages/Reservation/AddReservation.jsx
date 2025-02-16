@@ -35,7 +35,8 @@ const ReservationPage = () => {
   const navigate = useNavigate();
   const [view, setView] = useState("details"); // 'details' or 'seats'
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);const [user, setUser] = useState(null); // Stores user data or remains null if not logged in
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [user, setUser] = useState(null); // Stores user data or remains null if not logged in
   const [tables, setTables] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({

@@ -151,11 +151,11 @@ const UserMenu = () => {
     http.post("/ordercart", cartData)
       .then((res) => {
         console.log("Added to cart:", res.data);
-        alert(`Product added to cart!`);
+        toast.success(`${cartData.productName} added to Cart!`)
       })
       .catch((error) => {
         console.error("Error adding product to cart:", error);
-        alert("Failed to add product to cart.");
+        toast.error(`failed to add ${cartData.productName}to Cart!`)
       });
   };
 
