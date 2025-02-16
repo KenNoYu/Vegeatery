@@ -47,6 +47,19 @@ namespace vegeatery.Controllers
                     // save order
                     _context.Order.Add(order);
                     _context.SaveChanges();
+
+                    // Update the voucher's LastUsedDate if a voucher is used
+                    if (request.VoucherId.HasValue)
+                    {
+                        var voucher = _context.Vouchers.Find(request.VoucherId.Value);
+                        if (voucher != null)
+                        {
+                            voucher.LastUsedDate = DateTime.UtcNow;
+                            _context.Vouchers.Update(voucher);
+                            _context.SaveChanges();
+                        }
+                    }
+
                     // Create the order items from cart items
                     foreach (var cartItem in cart.CartItems)
                     {
