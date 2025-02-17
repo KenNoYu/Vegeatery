@@ -245,7 +245,8 @@ namespace vegeatery.Controllers
 		public IActionResult GetTopOrders([FromQuery] int count = 5)
         {
 			var topOrders = _context.Product
-				.OrderByDescending(p => p.quantityBought)
+				.Where(p => p.quantityBought > 1) // Filter for quantityBought > 1
+		        .OrderByDescending(p => p.quantityBought)
 				.Take(count)
 				.Select(p => new
 				{
@@ -264,6 +265,5 @@ namespace vegeatery.Controllers
 
 			return Ok(topOrders);
 		}
-
 	}
 }
