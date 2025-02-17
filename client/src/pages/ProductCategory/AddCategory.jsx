@@ -7,6 +7,29 @@ import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import http from '../../http';
 import RoleGuard from '../../utils/RoleGuard';
+import { useTheme } from '@mui/material/styles';
+import { styled } from "@mui/system";
+
+const DetailsTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiInputLabel-root.Mui-focused": {
+    color: "#C6487E", // Label color when focused and at the top
+  },
+  "& .MuiOutlinedInput-root": {
+    "&:hover fieldset": {
+      borderColor: "black", // Outline on hover
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#C6487E", // Outline when focused
+    },
+  },
+  "& .MuiInputLabel-root": {
+    color: "black", // Label color
+  },
+  "& .Mui-focused": {
+    color: "black", // Label when focused
+  },
+}));
+
 
 function AddCategory() {
     RoleGuard('Admin');
@@ -50,12 +73,21 @@ function AddCategory() {
     });
 
     return (
-        <Box>
-            <Typography variant="h5" sx={{ my: 2 }}>
+        <Box sx={{
+            border: '1px solid #ccc',
+            borderRadius: '8px',
+            padding: '26px',
+            backgroundColor: 'white',
+            maxWidth: '600px',
+            margin: 'auto',
+            boxShadow: 2,
+            marginTop: '84px',
+        }}>
+            <Typography variant="h5" >
                 Add Category
             </Typography>
             <Box component="form" onSubmit={formik.handleSubmit} noValidate>
-                <TextField
+                <DetailsTextField
                     fullWidth
                     margin="dense"
                     label="Category Name"
@@ -70,10 +102,12 @@ function AddCategory() {
                     helperText={
                         formik.touched.categoryName && formik.errors.categoryName
                     }
+                    sx = {{ marginTop: '10px'}}
                 />
-                
+
                 <Box sx={{ mt: 2 }}>
                     <Button
+                        style={{ marginTop: '16px', background: '#C6487E', color: '#FFFFFF' }}
                         variant="contained"
                         type="submit"
                         disabled={loading}
@@ -82,7 +116,8 @@ function AddCategory() {
                         {loading ? 'Submitting...' : 'Add Category'}
                     </Button>
                     <Button
-                        variant="outlined"
+                        style={{ marginTop: '16px', background: '#C6487E', color: '#FFFFFF' }}
+                        variant="contained"
                         onClick={() => navigate('/admin/store')}
                     >
                         Cancel

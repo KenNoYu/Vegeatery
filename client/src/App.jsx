@@ -30,6 +30,9 @@ import ProductDetails from "./pages/ProductCategory/ProductDetails";
 import EditProduct from "./pages/ProductCategory/EditProduct";
 import UserMenu from "./pages/ProductCategory/User/UserMenu";
 import EditCategory from "./pages/ProductCategory/EditCategory";
+import UserProductDetails from "./pages/ProductCategory/User/UserProductDetails";
+import StaffStockPage from "./pages/ProductCategory/Staff/StaffDashboard";
+import StaffProductLogs from "./pages/ProductCategory/Staff/StaffLogs"
 
 // REWARDS
 import PointsSystem from "./pages/rewards/User/PointsSystem";
@@ -164,20 +167,20 @@ function App() {
                           </>
                         )}
 
-                        {/* Show navigation for 'staff' role */}
-                        {user.role === "Staff" && (
-                          <>
-                            <Link to="/staff/vieworders">
-                              <Typography>Orders</Typography>
-                            </Link>
-                            <Link to="/staff/viewproducts">
-                              <Typography>Products</Typography>
-                            </Link>
-                            <Link to="/staff/viewreservations">
-                              <Typography>Reservations</Typography>
-                            </Link>
-                          </>
-                        )}
+                      {/* Show navigation for 'staff' role */}
+                      {user.role === "Staff" && (
+                        <>
+                          <Link to="/staff/vieworders">
+                            <Typography>Orders</Typography>
+                          </Link>
+                          <Link to="/staff/viewstocks">
+                            <Typography>Products</Typography>
+                          </Link>
+                          <Link to="/staff/viewreservations">
+                            <Typography>Reservations</Typography>
+                          </Link>
+                        </>
+                      )}
 
                         {/* Show navigation for 'customer' role */}
                         {user.role === "User" && (
@@ -320,6 +323,13 @@ function App() {
           {/* SideBar Content */}
           <Container maxWidth={false} disableGutters>
             <Routes>
+              <Route path={"/staff/viewstocks"} element={<StaffStockPage />} />
+              <Route path={"/staff/productlogs"} element={<StaffProductLogs />} />
+              <Route path={"/viewcategories/:id"} element={<CategoryList />} />
+              <Route path={"/admin/store"} element={<CategoryList />} />
+              <Route path="/editproduct/:productId" element={<EditProduct />} />
+              <Route path="/user/store" element={<UserMenu />} />
+              <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
               <Route path="/user/profile/:userId" element={<UserProfileView />}/>
               <Route path="/admin/roleModify" element={<RoleModify />} />
               <Route path="/admin/accounts" element={<Accounts />} />
@@ -341,14 +351,10 @@ function App() {
 
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />
-              <Route path={"/admin/store"} element={<CategoryList />} />
               <Route path={"/addproduct"} element={<AddProduct />} />
-              <Route path={"/viewcategories/:id"} element={<CategoryList />} />
               <Route path="/product/:productId" element={<ProductDetails />} />
-              <Route path="/editproduct/:productId" element={<EditProduct />} />
-              <Route path="/user/store" element={<UserMenu />} />
-              <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
-              <Route path={"/editcategory/:categoryId"} element={<EditCategory />}/>
+              <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
+              <Route path={"/userproduct/:productId"} element= {<UserProductDetails />} />
 
               {/* RESERVATION */}
               <Route path="/reserve" element={<ReservationPage />} />
