@@ -49,6 +49,8 @@ public class User
 	public bool Agreement { get; set; }
 
 	public int TotalPoints { get; set; } = 0;
+	public DateTime? PointsExpiryDate { get; set; } = null;
+    public DateTime? PointsPeriodStartDate { get; set; } = null ;
 
     public string? JwtToken { get; set; }
 
@@ -71,5 +73,7 @@ public class User
 
     // 🔹 Relationship: A User can have multiple feedbacks
     public virtual ICollection<GeneralFeedback>? Feedbacks { get; set; }
+
+    public virtual ICollection<Reservation>? Reservations { get; set; }
 }
 

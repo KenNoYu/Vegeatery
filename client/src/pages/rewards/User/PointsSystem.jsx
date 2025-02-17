@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, LinearProgress, Button, Card, CardContent, Grid } from '@mui/material';
+import { Box, Typography, LinearProgress, Button, Card, CardContent, Grid, Container } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import http from '../../../http';
 import dayjs from 'dayjs';
@@ -55,28 +55,24 @@ const PointsSystem = () => {
     try {
       const { data } = await http.get(`/vouchers/user/${userId.id}`);
       // Filter vouchers that are not in cooldown (LastUsedAt + 7 days <= today)
-      const filteredVouchers = data.filter(voucher => 
+      const filteredVouchers = data.filter(voucher =>
         !voucher.LastUsedAt || dayjs(voucher.LastUsedAt).add(7, 'day').isBefore(dayjs())
-    );
+      );
 
-    setVouchers(filteredVouchers);
-} catch (error) {
-    console.error('Error fetching vouchers:', error);
-}
-};
-
-
+      setVouchers(filteredVouchers);
+    } catch (error) {
+      console.error('Error fetching vouchers:', error);
+    }
+  };
 
   if (!userId) return <Typography>Loading...</Typography>;
 
   // Calculate progress capped at 100% when points are 777 or more
   const progress = userId.totalPoints >= 777 ? 100 : (userId.totalPoints / 777) * 100;
 
-
-
   return (
 
-    <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden" }}>
+    <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden", overflowX: "hidden" }}>
       {/* Sidebar */}
       <Box sx={{ width: "20%" }}>
         <RewardsSidebar />
@@ -111,32 +107,38 @@ const PointsSystem = () => {
             <Typography>777 pts</Typography>
           </Box>
 
-          <Typography variant="body2" sx={{ marginBottom: '2rem' }}>
-            * {userId.totalPoints} pts will be expired on <b>01/06/2025</b>
+          <Typography variant="body2" sx={{ marginBottom: '6rem' }}>
+            * {userId.totalPoints} pts will be expired on <b>{dayjs(userId.pointsExpiryDate).format('DD/MM/YYYY')}</b>
           </Typography>
 
-          <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '1rem' }}>
-            Rewards Vouchers
+          <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '1rem', textAlign: 'center' }}>
+            Your Rewards Vouchers
           </Typography>
 
           <Grid container spacing={3} justifyContent="center">
-            {vouchers.map((voucher) => (
-              <Grid item xs={12} sm={6} md={4} key={voucher.voucherId} display="flex" justifyContent="center">
-                <Card sx={{ backgroundColor: '#E3F2FD', boxShadow: 3, width: '100%', maxWidth: 300 }}>
-                  <CardContent>
-                    <Typography variant="h6" fontWeight="bold" textAlign="center" gutterBottom>
-                      {voucher.voucherName}
-                    </Typography>
-                    <Typography variant="caption" display="block" textAlign="center" gutterBottom>
-                      Cool down period of 1 week after use!
-                    </Typography>
-                    <Button onClick={() => navigate('/user/store')} variant="contained" fullWidth sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}>
-                      BUY NOW
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+            {vouchers.length > 0 ? (
+              vouchers.map((voucher) => (
+                <Grid item xs={12} sm={6} md={4} key={voucher.voucherId} display="flex" justifyContent="center">
+                  <Card sx={{ backgroundColor: '#E3F2FD', boxShadow: 3, width: '100%', maxWidth: 300 }}>
+                    <CardContent>
+                      <Typography variant="h6" fontWeight="bold" textAlign="center" gutterBottom>
+                        {voucher.voucherName}
+                      </Typography>
+                      <Typography variant="caption" display="block" textAlign="center" gutterBottom>
+                        Cool down period of 1 week after use!
+                      </Typography>
+                      <Button onClick={() => navigate('/user/store')} variant="contained" fullWidth sx={{ textTransform: 'none', color: '#FFFFFF', backgroundColor: '#C2185B', '&:hover': { backgroundColor: '#E7ABC5' } }}>
+                        BUY NOW
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+            ) : (
+              <Grid item xs={12} display="flex" justifyContent="center">
+      <Typography variant="body1">No vouchers are available.</Typography>
+    </Grid>
+            )}
           </Grid>
         </Box>
       </Box>
