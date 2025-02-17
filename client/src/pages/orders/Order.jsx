@@ -12,7 +12,7 @@ import RoleGuard from '../../utils/RoleGuard';
 import dayjs from 'dayjs';
 
 const Orders = () => {
-    RoleGuard('User');
+    RoleGuard(["User", "Admin", "Staff"]);
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [discountedTotal, setDiscountedTotal] = useState(0);
