@@ -193,10 +193,10 @@ const MyOrdersPage = () => {
 
                                         {/* Action Buttons */}
                                         <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                                            <Button variant="contained" color="secondary" size="large">
+                                            <Button variant="contained" color="Accent" size="large">
                                                 Review
                                             </Button>
-                                            <Button variant="contained" color="primary" size="large">
+                                            <Button variant="contained" color="Accent" size="large">
                                                 Buy Again
                                             </Button>
                                         </Box>
