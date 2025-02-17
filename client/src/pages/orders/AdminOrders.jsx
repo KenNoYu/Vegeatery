@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import DateSelector from "../Reservation/Components/DateSelector";
 import AdminDateSelector from './AdminDateSelector';
 import { ToastContainer, toast } from 'react-toastify';
+import ProductsSidebar from '../ProductCategory/ProductsSidebar';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -208,6 +209,8 @@ const AdminOrders = () => {
     if (loading) {
         return (
             <Box sx={{ p: 2 }}>
+                {/* Sidebar */}
+                <ProductsSidebar />
                 <Typography variant="h5" gutterBottom>
                     Orders
                 </Typography>
@@ -299,15 +302,17 @@ const AdminOrders = () => {
 
     return (
         <Box sx={{ p: 2 }}>
+            {/* Sidebar */}
+            <ProductsSidebar />
             <Typography variant="h5" gutterBottom>
                 Orders
             </Typography>
             <Tabs value={currentTab} onChange={handleTabChange} sx={{
-                    mb: 2,
-                    '& .MuiTabs-indicator': {
-                        backgroundColor: 'Accent.main', // Change the indicator color to Accent
-                    },
-                }} color="Accent">
+                mb: 2,
+                '& .MuiTabs-indicator': {
+                    backgroundColor: 'Accent.main', // Change the indicator color to Accent
+                },
+            }} color="Accent">
                 <Tab label="All Orders" sx={{
                     color: currentTab === 0 ? 'Accent.main' : '', // Change text color for selected tab
                     '&.Mui-selected': {
