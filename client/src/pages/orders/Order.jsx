@@ -97,7 +97,12 @@ const Orders = () => {
     const fetchVouchers = async (userId) => {
         try {
             const { data } = await http.get(`/vouchers/user/${userId}`);
-            setVouchers(data);
+            // Filter vouchers that are not in cooldown (LastUsedAt + 7 days <= today)
+            const filteredVouchers = data.filter(voucher => 
+                !voucher.LastUsedAt || dayjs(voucher.LastUsedAt).add(7, 'day').isBefore(dayjs())
+            );
+    
+            setVouchers(filteredVouchers);
         } catch (error) {
             console.error('Error fetching vouchers:', error);
         }
@@ -630,10 +635,7 @@ const Orders = () => {
                             vouchers.map((voucher) => (
                                 <Card key={voucher.voucherId} sx={{ backgroundColor: '#E3F2FD', boxShadow: 3, maxWidth: 300 }}>
                                     <CardContent>
-                                        <Typography variant="h6" fontWeight="bold" textAlign="center">{voucher.voucherName} {voucher.discountPercentage}% off</Typography>
-                                        <Typography variant="caption" display="block" textAlign="center">
-                                            Expires on {dayjs(voucher.expiryDate).format('DD/MM/YYYY')}
-                                        </Typography>
+                                        <Typography variant="h6" fontWeight="bold" textAlign="center">{voucher.voucherName}</Typography>
                                         <Button variant="contained" fullWidth sx={{ mt: 1 }}
                                             onClick={() => applyVoucher(voucher)}>
                                             USE VOUCHER

@@ -38,7 +38,7 @@ const OrderConfirmation = () => {
     }, []);
 
     useEffect(() => {
-        if (order && order.isUpdated == false) {
+        if (order) {
             hasUpdated.current = true;
             UpdateOrderAsNew(order.orderId);
             sendEmail();
