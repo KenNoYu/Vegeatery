@@ -314,12 +314,6 @@ namespace vegeatery.Controllers
               .Where(r => r.UserId == userId && r.Status == "Pending")
               .OrderBy(r => r.ReservationDate)
               .ToListAsync();
-
-            if (reservations == null || reservations.Count == 0)
-            {
-                return NotFound(new { message = "No pending reservations found for this user" });
-            }
-
             return Ok(reservations);
         }
 
@@ -332,11 +326,6 @@ namespace vegeatery.Controllers
               .Where(r => r.UserId == userId && r.Status == "seated")
               .OrderByDescending(r => r.ReservationDate)
               .ToListAsync();
-
-            if (reservations == null || reservations.Count == 0)
-            {
-                return NotFound(new { message = "No seated reservations found for this user" });
-            }
 
             return Ok(reservations);
         }
