@@ -21,24 +21,32 @@ import {
   Pagination,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import PersonIcon from "@mui/icons-material/Person";
 import http from "../../../http";
 import RoleGuard from "../../../utils/RoleGuard";
 import AdminSidebar from "./AdminSidebar";
 import UserRegistrationsGraph from "./UserRegistrationsGraph";
 import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
 import { useNavigate } from "react-router-dom";
+import RoleModificationModal from "./RoleModificationModal";
 
-export default function Accounts() {
+export default function RoleModify() {
   RoleGuard("Admin");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortBy, setSortBy] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
+  const [modalSelectedRole, setModalSelectedRole] = useState("");
 
+  const roleMapping = {
+    User: 1,
+    Staff: 2,
+    Admin: 3,
+  };
   useEffect(() => {
     const fetchUsers = async () => {
       setIsLoading(true);
@@ -53,13 +61,24 @@ export default function Accounts() {
         })
         .then((res) =>
           setUsers(
-            res.data.filter((user) => {
-              const searchText = searchTerm.toLowerCase();
-              return (
-                user.username.toLowerCase().includes(searchText) ||
-                user.email.toLowerCase().includes(searchText)
-              );
-            })
+            res.data
+              .filter((user) => {
+                const searchText = searchTerm.toLowerCase();
+                return (
+                  user.username.toLowerCase().includes(searchText) ||
+                  user.email.toLowerCase().includes(searchText)
+                );
+              })
+              .sort((a, b) => {
+                if (sortBy === "username") {
+                  return a.username.localeCompare(b.username);
+                } else if (sortBy === "email") {
+                  return a.email.localeCompare(b.email);
+                } else if (sortBy === "role") {
+                  return a.role.localeCompare(b.role);
+                }
+                return 0;
+              })
           )
         )
         .catch((err) => {
@@ -72,8 +91,51 @@ export default function Accounts() {
     fetchUsers();
   }, []);
 
+  const handleRoleChange = (event) => {
+    const newRole = event.target.value;
+    setModalSelectedRole(newRole);
+    console.log(newRole);
+  };
+
+  const handleSubmit = (user, newRole) => {
+    var userId = user.id;
+    var roleId = roleMapping[newRole];
+    http
+      .put("/Auth/roleModify", { userId, roleId }, { withCredentials: true })
+      .then((response) => {
+        // Update UI after role modification
+        setUsers(
+          users.map((user) =>
+            user.id === userId ? { ...user, role: newRole } : user
+          )
+        );
+        handleCloseModal(); // Close modal after success
+        alert("User role updated successfully!");
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Error updating role");
+      });
+  };
+
+  const handleCardClick = (user) => {
+    setSelectedUser(user);
+    console.log(user);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value.toLowerCase());
+  };
+
+  const handleSortByChange = (event) => {
+    setSortBy(event.target.value);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,20 +154,10 @@ export default function Accounts() {
       return matchesSearchTerm && matchesRole;
     })
     .sort((a, b) => {
-      if (sortBy === "createdAt" || sortBy === "createdAtReverse") {
-        const dateA = new Date(a.createdAt);
-        const dateB = new Date(b.createdAt);
-
-        // Check if the createdAt fields are valid dates
-        if (isNaN(dateA) || isNaN(dateB)) {
-          console.error("Invalid dates:", a.createdAt, b.createdAt);
-          return 0; // Return 0 if date parsing fails
-        }
-
-        const compare = dateA - dateB; // Ascending order by default
-
-        // Reverse the order if 'createdAtReverse' is selected
-        return sortBy === "createdAtReverse" ? -compare : compare;
+      if (sortBy === "username") {
+        return a.username.localeCompare(b.username);
+      } else if (sortBy === "createdAt") {
+        return new Date(a.createdAt) - new Date(b.createdAt);
       }
       return 0;
     });
@@ -127,8 +179,30 @@ export default function Accounts() {
   const UserProfileCard = ({ user }) => {
     const navigate = useNavigate();
 
-    const handleViewProfile = () => {
-      navigate(`/user/profile/${user.id}`); // Navigate to the profile page with the userId in the URL
+    // Function to handle navigation to the user's profile page
+    const getRoleStyles = (roleName) => {
+      switch (roleName.toLowerCase()) {
+        case "user":
+          return {
+            backgroundColor: "#E0F2FE", // Light blue background
+            color: "#007AFF", // Blue text color
+          };
+        case "admin":
+          return {
+            backgroundColor: "#FFE4E6", // Light red background
+            color: "#DC2626", // Red text color
+          };
+        case "staff":
+          return {
+            backgroundColor: "#F0FDF4", // Light green background
+            color: "#16A34A", // Green text color
+          };
+        default:
+          return {
+            backgroundColor: "#E0F2FE", // Default light blue background
+            color: "#007AFF", // Default blue text color
+          };
+      }
     };
 
     const ProfileImage = styled(Avatar)(({ theme }) => ({
@@ -209,10 +283,10 @@ export default function Accounts() {
             }}
           />
 
-          {/* View Profile Button */}
+          {/* Modify Role Button */}
           <Button
             variant="outlined"
-            onClick={handleViewProfile}
+            onClick={() => handleCardClick(user)}
             sx={{
               borderColor: "#C6487E",
               color: "#C6487E",
@@ -223,7 +297,7 @@ export default function Accounts() {
               marginTop: "2em",
             }}
           >
-            View Profile
+            Modify Role
           </Button>
         </Box>
       </Card>
@@ -243,19 +317,14 @@ export default function Accounts() {
           height: "100%",
         }}
       >
-        <Box
-          sx={{
-            marginBottom: "7em",
-            marginTop: "1.5em",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
-          <UserRegistrationsGraph />
-        </Box>
         <Box>
-          <Typography variant="h4" gutterBottom fontWeight="bold">
-            User Accounts
+          <Typography
+            variant="h4"
+            gutterBottom
+            fontWeight="bold"
+            sx={{ marginTop: "0.5em" }}
+          >
+            Accounts Role Modification
           </Typography>
 
           <Box display="flex" alignItems="center" mb={2}>
@@ -283,37 +352,6 @@ export default function Accounts() {
                 },
               }}
             />
-            <FormControl
-              sx={{
-                minWidth: 120,
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused": {
-                    fieldset: {
-                      borderColor: "#C6487E !important", // Keep your border color
-                    },
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  // Target the label specifically
-                  color: "black", // Default label color
-                  "&.Mui-focused": {
-                    // Label styles when focused
-                    color: "black !important", // Black on focus
-                  },
-                },
-              }}
-            >
-              <Select
-                labelId="sort-by-label"
-                id="sort-by-select"
-                value={sortBy || "createdAt"}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <MenuItem value="createdAt">Newest to Oldest</MenuItem>
-                <MenuItem value="createdAtReverse">Oldest to Newest</MenuItem>
-              </Select>
-            </FormControl>
-
             <FormControl
               sx={{
                 minWidth: 120,
@@ -425,6 +463,16 @@ export default function Accounts() {
           )}
         </Box>
       </Box>
+      {selectedUser && (
+        <RoleModificationModal
+          open={isModalOpen}
+          handleClose={handleCloseModal}
+          user={selectedUser}
+          role={modalSelectedRole}
+          handleRoleChange={handleRoleChange}
+          handleSubmit={() => handleSubmit(selectedUser, modalSelectedRole)}
+        />
+      )}
     </Box>
   );
 }

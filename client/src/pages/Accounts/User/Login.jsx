@@ -3,7 +3,7 @@ import { Box, Typography, TextField, Button, Grid } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import http from "../../../http";
-import { ToastContainer, toast } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import loginbanner from "../../../assets/loginbanner.jpg";
 import { useNavigate } from "react-router-dom";
@@ -38,17 +38,9 @@ function Login() {
           window.location = "/overview";
         })
         .catch((err) => {
-          if (err.response && err.response.data) {
-            toast.error(
-              `${
-                err.response.data.message || "Login failed. Please try again."
-              }`
-            );
-          } else {
-            toast.error(
-              "An unexpected error occurred. Please try again later."
-            );
-          }
+          const errorMessage =
+            err.response?.data?.message || "Login failed. Please try again.";
+          toast.error(errorMessage, {transition:Bounce}); // Simplified error handling
         });
     },
   });
@@ -71,49 +63,6 @@ function Login() {
           alignItems: "center",
         }}
       >
-        {/* Banner Section */}
-        {/* <Grid item xs={12} md={6}>
-          <Box
-            sx={{
-              backgroundImage: `url(${loginbanner})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              padding: "40px",
-              color: "#fff",
-            }}
-          >
-            <Typography
-              variant="h1"
-              sx={{ fontSize: "3rem", fontWeight: "bold", mb: 1 }}
-            >
-              Vegeatery
-            </Typography>
-            <Typography
-              variant="h2"
-              sx={{ fontSize: "1.5rem", fontStyle: "italic", mb: 3 }}
-            >
-              "Meals catered to your needs"
-            </Typography>
-
-            <Typography
-              variant="h3"
-              sx={{ fontSize: "1.2rem", fontWeight: "bold", mb: 2 }}
-            >
-              Who are we?
-            </Typography>
-            <Typography variant="h5" sx={{ fontSize: "1rem" }}>
-              Our plant-based business offers nutritious, customizable meals to
-              meet diverse dietary needs, from vegan to gluten-free. With a
-              focus on sustainability and fresh ingredients, we make healthy
-              eating easy and enjoyable for everyone.
-            </Typography>
-          </Box>
-        </Grid> */}
-
         {/* Login Form Section */}
         <Grid item xs={12} md={6}>
           <Box
@@ -129,7 +78,12 @@ function Login() {
           >
             <Typography
               variant="h1"
-              sx={{ fontSize: "2rem", fontWeight: "bold", mb: 3, alignSelf: "center" }}
+              sx={{
+                fontSize: "2rem",
+                fontWeight: "bold",
+                mb: 3,
+                alignSelf: "center",
+              }}
             >
               Login
             </Typography>

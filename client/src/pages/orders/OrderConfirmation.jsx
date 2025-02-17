@@ -73,7 +73,7 @@ const OrderConfirmation = () => {
     };
 
     useEffect(() => {
-        if (order && order.isUpdated == false) {
+        if (order) {
             hasUpdated.current = true;
             order.orderItems.forEach(item => {
                 if (item.productId) {

@@ -62,13 +62,13 @@ namespace vegeatery.Controllers
                 return NotFound("User not found");
             }
 
-            var vouchers = await _context.Vouchers
+            var userVouchers = await _context.Vouchers
                 .Where(v => v.TierId == user.TierId)
+                .Where(v => !_context.VoucherRedemptions
+                    .Any(r => r.UserId == userId && r.VoucherId == v.VoucherId && r.RedeemedAt.AddDays(7) > DateTime.UtcNow))
                 .ToListAsync();
-            // Filter out vouchers that are in the cool-down period
-            var availableVouchers = vouchers.Where(v => v.LastUsedDate == null || (DateTime.UtcNow - v.LastUsedDate.Value).TotalDays >= 7).ToList();
 
-            return Ok(availableVouchers);
+            return Ok(userVouchers);
         }
 
 

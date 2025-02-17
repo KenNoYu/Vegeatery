@@ -12,7 +12,7 @@ const AdminSidebar = () => {
   // List items data
   const menuItems = [
     { id: 'users', text: 'Store Users', icon: <Dashboard />, path: '/admin/accounts' },
-    { id: 'role', text: 'Role Modify', icon: <ShoppingCart />, path: '/admin/accounts/roles' }
+    { id: 'role', text: 'Role Modify', icon: <ShoppingCart />, path: '/admin/roleModify' }
   ];
 
   // Function to check if a route is active
