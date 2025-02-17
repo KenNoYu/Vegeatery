@@ -129,6 +129,16 @@ namespace vegeatery.Controllers
                 user.TotalPoints += 10;
                 user.OrderCount = 0;
                 user.OrderPeriodStartDate = null;
+
+                // Log the bonus points in the PointsHistory table
+                var pointsHistory = new PointsHistory
+                {
+                    UserId = userId,
+                    Points = 10,
+                    Description = "Bonus points!",
+                    Date = currentDate
+                };
+                _context.PointsHistories.Add(pointsHistory);
             }
 
             _context.Users.Update(user);
