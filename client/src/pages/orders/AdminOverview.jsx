@@ -77,8 +77,17 @@ const OrderDashboard = () => {
                         <Card sx={{ height: 350, width: { xs: '80vw', md: '60vw', lg: '45vw' } }}>
                             <CardContent>
                                 <Typography variant="h6" fontWeight="bold">Sales Summary</Typography>
-                                <Box sx={{ width: '100%', height: 280 }}>
-                                    <CircularProgress color='Primary' />
+                                <Box
+                                    sx={{
+                                        width: '100%',
+                                        height: 280,
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}
+                                >
+                                    <CircularProgress color="Primary" />
+                                    <Typography variant="body1" sx={{ ml: 2 }}>Loading sales data...</Typography>
                                 </Box>
                             </CardContent>
                         </Card>
@@ -91,21 +100,21 @@ const OrderDashboard = () => {
                                 <Package />
                                 <Typography fontWeight="medium">Total Orders</Typography>
                             </Box>
-                            <CircularProgress color='Primary' />
+                            <CircularProgress size={20} color="Primary" />
                         </Card>
                         <Card sx={{ mb: 7, display: 'flex', justifyContent: 'space-between', p: 3 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
                                 <Calendar />
                                 <Typography fontWeight="medium">Reservations</Typography>
                             </Box>
-                            <CircularProgress color='Primary' />
+                            <CircularProgress size={20} color="Primary" />
                         </Card>
                         <Card sx={{ mb: 7, display: 'flex', justifyContent: 'space-between', p: 3 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
                                 <User />
                                 <Typography fontWeight="medium">Total Users</Typography>
                             </Box>
-                            <CircularProgress color='Primary' />
+                            <CircularProgress size={20} color="Primary" />
                         </Card>
                     </Grid>
                 </Grid>
@@ -120,14 +129,18 @@ const OrderDashboard = () => {
                             sx={{
                                 textAlign: 'center',
                                 py: 5,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
                             }}
                         >
-                            <CircularProgress color='Primary' />
+                            <CircularProgress color="Primary" />
+                            <Typography variant="body1" sx={{ ml: 2 }}>Loading top products...</Typography>
                         </Box>
                     </CardContent>
                 </Card>
             </Box>
-        )
+        );
     }
 
     return (
