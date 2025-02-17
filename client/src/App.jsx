@@ -142,7 +142,7 @@ function App() {
       <Router>
         <ThemeProvider theme={MyTheme}>
           <ThemeProvider theme={currentThemeIsDark ? DarkTheme : MyTheme}>
-            <AppBar position="fixed" className="AppBar" sx={{zIndex: 10000}}>
+            <AppBar position="fixed" className="AppBar">
               <Container>
                 <Toolbar
                   disableGutters={true}
