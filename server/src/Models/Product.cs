@@ -21,6 +21,9 @@ namespace vegeatery.Models
         public string Ingredients { get; set; }
 
         [Required]
+        public string AllergyIngredients { get; set; }
+
+        [Required]
         public int ProductPoints { get; set; }
 
         public int Calories { get; set; }
