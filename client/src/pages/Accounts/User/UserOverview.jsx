@@ -25,6 +25,7 @@ const UserOverview = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -33,6 +34,10 @@ const UserOverview = () => {
 
   const StoreNav = () => {
     navigate("/user/store");
+  };
+
+  const checkoutNav = () => {
+    navigate("/orders");
   };
 
   const ProfileImage = styled(Avatar)(({ theme }) => ({
@@ -77,6 +82,74 @@ const UserOverview = () => {
     letterSpacing: '0.1em',
     color: tierColor,
   }));
+
+  // Delete items in cart
+  const deleteCartItems = async (cartId, productId) => {
+    http.delete(`/ordercart?CartId=${cartId}&ProductId=${productId}`)
+      .then((res) => res)
+      .catch((error) => {
+        console.error("Error deleting cart item:", error);
+        throw error; // Ensure errors propagate to `buyAgain`
+      });
+  }
+
+  // get cart items
+  const GetCartItems = () => {
+    // autofill cartId next time
+    http.get(`/ordercart?cartId=${user.data.cartId}`).then((res) => {
+      setCartItems(res.data);
+    })
+      .catch((error) => {
+        console.error("Error fetching cart items:", error);
+      })
+  };
+
+  // handle add to cart button
+  const addToCart = async (cartId, productId, productName, quantity) => {
+    const cartData = {
+      // auto fill id next time
+      cartId: cartId,
+      productId: productId,
+      productName: productName,
+      quantity: quantity,
+    };
+
+    http.post("/ordercart", cartData)
+      .then((res) => res)
+      .catch((error) => {
+        console.error("Error adding product to cart:", error);
+        throw error; // Ensure errors propagate to `buyAgain`
+      });
+  };
+
+  useEffect(() => {
+    if (user?.data.cartId) {
+      GetCartItems();
+    }
+  }, [user]);
+
+  const buyAgain = async (order) => {
+    try { // Add a try-catch block for better error handling
+      await GetCartItems();
+      if (Array.isArray(cartItems) && cartItems.length > 0) {
+        for (const item of cartItems) {
+          await Promise.all(
+            cartItems.map((item) => deleteCartItems(user.data.cartId, item.productId))
+          );
+        }
+      }
+
+      await Promise.all(
+        order.orderItems.map((product) =>
+          addToCart(user.data.cartId, product.productId, product.productName, product.quantity)
+        )
+      );
+
+      checkoutNav();
+    } catch (error) {
+      console.error("Error during buy again process:", error);
+    }
+  };
 
   const TierDisplay = ({ tierName }) => {
     const getTierColor = (tier) => {
@@ -378,7 +451,7 @@ const UserOverview = () => {
                           <Typography variant="subtitle1" fontWeight="bold">
                             Total: ${order.totalPrice.toFixed(2)}
                           </Typography>
-                          <Button variant="contained" size="small" color="Accent">
+                          <Button variant="contained" size="small" color="Accent" onClick={() => buyAgain(order)}>
                             Buy Again
                           </Button>
                         </Box>
