@@ -28,14 +28,13 @@ const MyOrdersPage = () => {
     };
 
     // Delete items in cart
-    const deleteCartItems = (cartId, productId) => {
+    const deleteCartItems = async (cartId, productId) => {
         http.delete(`/ordercart?CartId=${cartId}&ProductId=${productId}`)
-            .then((res) => {
-                return res;
-            })
+            .then((res) => res)
             .catch((error) => {
-                console.error("Error fetching orders:", error);
-            })
+                console.error("Error deleting cart item:", error);
+                throw error; // Ensure errors propagate to `buyAgain`
+            });
     }
 
     // get cart items
@@ -64,7 +63,7 @@ const MyOrdersPage = () => {
     }
 
     // handle add to cart button
-    const addToCart = (cartId, productId, productName, quantity) => {
+    const addToCart = async (cartId, productId, productName, quantity) => {
         const cartData = {
             // auto fill id next time
             cartId: cartId,
@@ -74,11 +73,10 @@ const MyOrdersPage = () => {
         };
 
         http.post("/ordercart", cartData)
-            .then((res) => {
-                return res;
-            })
+            .then((res) => res)
             .catch((error) => {
                 console.error("Error adding product to cart:", error);
+                throw error; // Ensure errors propagate to `buyAgain`
             });
     };
 
@@ -106,21 +104,24 @@ const MyOrdersPage = () => {
 
     const buyAgain = async (order) => {
         try { // Add a try-catch block for better error handling
-            if (Array.isArray(cartItems)) {
+            await GetCartItems();
+            if (Array.isArray(cartItems) && cartItems.length > 0) {
                 for (const item of cartItems) {
-                    await deleteCartItems(user.data.cartId, item.productId);
+                    await Promise.all(
+                        cartItems.map((item) => deleteCartItems(user.data.cartId, item.productId))
+                    );
                 }
             }
-    
-            for (const item of order.orderItems) {
-                await addToCart(user.data.cartId, item.productId, item.productName, item.quantity);
-            }
-    
-            await GetCartItems(); // Refresh cartItems state after adding
+
+            await Promise.all(
+                order.orderItems.map((product) =>
+                    addToCart(user.data.cartId, product.productId, product.productName, product.quantity)
+                )
+            );
+
             checkoutNav();
         } catch (error) {
             console.error("Error during buy again process:", error);
-            // Handle the error (e.g., display an error message to the user)
         }
     };
 
