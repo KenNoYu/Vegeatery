@@ -347,6 +347,7 @@ namespace vegeatery.Controllers
                 .Include(Order => Order.OrderItems)
 				.ThenInclude(item => item.Product)
 				.Where(Order => Order.CustomerId == custId && Order.Status != "pending")
+                .OrderByDescending(Order => Order.CreatedAt)
                 .Select(Order => new
                 {
                     Order.OrderId,
