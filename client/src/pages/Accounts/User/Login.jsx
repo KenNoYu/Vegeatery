@@ -40,7 +40,7 @@ function Login() {
         .catch((err) => {
           const errorMessage =
             err.response?.data?.message || "Login failed. Please try again.";
-          toast.error(errorMessage, {transition:Bounce}); // Simplified error handling
+          toast.error(errorMessage, { transition: Bounce }); // Simplified error handling
         });
     },
   });
@@ -202,7 +202,18 @@ function Login() {
           </Box>
         </Grid>
       </Grid>
-      <ToastContainer />
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </Box>
   );
 }
