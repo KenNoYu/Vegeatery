@@ -30,6 +30,9 @@ import ProductDetails from "./pages/ProductCategory/ProductDetails";
 import EditProduct from "./pages/ProductCategory/EditProduct";
 import UserMenu from "./pages/ProductCategory/User/UserMenu";
 import EditCategory from "./pages/ProductCategory/EditCategory";
+import UserProductDetails from "./pages/ProductCategory/User/UserProductDetails";
+import StaffStockPage from "./pages/ProductCategory/Staff/StaffDashboard";
+import StaffProductLogs from "./pages/ProductCategory/Staff/StaffLogs"
 
 // REWARDS
 import PointsSystem from './pages/rewards/User/PointsSystem';
@@ -158,20 +161,20 @@ function App() {
                           </>
                         )}
 
-                        {/* Show navigation for 'staff' role */}
-                        {user.role === "Staff" && (
-                          <>
-                            <Link to="/staff/vieworders">
-                              <Typography>Orders</Typography>
-                            </Link>
-                            <Link to="/staff/viewproducts">
-                              <Typography>Products</Typography>
-                            </Link>
-                            <Link to="/staff/viewreservations">
-                              <Typography>Reservations</Typography>
-                            </Link>
-                          </>
-                        )}
+                      {/* Show navigation for 'staff' role */}
+                      {user.role === "Staff" && (
+                        <>
+                          <Link to="/staff/vieworders">
+                            <Typography>Orders</Typography>
+                          </Link>
+                          <Link to="/staff/viewstocks">
+                            <Typography>Products</Typography>
+                          </Link>
+                          <Link to="/staff/viewreservations">
+                            <Typography>Reservations</Typography>
+                          </Link>
+                        </>
+                      )}
 
                         {/* Show navigation for 'customer' role */}
                         {user.role === "User" && (
@@ -310,7 +313,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
           </Routes>
-          <Container sx={{ paddingTop: '64px' }}>
+          <Container maxWidth={false} disableGutters sx={{ paddingTop: '64px' }}>
             <Routes>  
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
@@ -335,6 +338,9 @@ function App() {
               <Route path="/user/store" element={<UserMenu />} />
               <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
               <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
+              <Route path={"/userproduct/:productId"} element= {<UserProductDetails />} />
+              <Route path={"/staff/viewstocks"} element={<StaffStockPage />} />
+              <Route path={"/staff/productlogs"} element={<StaffProductLogs />} />
 
               {/* RESERVATION */}
               <Route path="/reserve" element={<ReservationPage />} />
