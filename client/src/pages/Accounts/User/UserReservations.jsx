@@ -81,7 +81,7 @@ const MyReservationsPage = () => {
         boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
         flexDirection: "column",
       }}>
-        <Typography variant="h5" sx={{ my: 2 }}>
+        <Typography variant="h4" sx={{ my: 2, fontWeight: 'bold' }}>
           Upcoming Reservations
         </Typography>
         {pendingReservations.length > 0 ? (
