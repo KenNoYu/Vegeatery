@@ -21,6 +21,7 @@ import UserContext from "./contexts/UserContext";
 import logoLight from "./assets/logo/vegeateryMain.png";
 import logoDark from "./assets/logo/vegeateryWhite.png";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import Chatbot from "./pages/ChatBot";
 
 // PRODUCTS
 import CategoryList from "./pages/ProductCategory/ViewCategories";
@@ -398,6 +399,7 @@ function App() {
           </Container>
         </ThemeProvider>
       </Router>
+      <Chatbot />
     </UserContext.Provider>
   );
 }
