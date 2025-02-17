@@ -180,6 +180,12 @@ public class AccountController : ControllerBase
             return NotFound(new { message = "User not found" });
         }
 
+        // Check if the current date is within the points period
+        if (DateTime.UtcNow > user.PointsExpiryDate)
+        {
+            return BadRequest(new { message = "Points period has expired. Points cannot be added." });
+        }
+
         // Update total points
         user.TotalPoints += request.Points;
 
@@ -207,8 +213,6 @@ public class AccountController : ControllerBase
             newTier = newTier?.TierName
         });
     }
-
-
 }
 
 public class PointsUpdateDto
