@@ -27,6 +27,8 @@ namespace vegeatery.Models
         public float Fats { get; set; }
         public float Carbs { get; set; }
         public float Protein { get; set; }
+        
+        public int Stocks { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
@@ -57,5 +59,6 @@ namespace vegeatery.Models
 
         [Column(TypeName = "datetime")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsActive { get; set; }
     }
 }
