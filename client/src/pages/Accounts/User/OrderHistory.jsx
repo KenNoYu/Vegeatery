@@ -10,8 +10,10 @@ import { ToastContainer, toast } from "react-toastify";
 import Sidebar from "./UserSidebar";
 import NoOrders from "../../../assets/NoOrders.png"
 import { useNavigate } from 'react-router-dom';
+import RoleGuard from '../../../utils/RoleGuard';
 
 const MyOrdersPage = () => {
+    RoleGuard(["User", "Admin", "Staff"]);
     const [user, setUser] = useState(null);
     const [orders, setOrders] = useState([]);
     const [cartItems, setCartItems] = useState([]);
