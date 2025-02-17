@@ -9,6 +9,7 @@ import * as yup from 'yup';
 import { ToastContainer, toast } from "react-toastify";
 import Sidebar from "./UserSidebar";
 import NoOrders from "../../../assets/NoOrders.png"
+import { useNavigate } from 'react-router-dom';
 
 const ProfileBox = styled(Box)(({ theme }) => ({
     padding: theme.spacing(4),
@@ -24,7 +25,11 @@ const MyOrdersPage = () => {
     const [orders, setOrders] = useState([]);
     const [error, setError] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
+    const StoreNav = () => {
+        navigate("/user/store");
+      };
     //TODO: function to buy order again
 
     // function to get order by cust id
@@ -143,7 +148,7 @@ const MyOrdersPage = () => {
                                 variant="contained" 
                                 color="Accent" 
                                 sx={{ borderRadius: "8px", textTransform: "none", fontSize: "1rem" }}
-                                onClick={() => { }}
+                                onClick={StoreNav}
                             >
                                 Explore Products
                             </Button>

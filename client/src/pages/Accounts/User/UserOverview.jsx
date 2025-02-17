@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "./UserSidebar.jsx";
 import { styled } from "@mui/system";
 import RoleGuard from "../../../utils/RoleGuard.js";
+import NoOrders from "../../../assets/NoOrders.png"
 
 const UserOverview = () => {
   RoleGuard(["User", "Admin", "Staff"]);
@@ -28,6 +29,10 @@ const UserOverview = () => {
 
   const handleClick = () => {
     navigate("/user/profile");
+  };
+
+  const StoreNav = () => {
+    navigate("/user/store");
   };
 
   const ProfileImage = styled(Avatar)(({ theme }) => ({
@@ -303,6 +308,7 @@ const UserOverview = () => {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        overflow: "auto",
                       }}
                     >
                       <Box key={order.orderId || i} sx={{ display: "flex", gap: 2 }}>
@@ -336,9 +342,38 @@ const UserOverview = () => {
                 )
               })
             ) : (
-              <Typography variant="body1" sx={{ mt: 2 }}>
-                No Past Purchases
-              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  p: 3,
+                  backgroundColor: "#f5f5f5",
+                  borderRadius: "8px",
+                  m: "5%"
+                }}
+              >
+                {/* Illustration */}
+                <img
+                  src={NoOrders} // Replace with your illustration path
+                  alt="No purchases"
+                  style={{ width: "120px", height: "auto", marginBottom: "1em" }}
+                />
+                {/* Message */}
+                <Typography variant="body1" sx={{ color: "text.secondary", marginBottom: "1em"}}>
+                  No past purchases yet. Start exploring our products!
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="Accent"
+                  sx={{ borderRadius: "8px", textTransform: "none", fontSize: "1rem" }}
+                  onClick={StoreNav}
+                >
+                  Explore Products
+                </Button>
+              </Box>
             )}
           </Box>
         </Box>
