@@ -3,10 +3,14 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContai
 import { Card, CardContent, Typography, Box, Grid2 as Grid } from '@mui/material';
 import { User, Calendar, Package } from 'lucide-react';
 import http from '../../http';
+import RoleGuard from '../../utils/RoleGuard';
 
 const OrderDashboard = () => {
+    RoleGuard("Admin");
+    const [users, setUsers] = useState([]);
     const [orderData, setOrderData] = useState([]);
     const [topProducts, setTopProducts] = useState([]);
+    const [totalUsers, setTotalUsers] = useState(0);
     const [salesSummary, setSalesSummary] = useState({
         totalOrders: 0,
         totalSales: 0,
@@ -20,6 +24,7 @@ const OrderDashboard = () => {
                 setOrderData(res.data)
                 setSalesSummary(res.data)
                 getTopOrders();
+                fetchUsers();
             })
             .catch((err) => {
                 console.error('Failed to fetch order stats:', err)
@@ -27,10 +32,10 @@ const OrderDashboard = () => {
     }, []);
 
     const stats = [
-        { icon: <Package />, label: 'Orders', value: orderData.totalOrders },
+        { icon: <Package />, label: 'Total Orders', value: orderData.totalOrders },
         // reservations wait for chloe's part first
         { icon: <Calendar />, label: 'Reservations', value: '10' },
-        { icon: <User />, label: 'Total Users', value: '' }
+        { icon: <User />, label: 'Total Users', value: totalUsers}
     ];
 
     const getTopOrders = () => {
@@ -42,6 +47,27 @@ const OrderDashboard = () => {
                 console.error('Failed to fetch order stats:', err)
             });
     }
+
+    const fetchUsers = async () => {
+        const response = await http
+            .get("/Account", {
+                withCredentials: true,
+            })
+            .then((res) => {
+                setUsers(res.data)
+                calculateTotalUsers()
+                return res;
+            })
+            .catch((err) => {
+                console.log(err);
+                setUsers([]);
+            })
+    };
+
+    const calculateTotalUsers = () => {
+        const totalUsersCal = users.length; // Efficient calculation
+        setTotalUsers(totalUsersCal);
+    };
 
     return (
         <Box p={3}>
