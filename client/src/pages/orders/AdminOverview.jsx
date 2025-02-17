@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
-import { Card, CardContent, Typography, Box, Grid2 as Grid } from '@mui/material';
+import { Card, CardContent, Typography, Box, Grid2 as Grid, CircularProgress } from '@mui/material';
 import { User, Calendar, Package } from 'lucide-react';
 import http from '../../http';
 import RoleGuard from '../../utils/RoleGuard';
 
 const OrderDashboard = () => {
     RoleGuard("Admin");
+    const [loading, setLoading] = useState(true);
     const [users, setUsers] = useState([]);
     const [orderData, setOrderData] = useState([]);
     const [topProducts, setTopProducts] = useState([]);
-    const [totalUsers, setTotalUsers] = useState(0);
+    const [totalUsers, setTotalUsers] = useState();
     const [salesSummary, setSalesSummary] = useState({
         totalOrders: 0,
         totalSales: 0,
@@ -18,6 +19,7 @@ const OrderDashboard = () => {
     });
 
     useEffect(() => {
+        setLoading(true);
         http.get('/stripe/sales-summary')
             .then((res) => {
                 console.log(res.data);
@@ -35,28 +37,27 @@ const OrderDashboard = () => {
         { icon: <Package />, label: 'Total Orders', value: orderData.totalOrders },
         // reservations wait for chloe's part first
         { icon: <Calendar />, label: 'Reservations', value: '10' },
-        { icon: <User />, label: 'Total Users', value: totalUsers}
+        { icon: <User />, label: 'Total Users', value: totalUsers }
     ];
 
     const getTopOrders = () => {
         http.get("/product/TopOrders")
             .then((res) => {
                 setTopProducts(res.data)
+                console.log(res.data)
             })
             .catch((err) => {
                 console.error('Failed to fetch order stats:', err)
             });
     }
 
-    const fetchUsers = async () => {
-        const response = await http
-            .get("/Account", {
+    const fetchUsers = () => {
+        http.get("/Account", {
                 withCredentials: true,
             })
             .then((res) => {
                 setUsers(res.data)
                 calculateTotalUsers()
-                return res;
             })
             .catch((err) => {
                 console.log(err);
@@ -67,7 +68,71 @@ const OrderDashboard = () => {
     const calculateTotalUsers = () => {
         const totalUsersCal = users.length; // Efficient calculation
         setTotalUsers(totalUsersCal);
+        setLoading(false);
     };
+
+    if (loading) {
+        return (
+            <Box p={3}>
+                {/* Sales Summary and Quick Stats */}
+                <Grid container spacing={5}>
+                    {/* Sales Chart */}
+                    <Grid item xs={12} md={9} lg={9}>
+                        <Card sx={{ height: 350, width: { xs: '80vw', md: '60vw', lg: '45vw' } }}>
+                            <CardContent>
+                                <Typography variant="h6" fontWeight="bold">Sales Summary</Typography>
+                                <Box sx={{ width: '100%', height: 280 }}>
+                                    <CircularProgress color='Primary' />
+                                </Box>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    {/* Quick Stats */}
+                    <Grid item xs={12} md={3} lg={3}>
+                        <Card sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', p: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Package />
+                                <Typography fontWeight="medium">Total Orders</Typography>
+                            </Box>
+                            <CircularProgress color='Primary' />
+                        </Card>
+                        <Card sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', p: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Calendar />
+                                <Typography fontWeight="medium">Reservationss</Typography>
+                            </Box>
+                            <CircularProgress color='Primary' />
+                        </Card>
+                        <Card sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', p: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <User />
+                                <Typography fontWeight="medium">Total Users</Typography>
+                            </Box>
+                            <CircularProgress color='Primary' />
+                        </Card>
+                    </Grid>
+                </Grid>
+
+                {/* Top Selling Products */}
+                <Card sx={{ mt: 3 }}>
+                    <CardContent>
+                        <Typography variant="h6" fontWeight="bold">
+                            Top Selling Products
+                        </Typography>
+                        <Box
+                            sx={{
+                                textAlign: 'center',
+                                py: 5,
+                            }}
+                        >
+                            <CircularProgress color='Primary' />
+                        </Box>
+                    </CardContent>
+                </Card>
+            </Box>
+        )
+    }
 
     return (
         <Box p={3}>
@@ -155,27 +220,12 @@ const OrderDashboard = () => {
                                     <Typography fontWeight="medium" variant="subtitle1">
                                         {product.productName}
                                     </Typography>
-                                    <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-                                        {product.tags.map((tag) => (
-                                            <Badge
-                                                key={tag}
-                                                sx={{
-                                                    p: 0.5,
-                                                    bgcolor: '#e0e0e0',
-                                                    borderRadius: 1,
-                                                    fontSize: '0.75rem',
-                                                }}
-                                            >
-                                                {tag}
-                                            </Badge>
-                                        ))}
-                                    </Box>
                                 </Box>
 
                                 {/* Product Earnings */}
                                 <Box textAlign="right">
                                     <Typography color="error" fontWeight="bold">
-                                        Earnings: ${product.earnings * product.quantityBought}
+                                        Earnings: ${product.productPrice * product.quantityBought}
                                     </Typography>
                                     <Typography variant="caption" color="textSecondary">
                                         x{product.quantityBought} Sold
