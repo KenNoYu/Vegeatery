@@ -12,8 +12,9 @@ import NoOrders from "../../../assets/NoOrders.png"
 import { useNavigate } from 'react-router-dom';
 
 const MyOrdersPage = () => {
-    const [userId, setUserId] = useState(null);
+    const [user, setUser] = useState(null);
     const [orders, setOrders] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
     const [error, setError] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -21,7 +22,32 @@ const MyOrdersPage = () => {
     const StoreNav = () => {
         navigate("/user/store");
     };
-    //TODO: function to buy order again
+
+    const checkoutNav = () => {
+        navigate("/orders");
+    };
+
+    // Delete items in cart
+    const deleteCartItems = (cartId, productId) => {
+        http.delete(`/ordercart?CartId=${cartId}&ProductId=${productId}`)
+            .then((res) => {
+                return res;
+            })
+            .catch((error) => {
+                console.error("Error fetching orders:", error);
+            })
+    }
+
+    // get cart items
+    const GetCartItems = () => {
+        // autofill cartId next time
+        http.get(`/ordercart?cartId=${user.data.cartId}`).then((res) => {
+            setCartItems(res.data);
+        })
+            .catch((error) => {
+                console.error("Error fetching cart items:", error);
+            })
+    };
 
     // function to get order by cust id
     const GetOrderByCustId = (custId) => {
@@ -37,12 +63,31 @@ const MyOrdersPage = () => {
             })
     }
 
+    // handle add to cart button
+    const addToCart = (cartId, productId, productName, quantity) => {
+        const cartData = {
+            // auto fill id next time
+            cartId: cartId,
+            productId: productId,
+            productName: productName,
+            quantity: quantity,
+        };
+
+        http.post("/ordercart", cartData)
+            .then((res) => {
+                return res;
+            })
+            .catch((error) => {
+                console.error("Error adding product to cart:", error);
+            });
+    };
+
     useEffect(() => {
         http
             .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
             .then((res) => {
                 console.log(res);
-                setUserId(res.data.id);
+                setUser(res);
                 GetOrderByCustId(res.data.id);
                 setLoading(false);
             })
@@ -52,6 +97,32 @@ const MyOrdersPage = () => {
                 setLoading(false);
             });
     }, []);
+
+    useEffect(() => {
+        if (user?.data.cartId) {
+            GetCartItems();
+        }
+    }, [user]);
+
+    const buyAgain = async (order) => {
+        try { // Add a try-catch block for better error handling
+            if (Array.isArray(cartItems)) {
+                for (const item of cartItems) {
+                    await deleteCartItems(user.data.cartId, item.productId);
+                }
+            }
+    
+            for (const item of order.orderItems) {
+                await addToCart(user.data.cartId, item.productId, item.productName, item.quantity);
+            }
+    
+            await GetCartItems(); // Refresh cartItems state after adding
+            checkoutNav();
+        } catch (error) {
+            console.error("Error during buy again process:", error);
+            // Handle the error (e.g., display an error message to the user)
+        }
+    };
 
     return (
         <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
@@ -163,7 +234,7 @@ const MyOrdersPage = () => {
                                         <Box
                                             sx={{
                                                 display: "flex",
-                                                flexDirection:"column",
+                                                flexDirection: "column",
                                                 alignItems: "end",
                                                 mt: 2,
                                                 mb: 2,
@@ -187,7 +258,7 @@ const MyOrdersPage = () => {
                                             <Button variant="contained" color="Accent" size="large">
                                                 Review
                                             </Button>
-                                            <Button variant="contained" color="Accent" size="large">
+                                            <Button variant="contained" color="Accent" size="large" onClick={() => buyAgain(order)}>
                                                 Buy Again
                                             </Button>
                                         </Box>
