@@ -17,6 +17,7 @@ const Cart = () => {
     const [totalPoints, setPoints] = useState(0);
     const [user, setUser] = useState(null);
     const [cartOpen, setCartOpen] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
 
     const toggleCart = (open) => () => {
         setCartOpen(open);
@@ -59,6 +60,7 @@ const Cart = () => {
 
     // Update cart item
     const UpdateCartItems = (cartId, productId, quantity) => {
+        setIsUpdating(true); // disables ui
         const cartData = {
             // auto fill id next time
             cartId: cartId,
@@ -76,6 +78,9 @@ const Cart = () => {
             .catch((error) => {
                 console.error("Error Updating product", error);
                 toast.error("Failed to update product.");
+            })
+            .finally(() => {
+                setIsUpdating(false); // Re-enable UI
             });
     };
 
@@ -108,16 +113,21 @@ const Cart = () => {
 
     // Remove item from cart
     const RemoveCartItem = (productId) => {
-        http.delete(`/ordercart?CartId=${user.data.cartId}&ProductId=${productId}`).then((res) => {
-            console.log("product deleted from cart");
-            // Refresh cart data
-            GetCartItems();
-            toast.success(`Product deleted from cart!`);
-        })
+        setIsUpdating(true); // Disable UI
+        http.delete(`/ordercart?CartId=${user.data.cartId}&ProductId=${productId}`)
+            .then((res) => {
+                console.log("product deleted from cart");
+                // Refresh cart data
+                GetCartItems();
+                toast.success(`Product deleted from cart!`);
+            })
             .catch((error) => {
                 console.error("Error deleting product from cart:", error);
                 toast.error("Failed to delete product from cart.");
             })
+            .finally(() => {
+                setIsUpdating(false); // Re-enable UI
+            });
     };
 
     const navigate = useNavigate();
@@ -131,7 +141,7 @@ const Cart = () => {
         setCartOpen(false);
         navigate("/orders");
     };
-    
+
 
     if (loading) {
         return (
@@ -184,7 +194,7 @@ const Cart = () => {
                 <ShoppingCartIcon />
             </IconButton>
 
-            <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)} ModalProps={{ keepMounted: true, disableEnforceFocus: true}}>
+            <Drawer anchor="right" open={cartOpen} onClose={toggleCart(false)} ModalProps={{ keepMounted: true, disableEnforceFocus: true }}>
                 {ToastContainer}
                 <Box
                     sx={{
@@ -220,7 +230,7 @@ const Cart = () => {
                                             onClick={() => UpdateCartItems(user.data.cartId, product.productId, product.quantity - 1)}
                                             color="Accent"
                                             size="small"
-                                            disabled={product.quantity === 1}
+                                            disabled={product.quantity === 1 || isUpdating}
                                         >
                                             <RemoveIcon />
                                         </IconButton>
@@ -234,7 +244,7 @@ const Cart = () => {
                                             onClick={() => UpdateCartItems(user.data.cartId, product.productId, product.quantity + 1)}
                                             color="Accent"
                                             size="small"
-                                            disabled={product.quantity === 10}
+                                            disabled={product.quantity === 10 || isUpdating}
                                         >
                                             <AddIcon />
                                         </IconButton>
@@ -263,7 +273,7 @@ const Cart = () => {
                         <Typography variant="body1">Points:</Typography>
                         <Typography variant="body1">{total}</Typography>
                     </Box>
-                    <Button variant="contained" color="Accent" fullWidth onClick={handleCheckout} disabled={cartItems.length <= 0}>
+                    <Button variant="contained" color="Accent" fullWidth onClick={handleCheckout} disabled={cartItems.length === 0 || isUpdating}>
                         Checkout
                     </Button>
                     {ToastContainer}

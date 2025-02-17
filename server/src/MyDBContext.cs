@@ -39,6 +39,7 @@ namespace vegeatery
     public required DbSet<Table> Tables { get; set; }
     public required DbSet<Tier> Tiers { get; set; }
     public required DbSet<Voucher> Vouchers { get; set; }
+    public required DbSet<PointsHistory> PointsHistories { get; set; }
     public required DbSet<VoucherRedemption> VoucherRedemptions { get; set; }
     public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
     public required DbSet<User> Users { get; set; }
@@ -122,8 +123,8 @@ namespace vegeatery
       Username = "masteradmin",
       PasswordHash = BCrypt.Net.BCrypt.HashPassword("MasterAdminPassword123!"),
       Email = "admin@domain.com",
-      DateofBirth = "",
-      ContactNumber = "",
+      DateofBirth = "2025-02-01T00:00:00.000Z",
+      ContactNumber = "12345678",
       Gender = "Others",
       DietPreference = "",
       AllergyInfo = "",
@@ -142,8 +143,8 @@ namespace vegeatery
       Username = "staffuser",
       PasswordHash = BCrypt.Net.BCrypt.HashPassword("StaffUserPassword123!"),
       Email = "staff@domain.com",
-      DateofBirth = "",
-      ContactNumber = "",
+      DateofBirth = "2025-02-01T00:00:00.000Z",
+      ContactNumber = "12345678",
       Gender = "Female",
       DietPreference = "",
       AllergyInfo = "",

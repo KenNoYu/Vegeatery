@@ -34,7 +34,8 @@ const FeedbackSidebar = () => {
           padding: '2em 0.5em',
           position: 'fixed',
           marginTop: '64px', // Dynamically adjust based on navbar height
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          zIndex: "500",
         },
       }}
     >

@@ -8,15 +8,18 @@ import RoleGuard from '../../../utils/RoleGuard';
 import RewardsSidebar from "./RewardsSidebar.jsx";
 
 
+
 const PointsHistory = () => {
     RoleGuard('User');
     const { user } = useContext(UserContext);
     const [pointsHistory, setPointsHistory] = useState([]);
+    const [bonusPointsHistory, setBonusPointsHistory] = useState([]);
+
 
     useEffect(() => {
         http.get("/auth/current-user", { withCredentials: true })
             .then((res) => {
-                setUser(res.data);  // FIXED: Store only user data
+                setUser(res.data);
             })
             .catch((err) => {
                 console.error("Failed to fetch user data", err);
@@ -32,6 +35,15 @@ const PointsHistory = () => {
                 })
                 .catch((err) => {
                     console.error("Error fetching points history", err);
+                });
+
+            // Fetch bonus points history
+            http.get(`/PointsHistory/bonus/${user.id}`)
+                .then((res) => {
+                    setBonusPointsHistory(res.data);
+                })
+                .catch((err) => {
+                    console.error("Error fetching bonus points history", err);
                 });
         }
     }, [user]);
@@ -56,25 +68,27 @@ const PointsHistory = () => {
             >
                 <Container maxWidth="md">
                     <Box p={3} mt={10} bgcolor="white" borderRadius={2} boxShadow={3} mb={5}>
-                        <Typography variant="h4" fontWeight="bold" mt={5} ml={3} mb={2} textAlign="center">
-                            Order Points History
+                        <Typography variant="h4" fontWeight="bold" textAlign="center" mb={2}>
+                            Points History
                         </Typography>
                         <Grid container spacing={2} justifyContent="center">
-                            {pointsHistory.length > 0 ? (
-                                pointsHistory.map((history) => (
-                                    <Grid item xs={12} key={history.orderId}>
-                                        <Card sx={{ backgroundColor: '#E3F2FD' }}>
+                            {pointsHistory.length > 0 || bonusPointsHistory.length > 0 ? (
+                                [...pointsHistory, ...bonusPointsHistory].sort((a, b) =>
+                                    new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)
+                                ).map((history, index) => (
+                                    <Grid item xs={12} key={index}>
+                                        <Card sx={{ backgroundColor: history.totalPoints ? '#E3F2FD' : '#FFF3E0' }}>
                                             <CardContent>
-                                                <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
+                                                <Box display="flex" justifyContent="space-between" alignItems="center">
                                                     <Typography variant="h6" fontWeight="bold">
-                                                        OrderID: #Vegeatery{history.orderDate.substring(0, 10).replace(/-/g, "").slice(0, 6)}{history.orderId}
+                                                        {history.orderId ? `OrderID: #Vegeatery${history.orderDate.substring(0, 10).replace(/-/g, "").slice(0, 6)}${history.orderId}` : history.description}
                                                     </Typography>
-                                                    <Typography variant="h6" color="#FFFFF" fontWeight="bold" marginRight={2}>
-                                                        +{history.totalPoints} pts
+                                                    <Typography variant="h6" fontWeight="bold" marginRight={2} color={history.totalPoints ? "black" : "green"}>
+                                                        +{history.totalPoints || history.points} pts
                                                     </Typography>
                                                 </Box>
-                                                <Typography mb={1} sx={{ color: "#817F7F" }}>
-                                                    Date: {dayjs(history.orderDate).format('DD/MM/YYYY HH:mm')}
+                                                <Typography sx={{ color: "#817F7F" }}>
+                                                    Date: {dayjs(history.date || history.createdAt).format('DD/MM/YYYY HH:mm')}
                                                 </Typography>
                                             </CardContent>
                                         </Card>
