@@ -12,6 +12,7 @@ const OrderDashboard = () => {
     const [orderData, setOrderData] = useState([]);
     const [topProducts, setTopProducts] = useState([]);
     const [totalUsers, setTotalUsers] = useState();
+    const [totalReservation, setTotalReservation] = useState();
     const [salesSummary, setSalesSummary] = useState({
         totalOrders: 0,
         totalSales: 0,
@@ -26,6 +27,7 @@ const OrderDashboard = () => {
                 setOrderData(res.data)
                 setSalesSummary(res.data)
                 getTopOrders();
+                fetchReservations();
                 fetchUsers();
             })
             .catch((err) => {
@@ -36,7 +38,7 @@ const OrderDashboard = () => {
     const stats = [
         { icon: <Package />, label: 'Total Orders', value: orderData.totalOrders },
         // reservations wait for chloe's part first
-        { icon: <Calendar />, label: 'Reservations', value: '10' },
+        { icon: <Calendar />, label: 'Reservations', value: totalReservation },
         { icon: <User />, label: 'Total Users', value: totalUsers }
     ];
 
@@ -66,6 +68,14 @@ const OrderDashboard = () => {
                 setUsers([]);
             })
     };
+
+    const fetchReservations = () => {
+        http.get("reservation/GetAllReservations")
+        .then((res) => {
+            const totalReservation = res.data.length;
+            setTotalReservation(totalReservation);
+        })
+    }
 
     if (loading) {
         return (
