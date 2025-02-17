@@ -354,6 +354,7 @@ namespace vegeatery.Controllers
                     Order.OrderDate,
                     Order.Status,
                     Order.TotalPrice,
+                    Order.TotalPoints,
                     OrderItems = Order.OrderItems.Select(item => new
                     {
                         item.ProductId,
