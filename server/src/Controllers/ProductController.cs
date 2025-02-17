@@ -50,6 +50,7 @@ namespace vegeatery.Controllers
                     x.DiscountPercentage,
                     x.DiscountedPrice,
                     IsActive = x.Stocks > 0,
+                    x.AllergyIngredients,
                     x.CategoryId,
                     x.Category.CategoryName,          
                     x.CreatedAt,
@@ -95,6 +96,7 @@ namespace vegeatery.Controllers
                 Stocks = product.Stocks,
                 CategoryId = product.CategoryId,
                 IsActive = product.IsActive,
+                AllergyIngredients = product.AllergyIngredients,
             };
 
             // Add the new product to the database
@@ -134,6 +136,7 @@ namespace vegeatery.Controllers
                     p.CategoryId,
                     p.Category.CategoryName,
                     p.ProductPoints,
+                    p.AllergyIngredients,
                     p.IsActive,
                     p.CreatedAt,
                     p.UpdatedAt
@@ -177,6 +180,7 @@ namespace vegeatery.Controllers
             existingProduct.DiscountPercentage = product.DiscountPercentage;
             existingProduct.UpdatedAt = DateTime.Now;
             existingProduct.IsActive = product.IsActive;
+            existingProduct.AllergyIngredients = product.AllergyIngredients;
 
             _context.SaveChanges();
 
@@ -212,18 +216,6 @@ namespace vegeatery.Controllers
             return Ok(new { message = "Product deleted successfully." });
         }
 
-
-
-        [HttpGet("GetProducts")]
-        public IActionResult GetFilteredProducts([FromQuery] ProductFilter filter)
-        {
-            var products = _context.Product.AsQueryable();
-
-            // Apply filters
-            var filteredProducts = filter.ApplyFiltering(products);
-
-            return Ok(filteredProducts.ToList());
-        }
 
         [HttpPut("UpdateTotalBought")]
         public IActionResult UpdateBoughtQuantity(UpdateProductBoughtRequest Request)
