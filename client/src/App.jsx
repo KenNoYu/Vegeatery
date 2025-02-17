@@ -75,6 +75,8 @@ import RequestPasswordReset from "./pages/Accounts/User/RequestPasswordReset";
 import ResetPassword from "./pages/Accounts/User/ResetPassword";
 import MyOrdersPage from "./pages/Accounts/User/OrderHistory";
 import UserProfileView from "./pages/Accounts/Admin/UserProfileView";
+import MyReservationsPage from "./pages/Accounts/User/UserReservations";
+import EditMyReservationsPage from "./pages/Accounts/User/UserEditReservations";
 
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
@@ -324,6 +326,8 @@ function App() {
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />
               <Route path="/user/profile/:userId" element={<UserProfileView />} />
+              <Route path="/user/reservations" element={<MyReservationsPage />} />
+              <Route path="/user/reservations/:id" element={<EditMyReservationsPage />} />
 
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />
