@@ -4,12 +4,13 @@ import { Container, Typography, CircularProgress, Box, Grid, Card, CardMedia, Bu
 import http from '../../http';
 import { toast } from 'react-toastify';
 import RoleGuard from '../../utils/RoleGuard';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function ProductDetails() {
   RoleGuard('Admin');
   const { productId } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,7 +55,7 @@ function ProductDetails() {
             left: 0,
           }}
         >
-          <Button sx={{ marginLeft: '20px' }} style={{ background: '#C6487E', color: '#FFFFFF' }} onClick={() => navigate('/admin/store')}>
+          <Button sx={{ marginLeft: '20px' }} style={{ background: '#C6487E', color: '#FFFFFF' }} onClick={() => navigate('/admin/store')} startIcon={<ArrowBackIcon />}>
             Go Back
           </Button>
         </Box>
@@ -74,7 +75,7 @@ function ProductDetails() {
             <>
               {/* Left Side - Product Information & Pricing/Stock */}
               <Box sx={{ flex: 6 }}>
-                <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px', height: 'auto' }}>
+                <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px', height: 'auto', width: '600px', overflow: 'hidden', wordWrap: 'break-word', whiteSpace: 'normal' }}>
                   <Grid item xs={12} sx={{ marginBottom: '10px' }}>
                     <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '20px' }}>
                       <Typography variant="h7"><strong>Product Name: </strong>{product.productName}</Typography>
@@ -89,20 +90,34 @@ function ProductDetails() {
                   </Grid>
                   <Grid item xs={12} sx={{ marginBottom: '10px' }}>
                     <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', height: '115px' }}>
-                      <Typography variant="body2" color="textSecondary">
+                      <Typography variant="body1" color="textSecondary">
                         <strong>Ingredients:</strong> {product.ingredients}
                       </Typography>
                     </Box>
                   </Grid>
                 </Box>
 
-                <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px' }}>
+                <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px', width: '600px' }}>
 
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
                         <Typography variant="body2" color="textSecondary">
+                          <strong>Product Points: $</strong>{product.productPoints}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Typography variant="body2" color="textSecondary">
                           <strong>Price: $</strong>{product.productPrice}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Typography variant="body2" color="textSecondary">
+                          <strong>Discount: $</strong>{product.discountedPrice} ({product.discountPercentage}% off)
                         </Typography>
                       </Box>
                     </Grid>
@@ -116,14 +131,14 @@ function ProductDetails() {
                     <Grid item xs={6}>
                       <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
                         <Typography variant="body2" color="textSecondary">
-                          <strong>Discount: </strong>{product.discountPercentage}% off
+                          <strong>Category: </strong>{product?.categoryName || 'Loading...'}
                         </Typography>
                       </Box>
                     </Grid>
                     <Grid item xs={6}>
                       <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
                         <Typography variant="body2" color="textSecondary">
-                          <strong>Discounted Price: $</strong>{product.discountedPrice}
+                          <strong>Contains: </strong>{product.allergyIngredients}
                         </Typography>
                       </Box>
                     </Grid>
@@ -132,13 +147,13 @@ function ProductDetails() {
               </Box>
 
               {/* Right Side - Image and Category */}
-              <Box sx={{ width: '40%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{
                   border: '1px solid #ccc',
                   borderRadius: '4px',
                   padding: '10px',
                   marginBottom: '6px',
-                  height: '400px',
+                  height: '428px',
                   display: 'flex', // Center the content vertically and horizontally
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -164,17 +179,30 @@ function ProductDetails() {
                 <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px', marginTop: '10px' }}>
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
-
                       <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
                         <Typography variant="body2" color="textSecondary">
-                          <strong>Category: </strong>{product?.categoryName || 'Loading...'}
+                        <strong>Calories: </strong>{product.calories}
                         </Typography>
                       </Box>
                     </Grid>
                     <Grid item xs={6}>
                       <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
                         <Typography variant="body2" color="textSecondary">
-                          <strong>Points: </strong>{product.productPoints}
+                          <strong>Fats (g): </strong>{product.fats}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Typography variant="body2" color="textSecondary">
+                          <strong>Carbs (g): </strong>{product.carbs}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Typography variant="body2" color="textSecondary">
+                          <strong>Protein (g): </strong>{product.protein}
                         </Typography>
                       </Box>
                     </Grid>
