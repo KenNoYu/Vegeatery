@@ -11,15 +11,6 @@ import Sidebar from "./UserSidebar";
 import NoOrders from "../../../assets/NoOrders.png"
 import { useNavigate } from 'react-router-dom';
 
-const ProfileBox = styled(Box)(({ theme }) => ({
-    padding: theme.spacing(4),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "#f9f9f9",
-    marginTop: "0.3em",
-}));
-
 const MyOrdersPage = () => {
     const [userId, setUserId] = useState(null);
     const [orders, setOrders] = useState([]);
