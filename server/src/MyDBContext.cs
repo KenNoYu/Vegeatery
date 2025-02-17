@@ -39,6 +39,7 @@ namespace vegeatery
     public required DbSet<Table> Tables { get; set; }
     public required DbSet<Tier> Tiers { get; set; }
     public required DbSet<Voucher> Vouchers { get; set; }
+    public required DbSet<PointsHistory> PointsHistories { get; set; }
     public required DbSet<VoucherRedemption> VoucherRedemptions { get; set; }
     public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
     public required DbSet<User> Users { get; set; }
