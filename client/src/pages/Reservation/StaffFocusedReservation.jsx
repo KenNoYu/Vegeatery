@@ -230,10 +230,10 @@ const StaffFocusedReservation = () => {
         if (table.id === id) {
           if (status === "unavailable") {
             return { ...table, status: "unavailable" };
-          } else if (status === "selected") {
+          } else if (status === "selected" && !selectedTables.includes(id)) {
             newSelectedTables.push(id);
             return { ...table, status: "selected" };
-          } else {
+          } else if (status === "available") {
             if (selectedTables.includes(id)) {
               // Deselect the table
               newSelectedTables = newSelectedTables.filter(tableId => tableId !== id);
