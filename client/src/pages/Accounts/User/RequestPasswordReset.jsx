@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import http from "../../../http";
 import vegeateryMain from "../../../assets/logo/vegeateryMain.png";
+import { ToastContainer, toast } from "react-toastify";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   display: "flex",
@@ -45,11 +46,6 @@ const StyledButton = styled(Button)(({ theme }) => ({
   "&:hover": { backgroundColor: "#C6487E" }, // Full width within the content box
 }));
 
-const ErrorMessage = styled(Typography)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-  color: theme.palette.error.main,
-}));
-
 const Title = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(3),
   fontWeight: 600,
@@ -65,14 +61,13 @@ const LogoContainer = styled(Box)(({ theme }) => ({
 
 const RequestPasswordReset = () => {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email) {
-      setMessage("Please enter a valid email address.");
+      toast.error("Please enter a valid email address.");
       return;
     }
 
@@ -84,17 +79,15 @@ const RequestPasswordReset = () => {
       const response = await http.post("/reset-password", { email });
 
       console.log("Response from backend:", response.data);
-      setMessage(
-        "If the email exists, a reset link has been sent to your inbox."
-      );
+      toast.success("If the email exists, a reset link has been sent to your inbox.")
     } catch (error) {
       // Log any error that occurs during the request
       if (error.response && error.response.data) {
         console.error("Error response from backend:", error.response.data);
-        setMessage(error.response.data);
+        toast.error(error.response.data)
       } else {
         console.error("Error occurred while sending the reset email:", error);
-        setMessage("An error occurred while sending the reset email.");
+        toast.error("An error occurred while sending the reset email.")
       }
     } finally {
       console.log("Request completed");
@@ -114,7 +107,13 @@ const RequestPasswordReset = () => {
           />
         </LogoContainer>
         <Title variant="h4">Forgot your password?</Title>
-        <Typography variant="body" sx={{textAlign: "center", marginBottom: "1em"}}>Please enter your email address you'd like your password reset information sent to</Typography>
+        <Typography
+          variant="body"
+          sx={{ textAlign: "center", marginBottom: "1em" }}
+        >
+          Please enter your email address you'd like your password reset
+          information sent to
+        </Typography>
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           {/* Form takes full width */}
           <TextField
@@ -156,8 +155,19 @@ const RequestPasswordReset = () => {
             )}
           </StyledButton>
         </form>
-        {message && <ErrorMessage variant="body2">{message}</ErrorMessage>}
       </StyledContent>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </StyledContainer>
   );
 };
