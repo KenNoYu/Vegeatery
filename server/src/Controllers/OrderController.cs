@@ -164,6 +164,7 @@ namespace vegeatery.Controllers
                     TimeSlot = order.TimeSlot,
                     TotalPrice = order.TotalPrice,
 					TotalPoints = order.TotalPoints,
+                    isUpdated = order.IsUpdated,
                     discountPercent = order?.discountPercent,
                     VoucherId = order?.VoucherId,
 					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
