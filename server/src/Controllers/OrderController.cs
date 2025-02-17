@@ -37,6 +37,7 @@ namespace vegeatery.Controllers
                         TotalPoints = request.TotalPoints,
                         TimeSlot = request.TimeSlot,
                         Status = request.Status,
+                        IsUpdated = false,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         VoucherId = request?.VoucherId,
@@ -322,6 +323,7 @@ namespace vegeatery.Controllers
                 // Update order status
                 order.Status = request.Status;
                 order.UpdatedAt = DateTime.UtcNow;
+                order.IsUpdated = true;
                 // Save changes
                 _context.SaveChanges();
                 return Ok(new { Message = "Order status updated successfully." });
