@@ -63,6 +63,7 @@ import Checkout from "./pages/orders/Checkout";
 import OrderConfirmation from "./pages/orders/OrderConfirmation";
 import StaffOrders from "./pages/orders/StaffOrders";
 import AdminOrders from "./pages/orders/AdminOrders";
+import OrderDashboard from "./pages/orders/AdminOverview";
 
 import Register from "./pages/Accounts/User/Register";
 import Login from "./pages/Accounts/User/Login";
@@ -386,6 +387,7 @@ function App() {
               <Route path={"/orderconfirmation"} element={<OrderConfirmation />}/>
               <Route path={"/staff/vieworders"} element={<StaffOrders />} />
               <Route path={"/admin/orders"} element={<AdminOrders />} />
+              <Route path={"/admin/overview"} element={<OrderDashboard />} />
             </Routes>
           </Container>
         </ThemeProvider>
