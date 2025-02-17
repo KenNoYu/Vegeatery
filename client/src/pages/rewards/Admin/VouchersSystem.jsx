@@ -112,7 +112,6 @@ const AdminVouchersSystem = () => {
                         <CardContent>
                           <Typography variant="h6">{voucher.voucherName}</Typography>
                           <Typography>Discount: {voucher.discountPercentage}%</Typography>
-                          <Typography>Expiry: {voucher.expiryDate.split('T')[0]}</Typography>
                           <Box mt={2} display="flex" justifyContent="space-between">
                             <Button
                               variant="contained"

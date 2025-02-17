@@ -27,6 +27,7 @@ const OrderConfirmation = () => {
         http
             .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
             .then((res) => {
+                console.log(res);
                 setUser(res);
                 setLoading(false);
             })
@@ -121,7 +122,6 @@ const OrderConfirmation = () => {
             })
     }
 
-    // get cart item
     const GetCartItems = () => {
         // autofill cartId next time
         http.get(`/ordercart?cartId=${user.data.cartId}`).then((res) => {
@@ -184,11 +184,18 @@ const OrderConfirmation = () => {
         http.put(`/Account/${user.data.id}/points`, userPoints)
             .then((res) => {
                 console.log("Update API Response:", res.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching orders:", error);
-            })
-    }
+                http.put(`/order/updatePoints/${user.data.id}`)
+                .then((res) => {
+                    console.log("Points updated based on order count:", res.data);
+                })
+                .catch((error) => {
+                    console.error("Error updating points based on order count:", error);
+                });
+        })
+        .catch((error) => {
+            console.error("Error fetching orders:", error);
+        })
+}
 
     const getOrderByID = async (orderId) => {
         http.get(`/order/orderId?orderId=${orderId}`)
