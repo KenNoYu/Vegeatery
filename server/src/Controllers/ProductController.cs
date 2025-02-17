@@ -50,6 +50,7 @@ namespace vegeatery.Controllers
                     x.DiscountPercentage,
                     x.DiscountedPrice,
                     IsActive = x.Stocks > 0,
+                    x.AllergyIngredients,
                     x.CategoryId,
                     x.Category.CategoryName,          
                     x.CreatedAt,
@@ -95,6 +96,7 @@ namespace vegeatery.Controllers
                 Stocks = product.Stocks,
                 CategoryId = product.CategoryId,
                 IsActive = product.IsActive,
+                AllergyIngredients = product.AllergyIngredients,
             };
 
             // Add the new product to the database
@@ -134,6 +136,7 @@ namespace vegeatery.Controllers
                     p.CategoryId,
                     p.Category.CategoryName,
                     p.ProductPoints,
+                    p.AllergyIngredients,
                     p.IsActive,
                     p.CreatedAt,
                     p.UpdatedAt
@@ -177,6 +180,7 @@ namespace vegeatery.Controllers
             existingProduct.DiscountPercentage = product.DiscountPercentage;
             existingProduct.UpdatedAt = DateTime.Now;
             existingProduct.IsActive = product.IsActive;
+            existingProduct.AllergyIngredients = product.AllergyIngredients;
 
             _context.SaveChanges();
 
@@ -215,12 +219,24 @@ namespace vegeatery.Controllers
 
 
         [HttpGet("GetProducts")]
-        public IActionResult GetFilteredProducts([FromQuery] ProductFilter filter)
+        public IActionResult GetFilteredProducts([FromQuery] ProductFilter filter, [FromQuery] int userId)
         {
             var products = _context.Product.AsQueryable();
 
-            // Apply filters
-            var filteredProducts = filter.ApplyFiltering(products);
+            // Get the user's allergic information
+            var user = _context.Users.Find(userId);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var userAllergies = user.AllergyInfo?.Split(',').Select(a => a.Trim()).ToList() ?? new List<string>();
+
+            // Apply filtering based on allergy ingredients
+            var filteredProducts = products.Where(p => !userAllergies.Any(allergy => p.AllergyIngredients.Contains(allergy)));
+
+            // Apply additional filters
+            filteredProducts = filter.ApplyFiltering(filteredProducts);
 
             return Ok(filteredProducts.ToList());
         }
