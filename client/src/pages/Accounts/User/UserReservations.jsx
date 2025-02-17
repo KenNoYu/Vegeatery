@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const MyReservationsPage = () => {
-  RoleGuard('User');
+  RoleGuard(["User", "Admin", "Staff"]);
   const myTheme = useTheme();
   const navigate = useNavigate()
   const [user, setUser] = useState(null);
