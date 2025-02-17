@@ -50,7 +50,6 @@ const EditProduct = () => {
         productPrice: 0,
         discountPercentage: 0,
         stocks: 0,
-        discountPercentage: 0,
     });
  
     useEffect(() => {
