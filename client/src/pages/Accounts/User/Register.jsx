@@ -601,8 +601,18 @@ function Register() {
           Register
         </Button>
       </Box>
-
-      <ToastContainer />
+      <ToastContainer
+              position="bottom-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick={false}
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
     </Box>
   );
 }
