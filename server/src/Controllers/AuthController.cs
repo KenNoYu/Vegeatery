@@ -69,6 +69,7 @@ public class AuthController : ControllerBase
 
         var user = new User
 		{
+			ImageFile = "",
 			Username = registerDto.username,
 			PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.password),
 			Email = registerDto.email,
@@ -196,6 +197,49 @@ public class AuthController : ControllerBase
 		});
 	}
 
+	[HttpPut("roleModify")]
+	[Authorize(Policy = "Admin")]
+	public async Task<IActionResult> UpdateUserRole([FromBody] UpdateUserRoleDto updateUserRoleDto)
+	{
+		var user = await _context.Users
+			.Include(u => u.Role)
+			.SingleOrDefaultAsync(u => u.Id == updateUserRoleDto.UserId);
+
+		if (user == null)
+		{
+			return NotFound(new { message = "User not found" });
+		}
+
+		var role = await _context.Role.SingleOrDefaultAsync(r => r.Id == updateUserRoleDto.RoleId);
+		if (role == null)
+		{
+			return BadRequest(new { message = "Role not found" });
+		}
+
+		user.RoleId = updateUserRoleDto.RoleId;
+		user.Role = role;
+		_context.Users.Update(user);
+		await _context.SaveChangesAsync();
+
+		// Log the user and role details for debugging
+		Console.WriteLine($"User ID: {user.Id}, Role ID: {user.RoleId}, Role Name: {user.Role?.Name}");
+
+		//var token = CreateToken(user);
+
+		//// Create a cookie to store the JWT token
+		//var cookieOptions = new CookieOptions
+		//{
+		//	HttpOnly = true,
+		//	Secure = true,
+		//	SameSite = SameSiteMode.None,
+		//	Expires = DateTime.Now.AddHours(1000)
+		//};
+
+		//Response.Cookies.Append("jwtToken", token, cookieOptions);
+
+		return Ok(new { message = "User role updated successfully" });
+	}
+
 	[HttpGet("role")]
 	[Authorize]
 	public async Task<IActionResult> GetUserRole()  // Make the method async
@@ -245,6 +289,7 @@ public class AuthController : ControllerBase
 			.Select(u => new UserDto
 			{
 				Id = u.Id,
+				ImageFile = u.ImageFile,
 				Username = u.Username,	
 				Email = u.Email,
 				DateofBirth = u.DateofBirth,
@@ -368,6 +413,11 @@ public class AuthController : ControllerBase
 
 	private string CreateToken(User user)
 	{
+		if (user.Role == null)
+		{
+			throw new Exception("User role is not set.");
+		}
+
 		string? secret = _configuration.GetValue<string>("Authentication:Secret");
 		if (string.IsNullOrEmpty(secret))
 		{

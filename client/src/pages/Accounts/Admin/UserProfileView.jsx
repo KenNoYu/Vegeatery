@@ -30,15 +30,17 @@ import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { useParams } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import { useNavigate } from "react-router-dom";
+import RoleGuard from "../../../utils/RoleGuard";
 
 // Styling for the custom components
 const ProfileBox = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(4),
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  backgroundColor: "#f9f9f9",
-  marginTop: "0.3em",
+  marginLeft: "240px",
+  width: "100%",
+  height: "100%",
+  flexGrow: 1,
+  paddingTop: "3em",
+  paddingRight: "3em",
+  backgroundColor: "#FFFFFF",
 }));
 
 const ProfileImage = styled(Avatar)(({ theme }) => ({
@@ -48,8 +50,6 @@ const ProfileImage = styled(Avatar)(({ theme }) => ({
 }));
 
 const ProfileDetailsBox = styled(Box)(({ theme }) => ({
-  width: "100%",
-  maxWidth: "800px",
   marginTop: theme.spacing(3),
   backgroundColor: "#ffffff",
   borderRadius: "8px",
@@ -64,6 +64,16 @@ const ProfileSection = styled(Box)(({ theme }) => ({
 const EditButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#C6487E",
   color: "#fff",
+  width: "60%",
+  marginBottom: theme.spacing(2),
+  "&:hover": {
+    backgroundColor: "#A83866",
+  },
+}));
+
+const SaveButton = styled(Button)(({ theme }) => ({
+  backgroundColor: "#C6487E",
+  color: "#fff",
   width: "100%",
   marginBottom: theme.spacing(2),
   "&:hover": {
@@ -72,6 +82,7 @@ const EditButton = styled(Button)(({ theme }) => ({
 }));
 
 const updateProfileSchema = yup.object().shape({
+  profileImage: yup.string().nullable(),
   username: yup
     .string()
     .trim()
@@ -80,23 +91,17 @@ const updateProfileSchema = yup.object().shape({
     .matches(
       /^[a-zA-Z0-9_-]+$/,
       "Username can only contain letters, numbers, underscores, and hyphens"
-    )
-    .required("Username is required"),
+    ),
   email: yup
     .string()
     .trim()
     .email("Enter a valid email")
-    .max(50, "Email must be at most 50 characters")
-    .required("Email is required"),
-  dob: yup
-    .date()
-    .required("Date of birth is required")
-    .max(new Date(), "Date of birth must be in the past"),
+    .max(50, "Email must be at most 50 characters"),
+  dob: yup.date().max(new Date(), "Date of birth must be in the past"),
   contact: yup
     .string()
     .trim()
-    .matches(/^\d{10}$/, "Contact number must be 10 digits long") // Example: 10 digits for illustration
-    .required("Contact number is required"),
+    .matches(/^\d{8}$/, "Contact number must be 10 digits long"), // Example: 10 digits for illustration
   gender: yup.string(), // Optional field, so no validation required
   diet: yup.string(), // Optional field, so no validation required
   allergy: yup
@@ -106,14 +111,17 @@ const updateProfileSchema = yup.object().shape({
       /^[a-zA-Z0-9.,\s-]*$/,
       "Allergy info can only contain letters, numbers, periods, commas, spaces, and hyphens"
     ),
-  meal: yup.string(), // Optional field, so no validation required
+  meal: yup.string(),
 });
 
 export default function UserProfileView() {
+  RoleGuard("Admin");
   const navigate = useNavigate();
+  const [imageFile, setImageFile] = useState(null);
   const { userId } = useParams();
   console.log(userId);
   const [user, setUser] = useState({
+    profileImage: "",
     username: "",
     email: "",
     mobile: "",
@@ -136,6 +144,7 @@ export default function UserProfileView() {
       const userData = response.data;
       console.log(userData);
       setUser({
+        profileImage: userData.imageFile,
         username: userData.username,
         email: userData.email,
         mobile: userData.contactNumber,
@@ -176,9 +185,35 @@ export default function UserProfileView() {
     setUser({ ...user, [name]: value });
   };
 
+  const onFileChange = (e) => {
+    let file = e.target.files[0];
+    if (file) {
+      if (file.size > 1024 * 1024) {
+        toast.error("Maximum file size is 1MB");
+        return;
+      }
+
+      let formData = new FormData();
+      formData.append("file", file);
+      http
+        .post("/file/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          setImageFile(res.data.filename);
+        })
+        .catch(function (error) {
+          console.log(error.response);
+        });
+    }
+  };
+
   // Handle save profile - Axios PUT request
   const handleSaveProfile = () => {
     const updateUserDto = {
+      profileImage: imageFile || user.profileImage,
       username: user.username,
       email: user.email,
       dob: user.dob,
@@ -204,6 +239,7 @@ export default function UserProfileView() {
         console.log("Profile updated successfully:", response.data.message);
         alert("Profile updated successfully!");
         setIsEditing(false); // Disable edit mode after saving
+        // window.location.reload();
       })
       .catch((error) => {
         console.error("Error updating profile:", error);
@@ -213,22 +249,56 @@ export default function UserProfileView() {
 
   const handleDeleteAccount = async () => {
     const confirm = window.confirm(
-      "Are you sure you want to delete your account? This action is irreversible."
+      "Are you sure you want to delete this account? This action is irreversible."
     );
     if (!confirm) return;
-
+  
     try {
       const response = await http.delete(`/Account/${userId}`, {
         withCredentials: true,
       });
-
-      // Handle successful deletion (e.g., redirect to login page)
-      alert("Account has been deleted successfully.");
-      navigate("/admin/accounts");
+  
+      alert("Account has been deleted successfully."); // Success toast
+      navigate("/admin/accounts"); // React Router navigation
     } catch (error) {
       console.error("Error deleting account:", error);
-      alert("Error deleting your account, please try again.");
+  
+      // More informative error handling:
+      const errorMessage = error.response?.data?.message || "Error deleting your account, please try again.";
+      console.error(errorMessage); // Error toast with potentially more details
+      toast.error("Error deleting your account, please try again.");
     }
+  };
+
+  const StyledTierName = styled(Typography)(({ theme, tierColor }) => ({
+    textTransform: "uppercase",
+    fontWeight: "bold",
+    textShadow: `2px 2px 4px rgba(0, 0, 0, 0.2)`,
+    letterSpacing: "0.1em",
+    color: tierColor,
+  }));
+
+  const TierDisplay = ({ tierName }) => {
+    const getTierColor = (tier) => {
+      switch (tier?.toLowerCase()) {
+        case "bronze":
+          return "#CD7F32"; // Bronze hex code
+        case "silver":
+          return "#C0C0C0"; // Silver hex code
+        case "gold":
+          return "#FFD700"; // Gold hex code
+        default:
+          return "textSecondary";
+      }
+    };
+
+    const tierColor = getTierColor(tierName);
+
+    return (
+      <StyledTierName variant="h5" tierColor={tierColor} gutterBottom>
+        {tierName}
+      </StyledTierName>
+    );
   };
 
   return (
@@ -271,10 +341,10 @@ export default function UserProfileView() {
               >
                 <ProfileImage
                   alt={user.username}
-                  src="/path-to-default-avatar.png"
+                  src={imageFile ? `${import.meta.env.VITE_FILE_BASE_URL}${imageFile}` : `${import.meta.env.VITE_FILE_BASE_URL}${user.profileImage}`}
                   sx={{
-                    width: 120,
-                    height: 120,
+                    width: 160,
+                    height: 160,
                     borderRadius: "50%",
                     marginBottom: 2,
                     border: "4px solid #fff",
@@ -283,21 +353,24 @@ export default function UserProfileView() {
                 />
 
                 {isEditing && (
-                  <Button
-                    sx={{
-                      backgroundColor: "green",
-                      color: "white",
-                      padding: 1,
-                      borderRadius: "5%",
-                      "&:hover": {
-                        backgroundColor: "darkgreen",
-                      },
-                      marginTop: 2,
-                    }}
-                  >
-                    <AddPhotoAlternateIcon />
-                    Change Profile
-                  </Button>
+                  <div>
+                    {" "}
+                    {/* Added a wrapping div */}
+                    <Button
+                      variant="contained"
+                      component="label"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      Change Image
+                      <input
+                        hidden
+                        accept="image/*"
+                        multiple
+                        type="file"
+                        onChange={onFileChange}
+                      />
+                    </Button>
+                  </div> // Close the wrapping div
                 )}
               </Box>
 
@@ -312,12 +385,9 @@ export default function UserProfileView() {
                   textAlign: "left",
                 }}
               >
+                <TierDisplay tierName={user.tierName} />
                 <Typography variant="h3" fontWeight="bold" gutterBottom>
                   {user.username}
-                </Typography>
-                <Typography variant="h5" color="textSecondary" gutterBottom>
-                  BRONZE
-                  {/* Membership Tier: {user.membershipTier} */}
                 </Typography>
                 <Typography
                   variant="subtitle2"
@@ -368,7 +438,7 @@ export default function UserProfileView() {
                   variant="outlined"
                   color="error"
                   sx={{
-                    width: "100%",
+                    width: "60%",
                     borderColor: "error.main",
                     color: "error.main",
                     "&:hover": {
@@ -383,7 +453,13 @@ export default function UserProfileView() {
             </Box>
 
             {/* Personal Details Section */}
-            <ProfileDetailsBox sx={{ marginLeft: 2 }}>
+            <ProfileDetailsBox
+              sx={{
+                width: "90%",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+            >
               <ProfileSection>
                 <Typography variant="h6" fontWeight="bold">
                   Personal Details
@@ -640,9 +716,9 @@ export default function UserProfileView() {
               {/* Save Button */}
               {isEditing && (
                 <Box textAlign="right">
-                  <EditButton onClick={handleSaveProfile}>
+                  <SaveButton onClick={handleSaveProfile}>
                     Save Profile
-                  </EditButton>
+                  </SaveButton>
                 </Box>
               )}
             </ProfileDetailsBox>
@@ -661,6 +737,7 @@ export default function UserProfileView() {
           </Box>
         )}
       </ProfileBox>
+      <ToastContainer />
     </Box>
   );
 }

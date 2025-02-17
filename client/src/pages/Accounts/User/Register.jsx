@@ -39,6 +39,17 @@ function Register() {
     "Keto",
     "Other",
   ];
+  const allergyInfo = [
+    "Milk",
+    "Tree Nuts",
+    "Soybean",
+    "Garlic",
+    "Onion",
+    "Wheat",
+    "Eggs",
+    "Peanuts",
+    "Prawns",
+  ];
 
   const formik = useFormik({
     initialValues: {
@@ -145,7 +156,16 @@ function Register() {
         borderRadius: "8px",
       }}
     >
-      <Typography variant="h5" sx={{ fontSize: "2rem", fontWeight: "bold", mb: 3, mt: 7, alignSelf: "center" }}>
+      <Typography
+        variant="h5"
+        sx={{
+          fontSize: "2rem",
+          fontWeight: "bold",
+          mb: 3,
+          mt: 7,
+          alignSelf: "center",
+        }}
+      >
         Register
       </Typography>
       <Box
@@ -430,6 +450,7 @@ function Register() {
         </TextField>
         {/* Allergy Info */}
         <TextField
+          select
           fullWidth
           margin="dense"
           autoComplete="off"
@@ -459,7 +480,13 @@ function Register() {
               },
             },
           }}
-        />
+        >
+          {allergyInfo.map((allergy, index) => (
+            <MenuItem key={index} value={allergy}>
+              {allergy}
+            </MenuItem>
+          ))}
+        </TextField>
 
         {/* Meal Type */}
         <TextField
