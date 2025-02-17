@@ -84,7 +84,7 @@ const OrderConfirmation = () => {
             });
             UpdateOrderAsNew(order.orderId);
             
-            //sendEmail();
+            sendEmail();
             updateUserPoints();
         }
     }, [order]);
