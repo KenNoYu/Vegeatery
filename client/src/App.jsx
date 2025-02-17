@@ -363,22 +363,10 @@ function App() {
               {/* RESERVATION */}
               <Route path="/reserve" element={<ReservationPage />} />
               <Route path="/reserve/confirmed" element={<ConfirmationPage />} />
-              <Route
-                path="/staff/viewreservations"
-                element={<StaffReservations />}
-              />
-              <Route
-                path="/staff/reservationlogs"
-                element={<StaffReserveLogs />}
-              />
-              <Route
-                path="/staff/viewreservations/:id"
-                element={<StaffFocusedReservation />}
-              />
-              <Route
-                path="/staff/addreservation"
-                element={<StaffAddReservation />}
-              />
+              <Route path="/staff/viewreservations" element={<StaffReservations />}/>
+              <Route path="/staff/reservationlogs" element={<StaffReserveLogs />}/>
+              <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation />}/>
+              <Route path="/staff/addreservation" element={<StaffAddReservation />}/>
 
               {/* REWARDS */}
               <Route path="/user/rewards" element={<PointsSystem />} />
