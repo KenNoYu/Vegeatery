@@ -10,9 +10,6 @@ namespace vegeatery.Controllers
     [Route("[controller]")]
     public class OrderController(MyDbContext context) : ControllerBase
     {
-   
-   
-
         private readonly MyDbContext _context = context;
         // Create new order (for customer)
         [HttpPost("newOrder")]
@@ -76,9 +73,6 @@ namespace vegeatery.Controllers
                             Quantity = cartItem.Quantity,
                             PointsEarned = cartItem.Points,
                         };
-
-                        // Log the orderItem to verify ProductId
-                        Console.WriteLine($"OrderItem: {orderItem.ProductId} - {orderItem.ProductName}");
 
                         // save order items
                         _context.OrderItems.Add(orderItem);
@@ -443,7 +437,6 @@ namespace vegeatery.Controllers
      
 
         }
-
 
         [HttpPut("updateStock/{productId}")]
         public IActionResult UpdateStock(int productId, [FromBody] int quantity)
