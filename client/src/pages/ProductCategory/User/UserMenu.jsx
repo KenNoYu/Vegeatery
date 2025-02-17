@@ -262,7 +262,7 @@ const UserMenu = () => {
   };
 
   return (
-    <Grid container spacing={0} sx={{ margin: 0, padding: 0 }}>
+    <Grid container spacing={0} sx={{ margin: '64px', padding: 0 }}>
       {/* Left Column - Search and Filters */}
       <Grid item xs={12} sm={4} md={3} sx={{ marginTop: '60px', paddingLeft: '150px' }}>
         <Box

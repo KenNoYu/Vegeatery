@@ -87,7 +87,7 @@ const CategoryList = () => {
           maxWidth: '2000px',
 
           padding: '16px', // Ensure no extra padding
-          marginTop: '20px', // Remove extra margin if necessary
+          marginTop: '90px', // Remove extra margin if necessary
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>

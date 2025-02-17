@@ -144,7 +144,7 @@ const EditProduct = () => {
     };
 
     return (
-        <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '64px' }}>
+        <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '128px' }}>
 
             <Box
                 sx={{

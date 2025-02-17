@@ -313,7 +313,20 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
           </Routes>
-          <Container maxWidth={false} disableGutters sx={{ paddingTop: '64px' }}>
+
+          <Container maxWidth={false} disableGutters>
+            <Routes>
+              <Route path={"/staff/viewstocks"} element={<StaffStockPage />} />
+              <Route path={"/staff/productlogs"} element={<StaffProductLogs />} />
+              <Route path={"/viewcategories/:id"} element={<CategoryList />} />
+              <Route path={"/admin/store"} element={<CategoryList />} />
+              <Route path="/editproduct/:productId" element={<EditProduct />} />
+              <Route path="/user/store" element={<UserMenu />} />
+              <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
+            </Routes>
+          </Container>
+
+          <Container sx={{ paddingTop: '64px' }}>
             <Routes>  
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
@@ -330,17 +343,13 @@ function App() {
 
               {/* PRODUCTS */}
               <Route path={"/addcategory"} element={<AddCategory />} />
-              <Route path={"/admin/store"} element={<CategoryList />} />
               <Route path={"/addproduct"} element={<AddProduct />} />
-              <Route path={"/viewcategories/:id"} element={<CategoryList />} />
               <Route path="/product/:productId" element={<ProductDetails />} />
-              <Route path="/editproduct/:productId" element={<EditProduct />} />
-              <Route path="/user/store" element={<UserMenu />} />
-              <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
+    
+           
               <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
               <Route path={"/userproduct/:productId"} element= {<UserProductDetails />} />
-              <Route path={"/staff/viewstocks"} element={<StaffStockPage />} />
-              <Route path={"/staff/productlogs"} element={<StaffProductLogs />} />
+            
 
               {/* RESERVATION */}
               <Route path="/reserve" element={<ReservationPage />} />
