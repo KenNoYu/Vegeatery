@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Container, Typography, CircularProgress, Box, Grid, Card, CardMedia } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Typography, CircularProgress, Box, Grid, Card, CardMedia, Button } from '@mui/material';
 import http from '../../http';
 import { toast } from 'react-toastify';
 import RoleGuard from '../../utils/RoleGuard';
@@ -8,6 +8,7 @@ import RoleGuard from '../../utils/RoleGuard';
 function ProductDetails() {
   RoleGuard('Admin');
   const { productId } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -29,164 +30,165 @@ function ProductDetails() {
 
 
   return (
-    <Container sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+    <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '64px' }}>
       <Box
         sx={{
+          position: 'relative', // Needed for absolute positioning of buttons
           border: '1px solid #ccc',
           borderRadius: '8px',
           padding: '20px',
           backgroundColor: 'white',
           width: '100%',
-          maxWidth: '1200px',
+          maxWidth: '1400px',
           boxShadow: 2,
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'flex-start',
         }}
       >
-        {loading ? (
-          <CircularProgress />
-        ) : product ? (
-          <>
-            {/* Left Side - Product Information & Pricing/Stock */}
-            <Box sx={{ width: '60%', paddingRight: '20px' }}>
-              <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px', height: '500px' }}>
-                <Typography variant="h5" gutterBottom sx={{ margin: '10px' }}>
-                  Product Information
-                </Typography>
-                <Grid item xs={6} sx={{ marginTop: '10px' }}>
-                  <Typography variant="h8" gutterBottom sx={{ margin: '10px' }}>
-                    Product Name
-                  </Typography>
-                  <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '20px', marginLeft: '10px', marginRight: '10px' }}>
-                    <Typography variant="h6">{product.productName}</Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h8" gutterBottom sx={{ margin: '10px' }}>
-                    Product Name
-                  </Typography>
-                  <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '20px', marginLeft: '10px', marginRight: '10px', height: '115px' }}>
-                    <Typography variant="body1" color="textSecondary">
-                      {product.productDescription}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h8" gutterBottom sx={{ margin: '10px' }}>
-                    Product Name
-                  </Typography>
-                  <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginLeft: '10px', marginRight: '10px', height: '115px' }}>
-                    <Typography variant="body2" color="textSecondary">
-                      <strong>Ingredients:</strong> {product.ingredients}
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Box>
-
-              <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px' }}>
-                <Typography variant="h5" gutterBottom sx={{ margin: '10px' }}>
-                  Pricing and Stock
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="h8" gutterBottom sx={{ margin: '10px' }}>
-                      Product Name
-                    </Typography>
-                    <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginLeft: '5px', marginRight: '10px' }}>
-                      <Typography variant="body2" color="textSecondary">
-                        Price: ${product.productPrice}
+        {/* Buttons at the top */}
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            position: 'absolute',
+            top: '20px',
+            left: 0,
+          }}
+        >
+          <Button sx={{ marginLeft: '20px' }} style={{ background: '#C6487E', color: '#FFFFFF' }} onClick={() => navigate('/admin/store')}>
+            Go Back
+          </Button>
+        </Box>
+        {/* Form Fields Container */}
+        <Box
+          component="form"
+          sx={{
+            display: 'flex',
+            flexDirection: 'row', // Ensures left and right fields are side by side
+            gap: '20px', // Adds spacing between left and right sections
+            marginTop: '60px', // Pushes the form down to avoid overlap with buttons
+          }}
+        >
+          {loading ? (
+            <CircularProgress />
+          ) : product ? (
+            <>
+              {/* Left Side - Product Information & Pricing/Stock */}
+              <Box sx={{ flex: 6 }}>
+                <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px', height: 'auto' }}>
+                  <Grid item xs={12} sx={{ marginBottom: '10px' }}>
+                    <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '20px' }}>
+                      <Typography variant="h7"><strong>Product Name: </strong>{product.productName}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sx={{ marginBottom: '10px' }}>
+                    <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '20px', height: '115px' }}>
+                      <Typography variant="body1" color="textSecondary">
+                        <strong>Description:</strong> {product.productDescription}
                       </Typography>
                     </Box>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h8" gutterBottom sx={{ margin: '10px' }}>
-                      Product Name
-                    </Typography>
-                    <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginLeft: '5px', marginRight: '10px' }}>
+                  <Grid item xs={12} sx={{ marginBottom: '10px' }}>
+                    <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', height: '115px' }}>
                       <Typography variant="body2" color="textSecondary">
-                        Stock: {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                        <strong>Ingredients:</strong> {product.ingredients}
                       </Typography>
                     </Box>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h8" gutterBottom sx={{ margin: '10px' }}>
-                      Product Name
-                    </Typography>
-                    <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginLeft: '5px', marginRight: '10px' }}>
-                      <Typography variant="body2" color="textSecondary">
-                        Discount: {product.discountPercentage}% off
-                      </Typography>
-                    </Box>
+                </Box>
+
+                <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px' }}>
+
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Typography variant="body2" color="textSecondary">
+                          <strong>Price: $</strong>{product.productPrice}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Typography variant="body2" color="textSecondary">
+                          <strong>Stocks: </strong>{product.stocks}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Typography variant="body2" color="textSecondary">
+                          <strong>Discount: </strong>{product.discountPercentage}% off
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Typography variant="body2" color="textSecondary">
+                          <strong>Discounted Price: $</strong>{product.discountedPrice}
+                        </Typography>
+                      </Box>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="h8" gutterBottom sx={{ margin: '10px' }}>
-                      Product Name
-                    </Typography>
-                    <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginLeft: '5px', marginRight: '10px', marginBottom: '10px' }}>
-                      <Typography variant="body2" color="textSecondary">
-                        Discounted Price: ${product.discountedPrice}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Box>
-
-            {/* Right Side - Image and Category */}
-            <Box sx={{ width: '40%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <Box sx={{
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                padding: '10px',
-                marginBottom: '6px',
-                height: '500px',
-                display: 'flex', // Center the content vertically and horizontally
-                justifyContent: 'center',
-                alignItems: 'center',
-                overflow: 'hidden', // Prevent image overflow outside the container
-              }}>
-                <Card sx={{ boxShadow: 'none', width: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '16px' }}>
-                  <CardMedia
-                    component="img"
-                    height="300"
-                    image={`${import.meta.env.VITE_FILE_BASE_URL}${product.imageFile}`}
-                    alt={product.productName}
-                    sx={{
-                      objectFit: 'cover',  // Ensure the image fully covers the container
-                      width: '100%', // Make sure it stretches to fill the container
-                      height: '100%', // Ensure full height coverage
-                    }}
-                  />
-                </Card>
-              </Box>
-
-
-              <Box sx={{ marginTop: '20px' }}>
-                <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px', height: '200px' }}>
-                  <Typography variant="h5" gutterBottom>
-                    Category
-                  </Typography>
-                  <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginTop: '16px' }}>
-                    <Typography variant="body2" color="textSecondary">
-                      Category: {product?.categoryName || 'Loading...'}
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginTop: '16px' }}>
-                    <Typography variant="body2" color="textSecondary">
-                      Points: {product.productPoints}
-                    </Typography>
-                  </Box>
                 </Box>
               </Box>
-            </Box>
-          </>
-        ) : (
-          <Typography variant="h6" color="error">
-            Product not found.
-          </Typography>
-        )}
+
+              {/* Right Side - Image and Category */}
+              <Box sx={{ width: '40%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <Box sx={{
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  padding: '10px',
+                  marginBottom: '6px',
+                  height: '400px',
+                  display: 'flex', // Center the content vertically and horizontally
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  overflow: 'hidden', // Prevent image overflow outside the container
+                }}>
+                  <Card sx={{ boxShadow: 'none', width: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '16px' }}>
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={`${import.meta.env.VITE_FILE_BASE_URL}${product.imageFile}`}
+                      alt={product.productName}
+                      sx={{
+                        objectFit: 'cover',  // Ensure the image fully covers the container
+                        width: '100%', // Make sure it stretches to fill the container
+                        height: '100%', // Ensure full height coverage
+                      }}
+                    />
+                  </Card>
+                </Box>
+
+
+
+                <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px', marginTop: '10px' }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+
+                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Typography variant="body2" color="textSecondary">
+                          <strong>Category: </strong>{product?.categoryName || 'Loading...'}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Typography variant="body2" color="textSecondary">
+                          <strong>Points: </strong>{product.productPoints}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Box>
+
+            </>
+          ) : (
+            <Typography variant="h6" color="error">
+              Product not found.
+            </Typography>
+          )}
+        </Box>
       </Box>
     </Container >
   );
