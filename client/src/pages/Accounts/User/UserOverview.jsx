@@ -300,47 +300,92 @@ const UserOverview = () => {
               Recent Purchases
             </Typography>
             {orders.length > 0 ? (
-              orders.map((order, i) => {
-                return (
-                  <Card sx={{ mb: 2 }}>
-                    <CardContent
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        overflow: "auto",
-                      }}
-                    >
-                      <Box key={order.orderId || i} sx={{ display: "flex", gap: 2 }}>
-                        <Typography variant="body1">{order.date}</Typography>
-                        {order.orderItems.map((item, i) => {
-                          return (
-                            <>
+              orders
+                .slice(0, 3) // Show only the 3 most recent orders
+                .map((order, i) => {
+                  // Format order date
+                  const orderDate = new Date(order.orderDate).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  });
+
+                  return (
+                    <Card key={order.orderId || i} sx={{ mb: 2, boxShadow: 3, borderRadius: 2 }}>
+                      <CardContent
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 2,
+                        }}
+                      >
+                        {/* Order Header */}
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            Order ID: #{order.orderId}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            Date: {orderDate}
+                          </Typography>
+                        </Box>
+
+                        {/* Order Items */}
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                          {order.orderItems.map((item, index) => (
+                            <Box
+                              key={item.productId || index}
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                bgcolor: '#f5f5f5',
+                                p: 1,
+                                borderRadius: 1,
+                              }}
+                            >
                               <img
-                                src={item.imageFile}
+                                src={`${import.meta.env.VITE_FILE_BASE_URL}${item.imageFile}`}
                                 alt={item.productName}
-                                style={{ width: 80, height: 80 }}
+                                style={{ width: 60, height: 60, borderRadius: 4 }}
                               />
                               <Box>
-                                <Typography variant="body1">{item.productName}</Typography>
+                                <Typography variant="body2" fontWeight="medium">
+                                  {item.productName}
+                                </Typography>
                                 <Typography variant="caption" color="textSecondary">
                                   x{item.quantity}
                                 </Typography>
                               </Box>
-                            </>
-                          )
-                        })}
-                      </Box>
-                      <Box sx={{ textAlign: "right" }}>
-                        <Typography variant="body1">${order.totalPrice}</Typography>
-                        <Button variant="contained" size="small">
-                          Buy Again
-                        </Button>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                )
-              })
+                            </Box>
+                          ))}
+                        </Box>
+
+                        {/* Total and Actions */}
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            mt: 2,
+                          }}
+                        >
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            Total: ${order.totalPrice.toFixed(2)}
+                          </Typography>
+                          <Button variant="contained" size="small" color="Accent">
+                            Buy Again
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  );
+                })
             ) : (
               <Box
                 sx={{
@@ -362,7 +407,7 @@ const UserOverview = () => {
                   style={{ width: "120px", height: "auto", marginBottom: "1em" }}
                 />
                 {/* Message */}
-                <Typography variant="body1" sx={{ color: "text.secondary", marginBottom: "1em"}}>
+                <Typography variant="body1" sx={{ color: "text.secondary", marginBottom: "1em" }}>
                   No past purchases yet. Start exploring our products!
                 </Typography>
                 <Button
