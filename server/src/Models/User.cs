@@ -47,8 +47,10 @@ public class User
 
 	[Required]
 	public bool Agreement { get; set; }
+    public int OrderCount { get; set; } = 0;
+    public DateTime? OrderPeriodStartDate { get; set; } = null;
 
-	public int TotalPoints { get; set; } = 0;
+    public int TotalPoints { get; set; } = 0;
 	public DateTime? PointsExpiryDate { get; set; } = null;
     public DateTime? PointsPeriodStartDate { get; set; } = null ;
 
@@ -68,11 +70,10 @@ public class User
 
 	// Navigation property
 	public Cart Cart { get; set; }
-    public int OrderCount { get; set; } = 0;
-    public DateTime? OrderPeriodStartDate { get; set; } = null;
 
     // 🔹 Relationship: A User can have multiple feedbacks
     public virtual ICollection<GeneralFeedback>? Feedbacks { get; set; }
-   
+
+    public virtual ICollection<Reservation>? Reservations { get; set; }
 }
 

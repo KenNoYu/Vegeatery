@@ -129,6 +129,16 @@ namespace vegeatery.Controllers
                 user.TotalPoints += 10;
                 user.OrderCount = 0;
                 user.OrderPeriodStartDate = null;
+
+                // Log the bonus points in the PointsHistory table
+                var pointsHistory = new PointsHistory
+                {
+                    UserId = userId,
+                    Points = 10,
+                    Description = "Bonus points!",
+                    Date = currentDate
+                };
+                _context.PointsHistories.Add(pointsHistory);
             }
 
             _context.Users.Update(user);
@@ -227,8 +237,8 @@ namespace vegeatery.Controllers
 			}
 		}
 
-			// Get all orders (for admin)
-			[HttpGet("all")]
+		// Get all orders (for admin)
+		[HttpGet("all")]
         public IActionResult GetAll()
         {
             try
@@ -345,7 +355,9 @@ namespace vegeatery.Controllers
             {
                 var result = _context.Order
                 .Include(Order => Order.OrderItems)
-                .Where(Order => Order.CustomerId == custId)
+				.ThenInclude(item => item.Product)
+				.Where(Order => Order.CustomerId == custId && Order.Status != "pending")
+                .OrderByDescending(Order => Order.CreatedAt)
                 .Select(Order => new
                 {
                     Order.OrderId,
@@ -353,8 +365,11 @@ namespace vegeatery.Controllers
                     Order.OrderDate,
                     Order.Status,
                     Order.TotalPrice,
+                    Order.TotalPoints,
                     OrderItems = Order.OrderItems.Select(item => new
                     {
+                        item.ProductId,
+						item.Product.ImageFile,
 						item.ProductName,
 						item.Price,
                         item.Quantity,

@@ -380,6 +380,7 @@ const ReservationPage = () => {
                 onChange={handleInputChange}
                 variant="outlined"
                 fullWidth
+                disabled={user !== null}
               />
               <DetailsTextField
                 label="Mobile Number"

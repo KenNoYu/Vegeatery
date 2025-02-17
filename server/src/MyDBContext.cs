@@ -39,6 +39,7 @@ namespace vegeatery
     public required DbSet<Table> Tables { get; set; }
     public required DbSet<Tier> Tiers { get; set; }
     public required DbSet<Voucher> Vouchers { get; set; }
+    public required DbSet<PointsHistory> PointsHistories { get; set; }
     public required DbSet<VoucherRedemption> VoucherRedemptions { get; set; }
     public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
     public required DbSet<User> Users { get; set; }
@@ -47,7 +48,10 @@ namespace vegeatery
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-      //Reservation
+
+      base.OnModelCreating(modelBuilder);
+
+      // Reservation Relationships
       modelBuilder.Entity<ReservationLog>()
         .HasOne(r => r.Reservation)
         .WithMany() // Assuming a Reservation has many logs
@@ -59,7 +63,10 @@ namespace vegeatery
         .WithMany(t => t.Reservations)
         .UsingEntity(j => j.ToTable("ReservationTables"));
 
-      base.OnModelCreating(modelBuilder);
+      modelBuilder.Entity<Reservation>()
+          .HasOne(r => r.User)
+          .WithMany(u => u.Reservations)
+          .HasForeignKey(r => r.UserId);
 
       // Seed Tier
       modelBuilder.Entity<Tier>().HasData(
