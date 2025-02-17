@@ -7,6 +7,9 @@ namespace vegeatery.Controllers
     [Route("[controller]")]
     public class OrderController(MyDbContext context) : ControllerBase
     {
+   
+   
+
         private readonly MyDbContext _context = context;
         // Create new order (for customer)
         [HttpPost("newOrder")]
@@ -56,6 +59,10 @@ namespace vegeatery.Controllers
                             Quantity = cartItem.Quantity,
                             PointsEarned = cartItem.Points,
                         };
+
+                        // Log the orderItem to verify ProductId
+                        Console.WriteLine($"OrderItem: {orderItem.ProductId} - {orderItem.ProductName}");
+
                         // save order items
                         _context.OrderItems.Add(orderItem);
                     }
@@ -106,6 +113,7 @@ namespace vegeatery.Controllers
                     VoucherId = order?.VoucherId,
 					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
                     {
+                        ProductId = oi.ProductId,
                         ProductName = oi.ProductName, // Assuming ProductName is a property of Product
                         Quantity = oi.Quantity,
                         Price = oi.Price
@@ -334,5 +342,86 @@ namespace vegeatery.Controllers
                 return StatusCode(500, new { Message = "An error occurred while deleting order.", Details = ex.Message });
             }
         }
+
+        [HttpGet("productLogs")]
+        public IActionResult GetAllProductLogs()
+        {
+            var logs = _context.ProductLogs
+                .Select(log => new
+                {
+                    log.ProductId,
+                    log.ProductName,
+                    log.Action,
+                    log.PreviousStock,
+                    log.NewStock,
+                    log.PreviousIsActive,
+                    log.NewIsActive,
+                    ChangedAt = log.ChangedAt.ToString("yyyy-MM-dd HH:mm:ss") // Format here
+                })
+                .ToList();
+
+            return Ok(logs);
+        }
+
+        [HttpPost("log-product-change")]
+        public void LogProductChange(Product product, int previousStock, bool previousIsActive, string action)
+        {
+            var singaporeTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time");
+            var singaporeTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, singaporeTimeZone);
+
+            var logEntry = new ProductLog
+            {
+                ProductId = product.ProductId,
+                ProductName = product.ProductName,
+                Action = action,
+                PreviousStock = previousStock,
+                NewStock = product.Stocks,
+                PreviousIsActive = previousIsActive,
+                NewIsActive = product.IsActive,
+                ChangedAt = singaporeTime
+            };
+
+            _context.ProductLogs.Add(logEntry);
+     
+
+        }
+
+
+        [HttpPut("updateStock/{productId}")]
+        public IActionResult UpdateStock(int productId, [FromBody] int quantity)
+        {
+            try
+            {
+                // Retrieve the product by productId
+                var product = _context.Product.FirstOrDefault(p => p.ProductId == productId);
+                if (product == null)
+                {
+                    return NotFound(new { Message = "Product not found" });
+                }
+
+                // Save the previous values before updating
+                int previousStock = product.Stocks;
+                bool previousIsActive = product.IsActive;
+
+                // Update the stock by subtracting the quantity
+                product.Stocks -= quantity;
+                product.IsActive = product.Stocks > 0;
+                product.UpdatedAt = DateTime.UtcNow;
+
+                LogProductChange(product, previousStock, previousIsActive, "Stock updated");
+
+                // Save the changes to the database
+                _context.SaveChanges();
+
+
+                return Ok(new { Message = "Stock updated successfully", ProductId = productId, NewStock = product.Stocks });
+            }
+            catch (Exception ex)
+            {
+                // Handle the error
+                return StatusCode(500, new { Message = "An error occurred while updating the stock.", Details = ex.Message });
+            }
+        }
+
     }
 }
