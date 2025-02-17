@@ -146,7 +146,7 @@ const MyOrdersPage = () => {
                 overflow: "auto"
             }}>
                 {/* Order History */}
-                <Typography variant="h3" sx={{ my: 2, fontWeight: 'bold' }}>
+                <Typography variant="h4" sx={{ my: 2, fontWeight: 'bold' }}>
                     Order History
                 </Typography>
                 <Grid container spacing={4} justifyContent="center">
