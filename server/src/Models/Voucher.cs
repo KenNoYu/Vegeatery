@@ -8,9 +8,9 @@ namespace vegeatery.Models
         public string VoucherName { get; set; }
 		[Column(TypeName = "decimal(18,2)")]
 		public Decimal DiscountPercentage { get; set; }
-        public DateTime ExpiryDate { get; set; }
-
         public int TierId { get; set; } // Foreign key for Tier
         public Tier Tier { get; set; } // Navigation property
+        public DateTime? LastUsedAt { get; set; }
+
     }
 }

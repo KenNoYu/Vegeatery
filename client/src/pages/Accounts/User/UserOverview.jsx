@@ -20,9 +20,10 @@ import { styled } from "@mui/system";
 import RoleGuard from "../../../utils/RoleGuard.js";
 import { useTheme } from "@emotion/react";
 
-function UserOverview() {
+const UserOverview = () => {
   RoleGuard(["User", "Admin", "Staff"]);
   const [user, setUser] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [orders, setOrders] = useState([]);
@@ -43,8 +44,9 @@ function UserOverview() {
     http
       .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
       .then((res) => {
-        console.log(res);
+        console.log(res.data.imageFile);
         setUser(res);
+        setProfileImage(res.data.imageFile);
         getCustOrders(res.data.id);
         fetchPendingReservations(res.data.id);
         setLoading(false);
@@ -132,7 +134,7 @@ function UserOverview() {
           sx={{
             marginLeft: "240px",
             flexGrow: 1,
-            height: "100vh",
+            height: "100%",
             paddingTop: "3em",
             paddingRight: "3em",
             paddingLeft: "3em",
@@ -167,10 +169,14 @@ function UserOverview() {
             >
               <ProfileImage
                 alt={user.username}
-                src="/path-to-default-avatar.png"
+                src={
+                  profileImage
+                    ? `${import.meta.env.VITE_FILE_BASE_URL}${profileImage}`
+                    : '/path/to/default-image.jpg'  // Provide a fallback image if no profile image is set
+                }
                 sx={{
-                  width: 120,
-                  height: 120,
+                  width: 160,
+                  height: 160,
                   borderRadius: "50%",
                   marginBottom: 2,
                   border: "4px solid #fff",
@@ -240,7 +246,7 @@ function UserOverview() {
                 sx={{
                   backgroundColor: "#C6487E",
                   color: "#fff",
-                  width: "100%",
+                  width: "60%",
                   marginBottom: 2,
                   "&:hover": {
                     backgroundColor: "#A83866",

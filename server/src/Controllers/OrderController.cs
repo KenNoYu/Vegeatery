@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using vegeatery.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 namespace vegeatery.Controllers
 {
     [ApiController]
@@ -22,6 +25,7 @@ namespace vegeatery.Controllers
                     {
                         return NotFound(new { Message = "Cart cannot be empty or it dosen't exist" });
                     }
+
                     // Create the order
                     var order = new Order
                     {
@@ -33,6 +37,7 @@ namespace vegeatery.Controllers
                         TotalPoints = request.TotalPoints,
                         TimeSlot = request.TimeSlot,
                         Status = request.Status,
+                        IsUpdated = false,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         VoucherId = request?.VoucherId,
@@ -43,6 +48,24 @@ namespace vegeatery.Controllers
                     // save order
                     _context.Order.Add(order);
                     _context.SaveChanges();
+
+                    // If a voucher is used, set its cooldown
+                    if (request.VoucherId.HasValue)
+                    {
+                        var voucher = _context.Vouchers.FirstOrDefault(v => v.VoucherId == request.VoucherId);
+                        if (voucher != null)
+                        {
+                            voucher.LastUsedAt = DateTime.UtcNow;
+                            _context.VoucherRedemptions.Add(new VoucherRedemption
+                            {
+                                UserId = request.CustomerId.Value,
+                                VoucherId = voucher.VoucherId,
+                                RedeemedAt = DateTime.UtcNow
+                            });
+                            _context.SaveChanges();
+                        }
+                    }
+
                     // Create the order items from cart items
                     foreach (var cartItem in cart.CartItems)
                     {
@@ -55,6 +78,7 @@ namespace vegeatery.Controllers
                             Quantity = cartItem.Quantity,
                             PointsEarned = cartItem.Points,
                         };
+
                         // save order items
                         _context.OrderItems.Add(orderItem);
                     }
@@ -70,6 +94,47 @@ namespace vegeatery.Controllers
                     return StatusCode(500, new { Message = "An error occurred while creating the order.", Details = errorMessage });
                 }
             }
+        }
+
+        [HttpPut("updatePoints/{userId}")]
+        public async Task<IActionResult> UpdateUserPoints(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found." });
+            }
+
+            var currentDate = DateTime.UtcNow;
+
+            // Check if the order period has started
+            if (user.OrderPeriodStartDate == null)
+            {
+                user.OrderPeriodStartDate = currentDate;
+            }
+
+            // Check if 7 days have passed since the start date
+            if ((currentDate - user.OrderPeriodStartDate.Value).TotalDays > 7)
+            {
+                user.OrderCount = 0;
+                user.OrderPeriodStartDate = currentDate;
+            }
+
+            // Increment the order count
+            user.OrderCount++;
+
+            // Check if the user has ordered 7 times within 7 days
+            if (user.OrderCount >= 7)
+            {
+                user.TotalPoints += 10;
+                user.OrderCount = 0;
+                user.OrderPeriodStartDate = null;
+            }
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "User points updated successfully.", TotalPoints = user.TotalPoints });
         }
 
         // Get Order By ID
@@ -100,10 +165,12 @@ namespace vegeatery.Controllers
                     TimeSlot = order.TimeSlot,
                     TotalPrice = order.TotalPrice,
 					TotalPoints = order.TotalPoints,
+                    isUpdated = order.IsUpdated,
                     discountPercent = order?.discountPercent,
                     VoucherId = order?.VoucherId,
 					OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
                     {
+                        ProductId = oi.ProductId,
                         ProductName = oi.ProductName, // Assuming ProductName is a property of Product
                         Quantity = oi.Quantity,
                         Price = oi.Price
@@ -259,6 +326,7 @@ namespace vegeatery.Controllers
                 // Update order status
                 order.Status = request.Status;
                 order.UpdatedAt = DateTime.UtcNow;
+                order.IsUpdated = true;
                 // Save changes
                 _context.SaveChanges();
                 return Ok(new { Message = "Order status updated successfully." });
@@ -331,5 +399,85 @@ namespace vegeatery.Controllers
                 return StatusCode(500, new { Message = "An error occurred while deleting order.", Details = ex.Message });
             }
         }
+
+        [HttpGet("productLogs")]
+        public IActionResult GetAllProductLogs()
+        {
+            var logs = _context.ProductLogs
+                .Select(log => new
+                {
+                    log.ProductId,
+                    log.ProductName,
+                    log.Action,
+                    log.PreviousStock,
+                    log.NewStock,
+                    log.PreviousIsActive,
+                    log.NewIsActive,
+                    ChangedAt = log.ChangedAt.ToString("yyyy-MM-dd HH:mm:ss") // Format here
+                })
+                .ToList();
+
+            return Ok(logs);
+        }
+
+        [HttpPost("log-product-change")]
+        public void LogProductChange(Product product, int previousStock, bool previousIsActive, string action)
+        {
+            var singaporeTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time");
+            var singaporeTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, singaporeTimeZone);
+
+            var logEntry = new ProductLog
+            {
+                ProductId = product.ProductId,
+                ProductName = product.ProductName,
+                Action = action,
+                PreviousStock = previousStock,
+                NewStock = product.Stocks,
+                PreviousIsActive = previousIsActive,
+                NewIsActive = product.IsActive,
+                ChangedAt = singaporeTime
+            };
+
+            _context.ProductLogs.Add(logEntry);
+     
+
+        }
+
+        [HttpPut("updateStock/{productId}")]
+        public IActionResult UpdateStock(int productId, [FromBody] int quantity)
+        {
+            try
+            {
+                // Retrieve the product by productId
+                var product = _context.Product.FirstOrDefault(p => p.ProductId == productId);
+                if (product == null)
+                {
+                    return NotFound(new { Message = "Product not found" });
+                }
+
+                // Save the previous values before updating
+                int previousStock = product.Stocks;
+                bool previousIsActive = product.IsActive;
+
+                // Update the stock by subtracting the quantity
+                product.Stocks -= quantity;
+                product.IsActive = product.Stocks > 0;
+                product.UpdatedAt = DateTime.UtcNow;
+
+                LogProductChange(product, previousStock, previousIsActive, "Stock updated");
+
+                // Save the changes to the database
+                _context.SaveChanges();
+
+
+                return Ok(new { Message = "Stock updated successfully", ProductId = productId, NewStock = product.Stocks });
+            }
+            catch (Exception ex)
+            {
+                // Handle the error
+                return StatusCode(500, new { Message = "An error occurred while updating the stock.", Details = ex.Message });
+            }
+        }
+
     }
 }

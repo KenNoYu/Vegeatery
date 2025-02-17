@@ -10,7 +10,7 @@ const VouchersSystemAdd = () => {
     const [tiers, setTiers] = useState([]);
     const [vouchers, setVouchers] = useState([]);
     const [voucher, setNewVoucher] = useState({
-        voucherName: '', discountPercentage: 1.0, expiryDate: '', tierId: '',
+        voucherName: '', discountPercentage: 1.0, tierId: '',
         tier: { tierId: '', tierName: '', minPoints: 0 }
     });
     const [errorMessage, setErrorMessage] = useState("");
@@ -43,7 +43,7 @@ const VouchersSystemAdd = () => {
 
     const handleAddVoucher = async () => {
         // Validate that all required fields are filled
-        if (!voucher.voucherName || voucher.discountPercentage == null || !voucher.expiryDate || !voucher.tierId) {
+        if (!voucher.voucherName || voucher.discountPercentage == null || !voucher.tierId) {
             setErrorMessage('Please fill in all required fields before adding the voucher.');
             return;
         }
@@ -62,16 +62,6 @@ const VouchersSystemAdd = () => {
         // Discount percentage validation
         if (voucher.discountPercentage <= 0 || voucher.discountPercentage > 100) {
             setErrorMessage("Discount percentage must be between 1 and 100.");
-            return;
-        }
-
-        // Date validation: Ensure it's not an earlier or current date
-        const currentDate = new Date();
-        const expiryDate = new Date(voucher.expiryDate);
-
-        // Compare only the date part, ignoring time
-        if (expiryDate <= currentDate.setHours(0, 0, 0, 0)) {
-            setErrorMessage("Expiry date must be in the future.");
             return;
         }
 
@@ -99,7 +89,6 @@ const VouchersSystemAdd = () => {
             setVoucher({
                 voucherName: '',
                 discountPercentage: 1.0,
-                expiryDate: '',
                 tierId: '',
                 tier: { tierId: '', tierName: '', minPoints: 0 }
             });
@@ -153,13 +142,6 @@ const VouchersSystemAdd = () => {
                                 })}
                                 inputProps={{ step: "0.01", min: "1", max: "100" }} />
                         </Grid>
-                        <Grid item xs={12}>
-                            <TextField fullWidth label="Expiry Date"
-                                type="date"
-                                value={voucher.expiryDate}
-                                onChange={(e) => setNewVoucher({ ...voucher, expiryDate: e.target.value })}
-                                InputLabelProps={{ shrink: true }} />
-                        </Grid>
 
                         <Grid item xs={12}>
                             <Select fullWidth
@@ -174,7 +156,7 @@ const VouchersSystemAdd = () => {
                         </Grid>
 
                         <Grid item xs={12} display="flex" justifyContent="space-between">
-                            <Button onClick={() => navigate('/rewards/admin/voucherssystem')} variant="contained" sx={{
+                            <Button onClick={() => navigate('/admin/rewards')} variant="contained" sx={{
                                 textTransform: 'none',
                                 color: '#C6487E',
                                 backgroundColor: '#FFFFFF',
