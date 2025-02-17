@@ -84,30 +84,92 @@ const OrderDashboard = () => {
             {/* Top Selling Products */}
             <Card sx={{ mt: 3 }}>
                 <CardContent>
-                    <Typography variant="h6" fontWeight="bold">Top Selling Products</Typography>
-                    {topProducts.map(product => (
-                        <Box key={product.productId} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, bgcolor: '#f5f5f5', mb: 2, borderRadius: 2 }}>
-                            <Box sx={{ width: 60, height: 60, overflow: 'hidden', borderRadius: 2, mr: 2 }}>
-                                <img
-                                    src={`${import.meta.env.VITE_FILE_BASE_URL}${product.imageFile}`}
-                                    alt={product.productName}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }}
-                                />
-                            </Box>
-                            <Box>
-                                <Typography fontWeight="medium" variant="subtitle1">{product.productName}</Typography>
-                                <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-                                    {product.tags.map(tag => (
-                                        <Badge key={tag} sx={{ p: 0.5, bgcolor: '#e0e0e0', borderRadius: 1 }}>{tag}</Badge>
-                                    ))}
+                    <Typography variant="h6" fontWeight="bold">
+                        Top Selling Products
+                    </Typography>
+
+                    {topProducts.length > 0 ? (
+                        topProducts.map((product) => (
+                            <Box
+                                key={product.productId}
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    p: 2,
+                                    bgcolor: '#f5f5f5',
+                                    mb: 2,
+                                    borderRadius: 2,
+                                }}
+                            >
+                                {/* Product Image */}
+                                <Box
+                                    sx={{
+                                        width: 60,
+                                        height: 60,
+                                        overflow: 'hidden',
+                                        borderRadius: 2,
+                                        mr: 2,
+                                    }}
+                                >
+                                    <img
+                                        src={`${import.meta.env.VITE_FILE_BASE_URL}${product.imageFile}`}
+                                        alt={product.productName}
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                            borderRadius: '10px',
+                                        }}
+                                    />
+                                </Box>
+
+                                {/* Product Info */}
+                                <Box>
+                                    <Typography fontWeight="medium" variant="subtitle1">
+                                        {product.productName}
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                                        {product.tags.map((tag) => (
+                                            <Badge
+                                                key={tag}
+                                                sx={{
+                                                    p: 0.5,
+                                                    bgcolor: '#e0e0e0',
+                                                    borderRadius: 1,
+                                                    fontSize: '0.75rem',
+                                                }}
+                                            >
+                                                {tag}
+                                            </Badge>
+                                        ))}
+                                    </Box>
+                                </Box>
+
+                                {/* Product Earnings */}
+                                <Box textAlign="right">
+                                    <Typography color="error" fontWeight="bold">
+                                        Earnings: ${product.earnings * product.quantityBought}
+                                    </Typography>
+                                    <Typography variant="caption" color="textSecondary">
+                                        x{product.quantityBought} Sold
+                                    </Typography>
                                 </Box>
                             </Box>
-                            <Box textAlign="right">
-                                <Typography color="error" fontWeight="bold">Earnings: ${product.earnings * product.quantityBought}</Typography>
-                                <Typography variant="caption" color="textSecondary">x{product.quantityBought} Sold</Typography>
-                            </Box>
+                        ))
+                    ) : (
+                        // No Sales Message
+                        <Box
+                            sx={{
+                                textAlign: 'center',
+                                py: 5,
+                            }}
+                        >
+                            <Typography variant="h6" color="textSecondary">
+                                No products have been sold yet.
+                            </Typography>
                         </Box>
-                    ))}
+                    )}
                 </CardContent>
             </Card>
         </Box>
