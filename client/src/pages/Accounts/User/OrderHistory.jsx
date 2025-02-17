@@ -78,6 +78,7 @@ const MyOrdersPage = () => {
                 borderBottomRightRadius: "1em",
                 boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
                 flexDirection: "column",
+                overflow: "auto"
             }}>
                 {/* Order History */}
                 <Typography variant="h3" sx={{ my: 2 }}>
@@ -92,6 +93,11 @@ const MyOrdersPage = () => {
                                         {order.orderItems.map((item, i) => {
                                             return (
                                                 <Box key={item.productId || i} sx={{ mb: 2 }}>
+                                                    <img
+                                                    src={item.imageFile}
+                                                    alt={item.productName}
+                                                    style={{ width: "200px", height: "auto", marginBottom: "1em" }}
+                                                    />
                                                     <Typography variant='h6'>
                                                         {item.productName} <Typography variant="subtitle1">
                                                             x {item.quantity}

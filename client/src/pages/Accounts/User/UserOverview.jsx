@@ -317,8 +317,8 @@ const UserOverview = () => {
                           return (
                             <>
                               <img
-                                src="/path/to/product.jpg"
-                                alt="Product"
+                                src={item.imageFile}
+                                alt={item.productName}
                                 style={{ width: 80, height: 80 }}
                               />
                               <Box>
@@ -332,7 +332,7 @@ const UserOverview = () => {
                         })}
                       </Box>
                       <Box sx={{ textAlign: "right" }}>
-                        <Typography variant="body1">$10.50</Typography>
+                        <Typography variant="body1">${order.totalPrice}</Typography>
                         <Button variant="contained" size="small">
                           Buy Again
                         </Button>
