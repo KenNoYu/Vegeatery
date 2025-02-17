@@ -79,6 +79,8 @@ import ResetPassword from "./pages/Accounts/User/ResetPassword";
 import MyOrdersPage from "./pages/Accounts/User/OrderHistory";
 import UserProfileView from "./pages/Accounts/Admin/UserProfileView";
 import RoleModify from "./pages/Accounts/Admin/RoleModify";
+import MyReservationsPage from "./pages/Accounts/User/UserReservations";
+import EditMyReservationsPage from "./pages/Accounts/User/UserEditReservations";
 
 // Navbar
 import { CircularProgress } from "@mui/material"; // import CircularProgress
@@ -139,7 +141,7 @@ function App() {
       <Router>
         <ThemeProvider theme={MyTheme}>
           <ThemeProvider theme={currentThemeIsDark ? DarkTheme : MyTheme}>
-            <AppBar position="fixed" className="AppBar">
+            <AppBar position="fixed" className="AppBar" sx={{zIndex: 10000}}>
               <Container>
                 <Toolbar
                   disableGutters={true}
@@ -335,6 +337,9 @@ function App() {
               <Route path="/admin/accounts" element={<Accounts />} />
               <Route path="/user/profile" element={<Profile />} />
               <Route path="/overview" element={<UserOverview />} />
+              <Route path="/user/orders" element={<MyOrdersPage />} />
+              <Route path="/user/reservations" element={<MyReservationsPage />} />
+              <Route path="/user/reservations/:id" element={<EditMyReservationsPage />} />
             </Routes>
           </Container>
 
@@ -344,7 +349,6 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/form" element={<MyForm />} />
-              <Route path="/user/orders" element={<MyOrdersPage />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />

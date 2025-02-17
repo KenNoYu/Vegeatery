@@ -19,6 +19,11 @@ const Sidebar = () => {
 
   // Function to check if a route is active
   const isRouteActive = (path) => {
+    // If the path is "reservations", check if the current path starts with "/user/reservations"
+    if (path === '/user/reservations') {
+      return location.pathname.startsWith('/user/reservations');
+    }
+    
     // If no route is selected, default to the first item's path ("/overview")
     return location.pathname === path || (location.pathname === '/' && path === '/overview');
   };

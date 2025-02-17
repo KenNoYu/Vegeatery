@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Drawer, Typography, Button, Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
-import http from '../../http';
-import { useTheme } from '@mui/material/styles';
+import { styled } from '@mui/system';
+import http from '../../../http';
+import UserContext from '../../../contexts/UserContext'
+import { UserProvider } from '../../../contexts/UserContext'
+import { WindowSharp } from '@mui/icons-material';
+import * as yup from 'yup';
 import { ToastContainer, toast } from "react-toastify";
-import DateSelector from "./Components/DateSelector";
+import Sidebar from "./UserSidebar";
+import { useTheme } from '@emotion/react';
+import RoleGuard from "../../../utils/RoleGuard.js";
+import { useNavigate, useParams } from 'react-router-dom';
+import DateSelector from '../../Reservation/Components/DateSelector.jsx';
 import { parse, isBefore, isDate } from 'date-fns';
 
-import RoleGuard from '../../utils/RoleGuard';
 
-const StaffFocusedReservation = () => {
-  RoleGuard('Staff');
+const EditMyReservationsPage = () => {
+  RoleGuard('User');
   const navigate = useNavigate();
   const theme = useTheme();
   const { id } = useParams();
@@ -63,7 +69,11 @@ const StaffFocusedReservation = () => {
       setSelectedDate(response.data.reservationDate);
       setSelectedTime(response.data.timeSlot);
     } catch (error) {
-      console.error("Error fetching reservation:", error);
+      if (error.response && error.response.status === 404) {
+        navigate('/user/reservations');
+      } else {
+        console.error("Error fetching reservation:", error);
+      }
     } finally {
       setLoading(false);
     }
@@ -117,7 +127,7 @@ const StaffFocusedReservation = () => {
       console.log("Reservation log created:", logResponse.data);
 
       toast.success("Reservation cancelled!");
-      navigate("/staff/reservationlogs")
+      navigate("/user/reservations")
     } catch (error) {
       console.error("Error cancelling reservation:", error);
       toast.error("Failed to cancel reservation.");
@@ -156,7 +166,7 @@ const StaffFocusedReservation = () => {
 
       toast.success("Reservation updated successfully!");
       setConfirmChangesOpen(false);
-      navigate('/staff/reservationlogs')
+      navigate('/user/reservations')
     } catch (error) {
       console.error("Error updating reservation:", error);
       toast.error("Failed to update reservation.");
@@ -187,6 +197,15 @@ const StaffFocusedReservation = () => {
             if (userResponse.data) {
               setUser(userResponse.data);
               userData = userResponse.data;
+
+              if (userData.email !== reservation.customerEmail) {
+                toast.error("This reservation does not belong to you.");
+                navigate("/user/reservations"); // Navigate to reservations if it doesn't belong to the user
+              } else if (reservation.status === "seated") {
+                toast.error("This reservation has been completed.");
+                navigate("/user/reservations");
+              }
+
             }
           } catch (userError) {
             console.warn("User not logged in or authentication failed.");
@@ -223,7 +242,6 @@ const StaffFocusedReservation = () => {
 
   const handleTableClick = (id, status = "available") => { 
     let newSelectedTables = [...selectedTables];
-    
     setTables((prevTables) => {
       // Create a new array to maintain immutability
       let updatedTables = prevTables.map((table) => {
@@ -265,22 +283,26 @@ const StaffFocusedReservation = () => {
     return null;
   }
 
-  return (
 
-    <Box
-      sx={{
-        flexGrow: 1,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 7,
-        boxShadow: 2,
-        borderRadius: '20px',
-        backgroundColor: 'white',
-        overflow: 'auto',
-      }}
-    >
-      <Box
+  return (
+    <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
+      {/* Sidebar */}
+      <Sidebar />
+      {/* Main Content */}
+      <Box sx={{
+        height: "100vh",
+        marginLeft: "240px",
+        flex: 1,
+        marginTop: "0.5em",
+        padding: "2em",
+        backgroundColor: "#ffffff",
+        borderTopRightRadius: "1em",
+        borderBottomRightRadius: "1em",
+        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+        flexDirection: "column",
+      }}>
+        
+        <Box
         sx={{
           backgroundColor: 'white',
           width: '80%',
@@ -301,7 +323,7 @@ const StaffFocusedReservation = () => {
           }}
         >
           <Button
-            onClick={() => navigate('/staff/viewreservations')}
+            onClick={() => navigate('/user/reservations')}
             sx={{
               textTransform: 'none',
               color: 'black',
@@ -364,13 +386,6 @@ const StaffFocusedReservation = () => {
             justifyContent: "center",
           }}
         >
-
-          <Typography variant="h5" gutterBottom>
-            {reservation.customerName} <br />
-            <Typography>
-              {reservation.customerPhone} | {reservation.customerEmail}
-            </Typography>
-          </Typography>
           <Box sx={{ textAlign: "center", marginTop: "20px" }}>
             <Grid container spacing={2} justifyContent="center">
               {tables.map((table) => {
@@ -502,8 +517,9 @@ const StaffFocusedReservation = () => {
         </DialogActions>
       </Dialog>
 
+      </Box>
     </Box>
   );
-};
+}
 
-export default StaffFocusedReservation;
+export default EditMyReservationsPage;
