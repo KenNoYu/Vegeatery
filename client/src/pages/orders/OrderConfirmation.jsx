@@ -6,7 +6,7 @@ import RoleGuard from '../../utils/RoleGuard';
 import emailjs from "@emailjs/browser";
 
 const OrderConfirmation = () => {
-    RoleGuard('User');
+    RoleGuard(["User", "Admin", "Staff"]);
     const [order, setOrder] = useState(null);
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
