@@ -189,7 +189,7 @@ const OrderDashboard = () => {
                     </Typography>
 
                     {topProducts.length > 0 ? (
-                        topProducts.map((product) => (
+                        topProducts.slice(0, 5).map((product) => (
                             <Box
                                 key={product.productId}
                                 sx={{
