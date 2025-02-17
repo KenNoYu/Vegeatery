@@ -36,6 +36,7 @@ public class AccountController : ControllerBase
         var userDto = new UserDto
 		{
 			Id = user.Id,
+			ImageFile = user.ImageFile,
 			Username = user.Username,
 			Email = user.Email,
 			DateofBirth = user.DateofBirth,
@@ -71,6 +72,7 @@ public class AccountController : ControllerBase
 		var userDtos = users.Select(user => new UserDto
 		{
 			Id = user.Id,
+			ImageFile = user.ImageFile ?? string.Empty,
 			Username = user.Username ?? string.Empty,
 			Email = user.Email ?? string.Empty,
 			DateofBirth = user.DateofBirth ?? string.Empty,
@@ -105,7 +107,7 @@ public class AccountController : ControllerBase
 		{
 			return NotFound(new { message = "User not found" });
 		}
-
+		user.ImageFile = updateUserDto.ProfileImage;
 		user.Username = updateUserDto.Username;
 		user.Email = updateUserDto.Email;
 		user.DateofBirth = updateUserDto.Dob;
@@ -138,25 +140,6 @@ public class AccountController : ControllerBase
 		return Ok(new { message = "User deleted successfully" });
 	}
 
-	[HttpPut("{id}/role")]
-	[Authorize(Policy = "Admin")]
-	public async Task<IActionResult> UpdateUserRole(int id, [FromBody] UpdateUserRoleDto updateUserRoleDto)
-	{
-		var user = _context.Users.SingleOrDefault(u => u.Id == id);
-
-		if (user == null)
-		{
-			return NotFound(new { message = "User not found" });
-		}
-
-		user.RoleId = updateUserRoleDto.RoleId;
-
-		_context.Users.Update(user);
-		await _context.SaveChangesAsync();
-
-		return Ok(new { message = "User role updated successfully" });
-	}
-
     [HttpGet("user/{userId}/email")]
     [Authorize(Policy = "Admin")]
     public async Task<IActionResult> GetUserEmail(int userId)
@@ -178,6 +161,12 @@ public class AccountController : ControllerBase
         if (user == null)
         {
             return NotFound(new { message = "User not found" });
+        }
+
+        // Check if the current date is within the points period
+        if (DateTime.UtcNow > user.PointsExpiryDate)
+        {
+            return BadRequest(new { message = "Points period has expired. Points cannot be added." });
         }
 
         // Update total points
@@ -207,8 +196,6 @@ public class AccountController : ControllerBase
             newTier = newTier?.TierName
         });
     }
-
-
 }
 
 public class PointsUpdateDto
@@ -219,6 +206,7 @@ public class PointsUpdateDto
 
 public class UpdateUserDto
 {
+	public string ProfileImage { get; set; }
 	public string Username { get; set; }
 	//public string Password { get; set; }
 	public string Email { get; set; }
@@ -236,5 +224,6 @@ public class UpdateUserDto
 
 public class UpdateUserRoleDto
 {
+	public int UserId { get; set; }
 	public int RoleId { get; set; }
 }

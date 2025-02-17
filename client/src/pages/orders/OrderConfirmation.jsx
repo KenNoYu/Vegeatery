@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import http from '../../http';
 import { Box, Typography, CircularProgress, Divider } from '@mui/material';
@@ -14,7 +14,7 @@ const OrderConfirmation = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const orderId = searchParams.get('orderId');
-    console.log("ID", orderId)
+    const hasUpdated = useRef(false);
 
     useEffect(() => {
         if (orderId) {
@@ -27,6 +27,7 @@ const OrderConfirmation = () => {
         http
             .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
             .then((res) => {
+                console.log(res);
                 setUser(res);
                 setLoading(false);
             })
@@ -36,18 +37,65 @@ const OrderConfirmation = () => {
             });
     }, []);
 
+    const updateStock = async (productId, quantity) => {
+        console.log(`Making request to update stock for Product ID: ${productId} with Quantity: ${quantity}`);
+
+        try {
+            // Await the response of the PUT request
+            const response = await http.put(`/Order/updateStock/${productId}`, quantity, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            // Log the response for debugging
+            console.log('API Response:', response);
+
+            // Check if the response is successful (status 200)
+            if (response.status === 200) {
+                console.log('Stock updated:', response.data);
+            } else {
+                console.log('Error updating stock:', response.data);
+            }
+        } catch (error) {
+            // Log detailed error info
+            if (error.response) {
+                // Server responded with an error (e.g., 400 or 500)
+                console.error('API Error Response:', error.response);
+            } else if (error.request) {
+                // Request was made but no response received
+                console.error('No response received:', error.request);
+            } else {
+                // Some other error occurred during setup
+                console.error('Error Message:', error.message);
+            }
+        }
+    };
+
     useEffect(() => {
-        if (order && Array.isArray(cartItems)) {
-            UpdateOrderAsNew(order.orderId);
-            //sendEmail();
+        if (order) {
+            hasUpdated.current = true;
+            order.orderItems.forEach(item => {
+                if (item.productId) {
+                    console.log(`Updating stock for Product ID: ${item.productId} with Quantity: ${item.quantity}`);
+                    updateStock(item.productId, item.quantity); // Update stock for each product in the order
+                } else {
+                    console.error('Missing productId for item:', item); // Log if productId is missing
+                }
+            });
+            UpdateOrderAsNew(order.orderId);       
+            sendEmail();
             updateUserPoints();
-    
+        }
+    }, [order]);
+
+    useEffect(() => {
+        if (Array.isArray(cartItems)){
             cartItems.forEach((item) => {
-                console.log(item.productId);
                 deleteCartItems(user.data.cartId, item.productId);
             });
         }
-    }, [order, cartItems]);
+    }, [cartItems]);
 
     // Update order status
     const UpdateOrderAsNew = (orderId) => {
@@ -67,14 +115,12 @@ const OrderConfirmation = () => {
     const deleteCartItems = (cartId, productId) => {
         http.delete(`/ordercart?CartId=${cartId}&ProductId=${productId}`)
             .then((res) => {
-                console.log("Product delete from cart successfully", res.data);
             })
             .catch((error) => {
                 console.error("Error fetching orders:", error);
             })
     }
 
-    // get cart item
     const GetCartItems = () => {
         // autofill cartId next time
         http.get(`/ordercart?cartId=${user.data.cartId}`).then((res) => {
@@ -132,15 +178,23 @@ const OrderConfirmation = () => {
         const userPoints = {
             points: order.totalPoints
         }
+        console.log("Total points", order.totalPoints)
 
         http.put(`/Account/${user.data.id}/points`, userPoints)
             .then((res) => {
                 console.log("Update API Response:", res.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching orders:", error);
-            })
-    }
+                http.put(`/order/updatePoints/${user.data.id}`)
+                .then((res) => {
+                    console.log("Points updated based on order count:", res.data);
+                })
+                .catch((error) => {
+                    console.error("Error updating points based on order count:", error);
+                });
+        })
+        .catch((error) => {
+            console.error("Error fetching orders:", error);
+        })
+}
 
     const getOrderByID = async (orderId) => {
         http.get(`/order/orderId?orderId=${orderId}`)

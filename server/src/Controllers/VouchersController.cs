@@ -36,11 +36,6 @@ namespace vegeatery.Controllers
                 return BadRequest("Discounts must be between 1 and 100.");
             }
 
-            if (voucher.ExpiryDate <= DateTime.UtcNow)
-            {
-                return BadRequest("Expiry date must be in the future.");
-            }
-
             // Check if the tier exists
             var tier = await _context.Tiers.FirstOrDefaultAsync(t => t.TierId == voucher.TierId);
             if (tier == null)
@@ -67,11 +62,13 @@ namespace vegeatery.Controllers
                 return NotFound("User not found");
             }
 
-            var vouchers = await _context.Vouchers
+            var userVouchers = await _context.Vouchers
                 .Where(v => v.TierId == user.TierId)
+                .Where(v => !_context.VoucherRedemptions
+                    .Any(r => r.UserId == userId && r.VoucherId == v.VoucherId && r.RedeemedAt.AddDays(7) > DateTime.UtcNow))
                 .ToListAsync();
 
-            return Ok(vouchers);
+            return Ok(userVouchers);
         }
 
 
@@ -135,10 +132,6 @@ namespace vegeatery.Controllers
                 return BadRequest("Voucher name and discounts are required.");
             }
 
-            if (voucher.ExpiryDate <= DateTime.UtcNow)
-            {
-                return BadRequest("Expiry date must be in the future.");
-            }
 
             // Check if the voucher exists
             var existingVoucher = await _context.Vouchers
@@ -160,7 +153,6 @@ namespace vegeatery.Controllers
             // Update voucher properties
             existingVoucher.VoucherName = voucher.VoucherName;
             existingVoucher.DiscountPercentage = voucher.DiscountPercentage;
-            existingVoucher.ExpiryDate = voucher.ExpiryDate;
             existingVoucher.TierId = voucher.TierId;
             existingVoucher.Tier = tier;
 

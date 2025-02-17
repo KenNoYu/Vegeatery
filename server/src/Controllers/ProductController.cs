@@ -45,12 +45,13 @@ namespace vegeatery.Controllers
                     x.Fats,
                     x.Carbs,
                     x.Protein,
+                    x.Stocks,
                     x.ProductPrice,
                     x.DiscountPercentage,
                     x.DiscountedPrice,
+                    IsActive = x.Stocks > 0,
                     x.CategoryId,
-                    x.Category.CategoryName,
-                    
+                    x.Category.CategoryName,          
                     x.CreatedAt,
                     x.UpdatedAt
                 })
@@ -91,7 +92,9 @@ namespace vegeatery.Controllers
                 Fats = product.Fats,
                 Carbs = product.Carbs,
                 Protein = product.Protein,
+                Stocks = product.Stocks,
                 CategoryId = product.CategoryId,
+                IsActive = product.IsActive,
             };
 
             // Add the new product to the database
@@ -124,12 +127,14 @@ namespace vegeatery.Controllers
                     p.Fats,
                     p.Carbs,
                     p.Protein,
+                    p.Stocks,
                     p.ProductPrice,
                     p.DiscountPercentage,
                     p.DiscountedPrice,
                     p.CategoryId,
                     p.Category.CategoryName,
                     p.ProductPoints,
+                    p.IsActive,
                     p.CreatedAt,
                     p.UpdatedAt
                 })
@@ -167,9 +172,11 @@ namespace vegeatery.Controllers
             existingProduct.Fats = product.Fats;
             existingProduct.Carbs = product.Carbs;
             existingProduct.Protein = product.Protein;
+            existingProduct.Stocks = product.Stocks;
             existingProduct.ProductPrice = product.ProductPrice;
             existingProduct.DiscountPercentage = product.DiscountPercentage;
             existingProduct.UpdatedAt = DateTime.Now;
+            existingProduct.IsActive = product.IsActive;
 
             _context.SaveChanges();
 

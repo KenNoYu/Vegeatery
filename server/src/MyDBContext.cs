@@ -28,6 +28,7 @@ namespace vegeatery
     }
 
     public required DbSet<Product> Product { get; set; }
+    public required DbSet<ProductLog> ProductLogs { get; set; }
     public required DbSet<Category> Category { get; set; }
     public required DbSet<Cart> Cart { get; set; }
     public required DbSet<Order> Order { get; set; }
@@ -38,6 +39,7 @@ namespace vegeatery
     public required DbSet<Table> Tables { get; set; }
     public required DbSet<Tier> Tiers { get; set; }
     public required DbSet<Voucher> Vouchers { get; set; }
+    public required DbSet<VoucherRedemption> VoucherRedemptions { get; set; }
     public required DbSet<GeneralFeedback> GeneralFeedbacks { get; set; }
     public required DbSet<User> Users { get; set; }
     public required DbSet<Role> Role { get; set; }

@@ -7,6 +7,9 @@ public class User
 	[Key]
 	public int Id { get; set; }
 
+	[MaxLength(20)]
+	public string? ImageFile { get; set; }
+
 	[Required]
 	[MaxLength(50)]
 	public string? Username { get; set; }
@@ -46,6 +49,8 @@ public class User
 	public bool Agreement { get; set; }
 
 	public int TotalPoints { get; set; } = 0;
+	public DateTime? PointsExpiryDate { get; set; } = null;
+    public DateTime? PointsPeriodStartDate { get; set; } = null ;
 
     public string? JwtToken { get; set; }
 
@@ -63,8 +68,11 @@ public class User
 
 	// Navigation property
 	public Cart Cart { get; set; }
+    public int OrderCount { get; set; } = 0;
+    public DateTime? OrderPeriodStartDate { get; set; } = null;
 
     // 🔹 Relationship: A User can have multiple feedbacks
     public virtual ICollection<GeneralFeedback>? Feedbacks { get; set; }
+   
 }
 
