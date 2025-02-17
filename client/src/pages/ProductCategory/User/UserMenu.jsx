@@ -9,61 +9,39 @@ import { toast } from 'react-toastify';
 
 const DetailsTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputLabel-root.Mui-focused": {
-    color: "black", // Label color when focused and at the top
+    color: "#C6487E", // Label color when focused and at the top
   },
   "& .MuiOutlinedInput-root": {
     "&:hover fieldset": {
-      borderColor: "black", // Outline on hover
+      borderColor: "#C6487E", // Outline on hover
     },
     "&.Mui-focused fieldset": {
-      borderColor: "black", // Outline when focused
+      borderColor: "#C6487E", // Outline when focused
     },
   },
   "& .MuiInputLabel-root": {
-    color: "black", // Label color
+    color: "#C6487E", // Label color
   },
   "& .Mui-focused": {
-    color: "black", // Label when focused
+    color: "#C6487E", // Label when focused
   },
 }));
 
+const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
+  color: "#C6487E", // Default color
+  "&.Mui-focused": {
+      color: "#C6487E", // Keep visible when focused or shrinked
+  }
+}));
+
 const DetailedSelect = styled(Select)(({ theme }) => ({
-  "& .MuiInputLabel-root.Mui-focused": {
-    color: "black", // Label color when focused and at the top
-  },
-  "& .MuiOutlinedInput-root": {
+  "&.MuiOutlinedInput-root": {
+
     "&:hover fieldset": {
-      borderColor: "black", // Outline on hover
+      borderColor: "black", // Border on hover
     },
     "&.Mui-focused fieldset": {
-      borderColor: "black", // Outline when focused
-    },
-    "& fieldset": {
-      borderColor: "black", // Default border color
-      borderWidth: "1px", // Ensure the border width is consistent
-    },
-  },
-
-  // Ensuring InputLabel stays in place and is styled properly
-  "& .MuiInputLabel-root": {
-    color: "black", // Label color
-    "&.Mui-focused": {
-      color: "black", // Keep the label color black when focused
-    },
-  },
-
-  // Customizing the select dropdown icon
-  "& .MuiSelect-icon": {
-    color: "black", // Color of the dropdown icon
-  },
-
-
-
-  // Style for selected item
-  "& .Mui-selected": {
-    backgroundColor: "#c0c0c0", // Background of selected item
-    "&:hover": {
-      backgroundColor: "#b0b0b0", // Hover effect on selected item
+      borderColor: "#C6487E", // Border when focused
     },
   },
 }));
@@ -98,6 +76,7 @@ const UserMenu = () => {
   const [priceFilter, setPriceFilter] = useState(''); // State for price filter
   const [caloriesFilter, setCaloriesFilter] = useState(''); // State for calories filter
   const [pointsFilter, setPointsFilter] = useState(''); // State for points filter
+  const [proteinFilter, setProteinFilter] = useState(''); // State for points filter
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [allergyFilter, setAllergyFilter] = useState(false);  // Allergy filter state
 
@@ -190,7 +169,7 @@ const UserMenu = () => {
   };
 
 
-  
+
   const getUserAllergies = () => {
     return user?.allergyInfo || [];  // Make sure the key name matches your API response
   };
@@ -239,8 +218,6 @@ const UserMenu = () => {
     // Apply the third filter (calories order sorting)
     if (caloriesFilter.includes("lowest")) {
       filtered = [...filtered].sort((a, b) => a.calories - b.calories);
-    } else if (caloriesFilter.includes("highest")) {
-      filtered = [...filtered].sort((a, b) => b.calories - a.calories);
     }
 
     // Apply the fourth filter (points order sorting)
@@ -250,8 +227,13 @@ const UserMenu = () => {
       filtered = [...filtered].sort((a, b) => b.productPoints - a.productPoints);
     }
 
+    // Apply the fifth filter (protein order sorting)
+    if (proteinFilter.includes("highest")) {
+      filtered = [...filtered].sort((a, b) => b.protein - a.protein);
+    }
+
     setFilteredProducts(filtered);
-  }, [filterValue, priceFilter, caloriesFilter, pointsFilter, products, allergyFilter, user]);
+  }, [filterValue, priceFilter, caloriesFilter, pointsFilter, proteinFilter, products, allergyFilter, user]);
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
@@ -268,6 +250,10 @@ const UserMenu = () => {
       );
     } else if (filterType === "points") {
       setPointsFilter((prev) =>
+        checked ? [value] : prev.filter((item) => item !== value)
+      );
+    } else if (filterType === "protein") {
+      setProteinFilter((prev) =>
         checked ? [value] : prev.filter((item) => item !== value)
       );
     }
@@ -314,7 +300,7 @@ const UserMenu = () => {
           />
 
           <FormControl fullWidth sx={{ marginBottom: '20px' }}>
-            <InputLabel id="filter-category-label">Select Filter</InputLabel>
+            <StyledInputLabel id="filter-category-label">Select Filter</StyledInputLabel>
             <DetailedSelect
               labelId="filter-category-label"
               value={selectedFilter}
@@ -328,6 +314,51 @@ const UserMenu = () => {
           {/* Conditionally render filter options based on dropdown selection */}
           {selectedFilter === 'choose-filters' && (
             <>
+              <FormControl component="fieldset">
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <CustomCheckbox
+                        checked={caloriesFilter.includes("lowest")}
+                        onChange={handleCheckboxChange}
+                        name="lowest-calories"
+                      />
+                    }
+                    label="Low Calories Meals"
+                  />
+                </FormGroup>
+              </FormControl>
+
+              <FormControl component="fieldset">
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <CustomCheckbox
+                        checked={proteinFilter.includes("highest")}
+                        onChange={handleCheckboxChange}
+                        name="highest-protein"
+                      />
+                    }
+                    label="High Protein Meals"
+                  />
+                </FormGroup>
+              </FormControl>
+
+              <FormControl component="fieldset">
+                <FormGroup row>
+                  <FormControlLabel
+                    control={
+                      <CustomCheckbox
+                        checked={allergyFilter}
+                        onChange={(e) => setAllergyFilter(e.target.checked)}  // Toggle the state
+                        name="allergy-filter" // "allergy" will be extracted as the filter type
+                      />
+                    }
+                    label="Filter by Allergy"
+                  />
+                </FormGroup>
+              </FormControl>
+
               <Typography variant="body1" color="textSecondary">
                 <strong>Price</strong>
               </Typography>
@@ -356,33 +387,6 @@ const UserMenu = () => {
                 </FormGroup>
               </FormControl>
 
-              <Typography variant="body1" color="textSecondary">
-                <strong>Calories</strong>
-              </Typography>
-              <FormControl component="fieldset">
-                <FormGroup row>
-                  <FormControlLabel
-                    control={
-                      <CustomCheckbox
-                        checked={caloriesFilter.includes("lowest")}
-                        onChange={handleCheckboxChange}
-                        name="lowest-calories"
-                      />
-                    }
-                    label="Low to High"
-                  />
-                  <FormControlLabel
-                    control={
-                      <CustomCheckbox
-                        checked={caloriesFilter.includes("highest")}
-                        onChange={handleCheckboxChange}
-                        name="highest-calories"
-                      />
-                    }
-                    label="High to Low"
-                  />
-                </FormGroup>
-              </FormControl>
 
               <Typography variant="body1" color="textSecondary">
                 <strong>Points</strong>
@@ -412,20 +416,6 @@ const UserMenu = () => {
                 </FormGroup>
               </FormControl>
 
-              <FormControl component="fieldset">
-                <FormGroup row>
-                  <FormControlLabel
-                    control={
-                      <CustomCheckbox
-                        checked={allergyFilter}
-                        onChange={(e) => setAllergyFilter(e.target.checked)}  // Toggle the state
-                        name="allergy-filter" // "allergy" will be extracted as the filter type
-                      />
-                    }
-                    label="Filter by Allergy"
-                  />
-                </FormGroup>
-              </FormControl>
             </>
           )}
 
