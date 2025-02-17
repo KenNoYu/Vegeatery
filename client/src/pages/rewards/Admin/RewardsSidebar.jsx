@@ -29,13 +29,14 @@ const RewardsSidebar = () => {
         anchor="left"
         PaperProps={{
           sx: {
-            backgroundColor: '#000000',
+            backgroundColor: '#1a1a1a',
             width: 240,
             height: '120vh',
             borderRight: '0.5px solid #000000',
             padding: '2em 0.5em',
             position: 'fixed',
-            marginTop: '64px', // Dynamically adjust based on navbar height
+            marginTop: '64px',
+            zIndex: "500", // Dynamically adjust based on navbar height
           },
         }}
       >
