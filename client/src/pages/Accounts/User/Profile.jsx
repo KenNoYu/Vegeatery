@@ -87,9 +87,7 @@ const updateProfileSchema = yup.object().shape({
     .trim()
     .email("Enter a valid email")
     .max(50, "Email must be at most 50 characters"),
-  dob: yup
-    .date()
-    .max(new Date(), "Date of birth must be in the past"),
+  dob: yup.date().max(new Date(), "Date of birth must be in the past"),
   contact: yup
     .string()
     .trim()
@@ -153,7 +151,7 @@ export default function ProfilePage() {
       setLoading(false);
     }
   };
-  
+
   // Use useEffect to fetch user info when the component loads
   useEffect(() => {
     http
@@ -185,17 +183,18 @@ export default function ProfilePage() {
     let file = e.target.files[0];
     if (file) {
       if (file.size > 1024 * 1024) {
-        toast.error('Maximum file size is 1MB');
+        toast.error("Maximum file size is 1MB");
         return;
       }
 
       let formData = new FormData();
-      formData.append('file', file);
-      http.post('/file/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      formData.append("file", file);
+      http
+        .post("/file/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((res) => {
           setImageFile(res.data.filename);
         })
@@ -218,21 +217,21 @@ export default function ProfilePage() {
       allergy: user.allergyInfo,
       meal: user.mealTypes,
     };
-    
+
     try {
       await updateProfileSchema.validate(updateUserDto, {
         abortEarly: false,
       });
 
       http
-      .put(`/Account/${userId}`, updateUserDto)
-      .then((response) => {
-        toast.success("Profile updated successfully!");
-        setIsEditing(false); // Disable edit mode after saving
-      })
-      .catch((error) => {
-        toast.error("Error updating profile. Please try again.");
-      });
+        .put(`/Account/${userId}`, updateUserDto)
+        .then((response) => {
+          toast.success("Profile updated successfully!");
+          setIsEditing(false); // Disable edit mode after saving
+        })
+        .catch((error) => {
+          toast.error("Error updating profile. Please try again.");
+        });
     } catch (error) {
       if (error.inner) {
         error.inner.forEach((err) => {
@@ -241,7 +240,7 @@ export default function ProfilePage() {
       } else {
         console.error("Unknown error:", error);
       }
-    } 
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -308,7 +307,9 @@ export default function ProfilePage() {
   };
 
   return (
-    <Box sx={{ display: "flex", height: "100%", marginTop: "2em", width: "100%" }}>
+    <Box
+      sx={{ display: "flex", height: "100%", marginTop: "2em", width: "100%" }}
+    >
       <Sidebar />
       <ProfileBox>
         {loading ? (
@@ -344,7 +345,13 @@ export default function ProfilePage() {
               >
                 <ProfileImage
                   alt={user.username}
-                  src={imageFile ? `${import.meta.env.VITE_FILE_BASE_URL}${imageFile}` : `${import.meta.env.VITE_FILE_BASE_URL}${user.profileImage}`}
+                  src={
+                    imageFile
+                      ? `${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`
+                      : `${import.meta.env.VITE_FILE_BASE_URL}${
+                          user.profileImage
+                        }`
+                  }
                   sx={{
                     width: 160,
                     height: 160,
@@ -356,10 +363,22 @@ export default function ProfilePage() {
                 />
 
                 {isEditing && (
-                  <div> {/* Added a wrapping div */}
-                    <Button variant="contained" component="label" sx={{fontWeight: "bold"}}>
+                  <div>
+                    {" "}
+                    {/* Added a wrapping div */}
+                    <Button
+                      variant="contained"
+                      component="label"
+                      sx={{ fontWeight: "bold" }}
+                    >
                       Upload Image
-                      <input hidden accept="image/*" multiple type="file" onChange={onFileChange} />
+                      <input
+                        hidden
+                        accept="image/*"
+                        multiple
+                        type="file"
+                        onChange={onFileChange}
+                      />
                     </Button>
                   </div> // Close the wrapping div
                 )}
@@ -444,11 +463,13 @@ export default function ProfilePage() {
             </Box>
 
             {/* Personal Details Section */}
-            <ProfileDetailsBox sx={{
-              width: "90%",
-              marginLeft: "auto",
-              marginRight: "auto"
-            }}>
+            <ProfileDetailsBox
+              sx={{
+                width: "90%",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+            >
               <ProfileSection>
                 <Typography variant="h6" fontWeight="bold">
                   Personal Details
@@ -726,7 +747,18 @@ export default function ProfilePage() {
           </Box>
         )}
       </ProfileBox>
-      <ToastContainer />
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </Box>
   );
 }
