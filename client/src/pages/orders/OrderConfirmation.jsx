@@ -14,7 +14,6 @@ const OrderConfirmation = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const orderId = searchParams.get('orderId');
-    const hasUpdated = useRef(false);
 
     useEffect(() => {
         if (orderId) {
@@ -54,6 +53,7 @@ const OrderConfirmation = () => {
             // Check if the response is successful (status 200)
             if (response.status === 200) {
                 console.log('Stock updated:', response.data);
+                updateTotalBought(productId, quantity)
             } else {
                 console.log('Error updating stock:', response.data);
             }
@@ -74,18 +74,16 @@ const OrderConfirmation = () => {
 
     useEffect(() => {
         if (order) {
-            hasUpdated.current = true;
             order.orderItems.forEach(item => {
                 if (item.productId) {
                     console.log(`Updating stock for Product ID: ${item.productId} with Quantity: ${item.quantity}`);
                     updateStock(item.productId, item.quantity); // Update stock for each product in the order
-                    updateTotalBought(item.productId, item.quantity); // update the total bought items
                 } else {
                     console.error('Missing productId for item:', item); // Log if productId is missing
                 }
             });
             UpdateOrderAsNew(order.orderId);       
-            sendEmail();
+            //sendEmail();
             updateUserPoints();
         }
     }, [order]);
@@ -121,7 +119,7 @@ const OrderConfirmation = () => {
 
         http.put("/product/updateTotalBought", updateData)
         .then((res) => {
-            return res;
+            console.log(res);
         })
         .catch((error) => {
             console.error("Error fetching orders:", error);
