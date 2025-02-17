@@ -67,8 +67,8 @@ const PointsHistory = () => {
                 }}
             >
                 <Container maxWidth="md">
-                    <Box p={3} mt={10} bgcolor="white" borderRadius={2} boxShadow={3} mb={5}>
-                        <Typography variant="h4" fontWeight="bold" textAlign="center" mb={2}>
+                    <Box p={3} mt={10} bgcolor="white" mb={5}>
+                        <Typography variant="h4" fontWeight="bold" textAlign="center" mb={5}>
                             Points History
                         </Typography>
                         <Grid container spacing={2} justifyContent="center">
