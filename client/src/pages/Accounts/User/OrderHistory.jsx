@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, RadioGroup, FormControlLabel, Radio, Typography, Avatar, Input, Grid2 as Grid, Card } from '@mui/material';
+import { Box, Button, TextField, RadioGroup, FormControlLabel, Radio, Typography, Avatar, Input, Grid2 as Grid, Card} from '@mui/material';
 import { styled } from '@mui/system';
 import http from '../../../http';
 import UserContext from '../../../contexts/UserContext'
@@ -8,6 +8,7 @@ import { WindowSharp } from '@mui/icons-material';
 import * as yup from 'yup';
 import { ToastContainer, toast } from "react-toastify";
 import Sidebar from "./UserSidebar";
+import NoOrders from "../../../assets/NoOrders.png"
 
 const ProfileBox = styled(Box)(({ theme }) => ({
     padding: theme.spacing(4),
@@ -85,7 +86,7 @@ const MyOrdersPage = () => {
                                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                                         {order.orderItems.map((item, i) => {
                                             return (
-                                                <Box key={item.productName || i} sx={{ mb: 2 }}>
+                                                <Box key={item.productId || i} sx={{ mb: 2 }}>
                                                     <Typography variant='h6'>
                                                         {item.productName} <Typography variant="subtitle1">
                                                             x {item.quantity}
@@ -115,9 +116,38 @@ const MyOrdersPage = () => {
                             </Grid>
                         ))
                     ) : (
-                        <Typography variant="body1" sx={{ mt: 2 }}>
-                            No Past Orders.
-                        </Typography>
+                       <Box sx={{ 
+                            display: "flex", 
+                            flexDirection: "column", 
+                            alignItems: "center", 
+                            justifyContent: "center", 
+                            width: "100%", 
+                            textAlign: "center", 
+                            mt: 4 
+                        }}> 
+                            {/* Illustration */}
+                            <img 
+                                src={NoOrders}
+                                alt="No orders" 
+                                style={{ width: "200px", height: "auto", marginBottom: "1em" }} 
+                            />
+                            {/* Message */}
+                            <Typography variant="h5" sx={{ mb: 2, color: "text.secondary" }}>
+                                No Past Orders
+                            </Typography>
+                            <Typography variant="body1" sx={{ mb: 3, color: "text.secondary" }}>
+                                Oops! It looks like you haven't placed any orders yet. Start exploring our products!
+                            </Typography>
+                            {/* Call-to-Action Button */}
+                            <Button 
+                                variant="contained" 
+                                color="Accent" 
+                                sx={{ borderRadius: "8px", textTransform: "none", fontSize: "1rem" }}
+                                onClick={() => { }}
+                            >
+                                Explore Products
+                            </Button>
+                        </Box>
                     )}
                 </Grid>
             </Box>
