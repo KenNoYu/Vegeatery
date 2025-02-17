@@ -73,6 +73,7 @@ public class User
 
     // 🔹 Relationship: A User can have multiple feedbacks
     public virtual ICollection<GeneralFeedback>? Feedbacks { get; set; }
-   
+
+    public virtual ICollection<Reservation>? Reservations { get; set; }
 }
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using vegeatery.Models;
 using vegeatery;
+using SendGrid.Helpers.Mail;
 
 namespace vegeatery.Controllers
 {
@@ -39,6 +40,10 @@ namespace vegeatery.Controllers
         return BadRequest("Invalid reservation request. Tables must be selected.");
       }
 
+        // Check if a user exists with the given email
+      var user = await _dbContext.Users
+                                 .FirstOrDefaultAsync(u => u.Email == request.CustomerEmail);
+
       var reservation = new Reservation
       {
         ReservationDate = request.ReservationDate,
@@ -46,7 +51,8 @@ namespace vegeatery.Controllers
         CustomerName = request.CustomerName,
         CustomerEmail = request.CustomerEmail,
         CustomerPhone = request.CustomerPhone,
-        Status = "Pending"
+        Status = "Pending",
+        UserId = user?.Id
       };
 
       // Get the tables from the database based on the IDs sent in the request
@@ -200,14 +206,18 @@ namespace vegeatery.Controllers
       try
       {
         // Find the reservation by its ID
-        var reservation = await _dbContext.Reservations.FindAsync(reservationId);
+        var reservation = await _dbContext.Reservations
+                                      .Include(r => r.Tables) // Includes the tables linked to this reservation
+                                      .FirstOrDefaultAsync(r => r.Id == reservationId);
 
         if (reservation == null)
         {
           return NotFound(new { message = "Reservation not found." });
         }
 
-        // Update the status to "Seated"
+        reservation.Tables.Clear();
+
+        // Update the status to "cancelled"
         reservation.Status = "cancelled";
 
         // Save changes to the database
@@ -263,34 +273,61 @@ namespace vegeatery.Controllers
       }
     }
 
-        [HttpPut("UpdateReservation/{id}")]
-        public async Task<IActionResult> UpdateReservation(int id, [FromBody] ReservationRequest updatedReservation)
+    [HttpPut("UpdateReservation/{id}")]
+    public async Task<IActionResult> UpdateReservation(int id, [FromBody] ReservationRequest updatedReservation)
+    {
+        var reservation = await _dbContext.Reservations
+                                            .Include(r => r.Tables)
+                                            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (reservation == null)
         {
-            var reservation = await _dbContext.Reservations
-                                              .Include(r => r.Tables)
-                                              .FirstOrDefaultAsync(r => r.Id == id);
+            return NotFound(new { message = "Reservation not found." });
+        }
 
-            if (reservation == null)
-            {
-                return NotFound(new { message = "Reservation not found." });
-            }
+        reservation.ReservationDate = updatedReservation.ReservationDate;
+        reservation.TimeSlot = updatedReservation.TimeSlot;
+        reservation.CustomerName = updatedReservation.CustomerName;
+        reservation.CustomerEmail = updatedReservation.CustomerEmail;
+        reservation.CustomerPhone = updatedReservation.CustomerPhone;
+        reservation.Status = updatedReservation.Status;
 
-            reservation.ReservationDate = updatedReservation.ReservationDate;
-            reservation.TimeSlot = updatedReservation.TimeSlot;
-            reservation.CustomerName = updatedReservation.CustomerName;
-            reservation.CustomerEmail = updatedReservation.CustomerEmail;
-            reservation.CustomerPhone = updatedReservation.CustomerPhone;
-            reservation.Status = updatedReservation.Status;
+        reservation.Tables.Clear();
 
-            var selectedTables = await _dbContext.Tables
-                                         .Where(t => updatedReservation.TableIds.Contains(t.Id))
-                                         .ToListAsync();
+        var selectedTables = await _dbContext.Tables
+                                        .Where(t => updatedReservation.TableIds.Contains(t.Id))
+                                        .ToListAsync();
 
-            reservation.Tables = selectedTables;
+        reservation.Tables = selectedTables;
 
-            await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
 
-            return Ok(new { message = "Reservation updated successfully", reservation });
+        return Ok(new { message = "Reservation updated successfully", reservation });
+    }
+
+        // get upcoming reservations
+        [HttpGet("UserPending/{userId}")]
+        public async Task<IActionResult> GetPendingReservationsByUserId(int userId)
+        {
+            var reservations = await _dbContext.Reservations
+              .Include(r => r.Tables)
+              .Where(r => r.UserId == userId && r.Status == "Pending")
+              .OrderBy(r => r.ReservationDate)
+              .ToListAsync();
+            return Ok(reservations);
+        }
+
+        // get past reservations
+        [HttpGet("UserPast/{userId}")]
+        public async Task<IActionResult> GetSeatedReservationsByUserId(int userId)
+        {
+            var reservations = await _dbContext.Reservations
+              .Include(r => r.Tables)
+              .Where(r => r.UserId == userId && r.Status == "seated")
+              .OrderByDescending(r => r.ReservationDate)
+              .ToListAsync();
+
+            return Ok(reservations);
         }
     }
 }
