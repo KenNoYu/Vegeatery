@@ -53,22 +53,18 @@ const OrderDashboard = () => {
 
     const fetchUsers = () => {
         http.get("/Account", {
-                withCredentials: true,
-            })
+            withCredentials: true,
+        })
             .then((res) => {
                 setUsers(res.data)
-                calculateTotalUsers()
+                const totalUsersCal = res.data.length; // Calculate total users directly
+                setTotalUsers(totalUsersCal); // Update totalUsers state
+                setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
                 setUsers([]);
             })
-    };
-
-    const calculateTotalUsers = () => {
-        const totalUsersCal = users.length; // Efficient calculation
-        setTotalUsers(totalUsersCal);
-        setLoading(false);
     };
 
     if (loading) {
@@ -89,23 +85,23 @@ const OrderDashboard = () => {
                     </Grid>
 
                     {/* Quick Stats */}
-                    <Grid item xs={12} md={3} lg={3}>
-                        <Card sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', p: 2 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Grid item xs={12} md={2} lg={2} sx={{ height: 350 }}>
+                        <Card sx={{ mb: 7, display: 'flex', justifyContent: 'space-between', p: 3 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
                                 <Package />
                                 <Typography fontWeight="medium">Total Orders</Typography>
                             </Box>
                             <CircularProgress color='Primary' />
                         </Card>
-                        <Card sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', p: 2 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Card sx={{ mb: 7, display: 'flex', justifyContent: 'space-between', p: 3 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
                                 <Calendar />
-                                <Typography fontWeight="medium">Reservationss</Typography>
+                                <Typography fontWeight="medium">Reservations</Typography>
                             </Box>
                             <CircularProgress color='Primary' />
                         </Card>
-                        <Card sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', p: 2 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Card sx={{ mb: 7, display: 'flex', justifyContent: 'space-between', p: 3 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
                                 <User />
                                 <Typography fontWeight="medium">Total Users</Typography>
                             </Box>
@@ -159,9 +155,9 @@ const OrderDashboard = () => {
                 </Grid>
 
                 {/* Quick Stats */}
-                <Grid item xs={12} md={3} lg={3}>
+                <Grid item xs={12} md={3} lg={3} sx={{ height: 350 }}>
                     {stats.map((stat, index) => (
-                        <Card key={index} sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', p: 2 }}>
+                        <Card key={index} sx={{ mb: 7, display: 'flex', justifyContent: 'space-between', p: 3 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 {stat.icon}
                                 <Typography fontWeight="medium">{stat.label}</Typography>
@@ -217,17 +213,17 @@ const OrderDashboard = () => {
 
                                 {/* Product Info */}
                                 <Box>
-                                    <Typography fontWeight="medium" variant="subtitle1">
+                                    <Typography fontWeight="Bold" variant="h6">
                                         {product.productName}
                                     </Typography>
                                 </Box>
 
                                 {/* Product Earnings */}
                                 <Box textAlign="right">
-                                    <Typography color="error" fontWeight="bold">
+                                    <Typography color="Accent" fontWeight="bold" variant="body1">
                                         Earnings: ${product.productPrice * product.quantityBought}
                                     </Typography>
-                                    <Typography variant="caption" color="textSecondary">
+                                    <Typography variant="body1" color="textSecondary">
                                         x{product.quantityBought} Sold
                                     </Typography>
                                 </Box>
