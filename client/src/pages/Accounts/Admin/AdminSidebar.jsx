@@ -1,7 +1,7 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import { Dashboard, ShoppingCart, Event } from '@mui/icons-material';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import { Box } from '@mui/system';
 import { Link, useLocation } from 'react-router-dom'; // React Router imports
 import vegeateryWhiteHorizontal from '../../../assets/logo/vegeateryWhiteHorizontal.png';
@@ -11,8 +11,8 @@ const AdminSidebar = () => {
 
   // List items data
   const menuItems = [
-    { id: 'users', text: 'Store Users', icon: <Dashboard />, path: '/admin/accounts' },
-    { id: 'role', text: 'Role Modify', icon: <ShoppingCart />, path: '/admin/roleModify' }
+    { id: 'users', text: 'Store Users', icon: <PersonSearchIcon />, path: '/admin/accounts' },
+    { id: 'role', text: 'Role Modify', icon: <AutoFixHighIcon />, path: '/admin/roleModify' }
   ];
 
   // Function to check if a route is active
