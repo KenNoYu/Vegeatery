@@ -49,6 +49,8 @@ public class User
 	public bool Agreement { get; set; }
 
 	public int TotalPoints { get; set; } = 0;
+	public DateTime? PointsExpiryDate { get; set; } = null;
+    public DateTime? PointsPeriodStartDate { get; set; } = null ;
 
     public string? JwtToken { get; set; }
 
