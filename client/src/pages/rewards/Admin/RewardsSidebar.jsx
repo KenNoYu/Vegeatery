@@ -35,7 +35,8 @@ const RewardsSidebar = () => {
             borderRight: '0.5px solid #000000',
             padding: '2em 0.5em',
             position: 'fixed',
-            marginTop: '64px', // Dynamically adjust based on navbar height
+            marginTop: '64px',
+            zIndex: "500", // Dynamically adjust based on navbar height
           },
         }}
       >
