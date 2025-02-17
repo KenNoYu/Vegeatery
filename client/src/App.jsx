@@ -325,6 +325,7 @@ function App() {
               <Route path="/admin/accounts" element={<Accounts />} />
               <Route path="/user/profile" element={<Profile />} />
               <Route path="/overview" element={<UserOverview />} />
+              <Route path="/user/orders" element={<MyOrdersPage />} />
             </Routes>
           </Container>
 
@@ -334,7 +335,6 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/form" element={<MyForm />} />
-              <Route path="/user/orders" element={<MyOrdersPage />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />
@@ -348,30 +348,15 @@ function App() {
               <Route path="/editproduct/:productId" element={<EditProduct />} />
               <Route path="/user/store" element={<UserMenu />} />
               <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
-              <Route
-                path={"/editcategory/:categoryId"}
-                element={<EditCategory />}
-              />
+              <Route path={"/editcategory/:categoryId"} element={<EditCategory />}/>
 
               {/* RESERVATION */}
               <Route path="/reserve" element={<ReservationPage />} />
               <Route path="/reserve/confirmed" element={<ConfirmationPage />} />
-              <Route
-                path="/staff/viewreservations"
-                element={<StaffReservations />}
-              />
-              <Route
-                path="/staff/reservationlogs"
-                element={<StaffReserveLogs />}
-              />
-              <Route
-                path="/staff/viewreservations/:id"
-                element={<StaffFocusedReservation />}
-              />
-              <Route
-                path="/staff/addreservation"
-                element={<StaffAddReservation />}
-              />
+              <Route path="/staff/viewreservations" element={<StaffReservations />}/>
+              <Route path="/staff/reservationlogs" element={<StaffReserveLogs />}/>
+              <Route path="/staff/viewreservations/:id" element={<StaffFocusedReservation />}/>
+              <Route path="/staff/addreservation" element={<StaffAddReservation />}/>
 
               {/* REWARDS */}
               <Route path="/user/rewards" element={<PointsSystem />} />
