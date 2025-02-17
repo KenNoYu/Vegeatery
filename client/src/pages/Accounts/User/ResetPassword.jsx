@@ -12,6 +12,7 @@ import { useLocation } from "react-router-dom";
 import http from "../../../http";
 import { useNavigate } from "react-router-dom";
 import vegeateryMain from "../../../assets/logo/vegeateryMain.png";
+import { ToastContainer, toast } from "react-toastify";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   display: "flex",
@@ -49,17 +50,17 @@ const Title = styled(Typography)(({ theme }) => ({
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
-    marginTop: theme.spacing(2),
-    textTransform: "none",
-    width: "100%",
-    backgroundColor: "#C6487E",
-    padding: "10px",
-    fontSize: "1rem",
-    color: "#fff",
-    borderRadius: "8px",
-    "&:hover": { backgroundColor: "#C6487E" }, // Full width within the content box
-  }));
-  
+  marginTop: theme.spacing(2),
+  textTransform: "none",
+  width: "100%",
+  backgroundColor: "#C6487E",
+  padding: "10px",
+  fontSize: "1rem",
+  color: "#fff",
+  borderRadius: "8px",
+  "&:hover": { backgroundColor: "#C6487E" }, // Full width within the content box
+}));
+
 const ResetPassword = () => {
   const navigate = useNavigate();
 
@@ -70,13 +71,12 @@ const ResetPassword = () => {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Check if token and email are available, otherwise show an error
     if (!token) {
-      setMessage("Invalid or expired reset token.");
+      toast.error("Invalid or expired reset token.")
     }
   }, [token]);
 
@@ -84,7 +84,7 @@ const ResetPassword = () => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      setMessage("Passwords do not match.");
+      toast.error("Passwords do not match.")
       return;
     }
 
@@ -101,12 +101,11 @@ const ResetPassword = () => {
         newPassword: password,
       });
       console.log("Password reset successful!");
-      setMessage("Your password has been reset successfully!");
+      toast.success("Your password has been reset successfully!")
       navigate("/login");
     } catch (error) {
       // Handle error appropriately
-      console.error("Error during password reset:", error);
-      setMessage("An error occurred while resetting the password.");
+      toast.error("An error occurred while resetting the password.")
     } finally {
       setLoading(false);
     }
@@ -188,15 +187,19 @@ const ResetPassword = () => {
             {loading ? "Resetting..." : "Reset Password"}
           </StyledButton>
         </form>
-        {message && (
-          <Typography
-            color={message.includes("error") ? "error" : "success"}
-            variant="body2"
-          >
-            {message}
-          </Typography>
-        )}
       </StyledContent>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </StyledContainer>
   );
 };
