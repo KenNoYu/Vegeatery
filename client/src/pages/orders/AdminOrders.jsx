@@ -301,203 +301,204 @@ const AdminOrders = () => {
     }
 
     return (
-        <Box sx={{ p: 2 }}>
-            {/* Sidebar */}
-            <ProductsSidebar />
-            <Typography variant="h5" gutterBottom>
-                Orders
-            </Typography>
-            <Tabs value={currentTab} onChange={handleTabChange} sx={{
-                mb: 2,
-                '& .MuiTabs-indicator': {
-                    backgroundColor: 'Accent.main', // Change the indicator color to Accent
-                },
-            }} color="Accent">
-                <Tab label="All Orders" sx={{
-                    color: currentTab === 0 ? 'Accent.main' : '', // Change text color for selected tab
-                    '&.Mui-selected': {
-                        color: 'Accent.main', // Ensure selected tab text color is Accent
-                    },
-                }} />
-                <Tab label="In-Progress" sx={{
-                    color: currentTab === 1 ? 'Accent.main' : '', // Change text color for selected tab
-                    '&.Mui-selected': {
-                        color: 'Accent.main', // Ensure selected tab text color is Accent
-                    },
-                }} />
-                <Tab label="Completed" sx={{
-                    color: currentTab === 2 ? 'Accent.main' : '', // Change text color for selected tab
-                    '&.Mui-selected': {
-                        color: 'Accent.main', // Ensure selected tab text color is Accent
-                    },
-                }} />
-            </Tabs>
-
-            <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-                <Button
-                    variant="outlined"
-                    color="primaryText"
-                    onClick={handleStartDialogOpen}
-                >
-                    {`${new Date(startDate).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                    })}`}
-                </Button>
-                <Typography variant="body1">
-                    To:
+        <>
+            <Box sx={{ p: 2 }}>
+                {/* Sidebar */}
+                <ProductsSidebar />
+                <Typography variant="h5" gutterBottom>
+                    Orders
                 </Typography>
-                <Button
-                    variant="outlined"
-                    color="primaryText"
-                    onClick={handleEndDialogOpen}
-                >
-                    {`${new Date(endDate).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                    })}`}
-                </Button>
-            </Box>
-            <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-                <Button
-                    variant="outlined"
-                    color="primaryText"
-                    onClick={exportToCSV}
-                >
-                    Export as CSV
-                </Button>
-            </Box>
+                <Tabs value={currentTab} onChange={handleTabChange} sx={{
+                    mb: 2,
+                    '& .MuiTabs-indicator': {
+                        backgroundColor: 'Accent.main', // Change the indicator color to Accent
+                    },
+                }} color="Accent">
+                    <Tab label="All Orders" sx={{
+                        color: currentTab === 0 ? 'Accent.main' : '', // Change text color for selected tab
+                        '&.Mui-selected': {
+                            color: 'Accent.main', // Ensure selected tab text color is Accent
+                        },
+                    }} />
+                    <Tab label="In-Progress" sx={{
+                        color: currentTab === 1 ? 'Accent.main' : '', // Change text color for selected tab
+                        '&.Mui-selected': {
+                            color: 'Accent.main', // Ensure selected tab text color is Accent
+                        },
+                    }} />
+                    <Tab label="Completed" sx={{
+                        color: currentTab === 2 ? 'Accent.main' : '', // Change text color for selected tab
+                        '&.Mui-selected': {
+                            color: 'Accent.main', // Ensure selected tab text color is Accent
+                        },
+                    }} />
+                </Tabs>
 
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Id</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Address</TableCell>
-                            <TableCell>Order Date</TableCell>
-                            <TableCell>Pick-Up Time</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Total Price</TableCell>
-                            <TableCell>Action</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody sx={{
-                        backgroundColor: 'transparent',
-                    }}>
-                        {orders.length > 0 ? (
-                            orders.map((order, i) => (
-                                <React.Fragment key={order.id || i}>
-                                    <TableRow sx={{
-                                        width: '100%',
-                                        border: '1px solid black',
-                                        borderRadius: '8px',
-                                        marginTop: 2,
-                                        marginBottom: 2, // Space between rows
-                                        overflow: 'hidden', // Ensure border radius applies
-                                    }}>
-                                        <TableCell sx={{ flex: 1 }}>{order.orderId}</TableCell>
-                                        <TableCell sx={{ flex: 1 }}>{order.fullName}</TableCell>
-                                        <TableCell sx={{ flex: 1 }}>{order.address}</TableCell>
-                                        <TableCell sx={{ flex: 1 }}>{order.orderDate}</TableCell>
-                                        <TableCell sx={{ flex: 1 }}>{order.timeSlot}</TableCell>
-                                        <TableCell sx={{ flex: 1 }}>{order.status}</TableCell>
-                                        <TableCell sx={{ flex: 1 }}>{order.totalPrice}</TableCell>
-                                        <TableCell sx={{ flex: 1 }}>
-                                            <Button
-                                                variant="outlined"
-                                                size="small"
-                                                color="Primary"
-                                                onClick={() => toggleRow(order.orderId)}
-                                            >
-                                                {expandedRow === order.orderId ? "Collapse" : "Expand"}
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                    {expandedRow === order.orderId && (
-                                        <TableRow
-                                            sx={{
-                                                border: '1px solid black',
-                                                borderRadius: '8px',
-                                                marginBottom: 2,
-                                                overflow: 'hidden',
-                                                backgroundColor: '#f9f9f9', // Light background for expanded content
-                                            }}>
-                                            <TableCell colSpan={7}>
-                                                {order.items.map((item, index) => (
-                                                    <Box key={index} sx={{ ml: 2, my: 1 }}>
-                                                        <Typography variant="body1">
-                                                            x{item.quantity} {item.productName}
-                                                        </Typography>
-                                                    </Box>
-                                                ))}
+                <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                    <Button
+                        variant="outlined"
+                        color="primaryText"
+                        onClick={handleStartDialogOpen}
+                    >
+                        {`${new Date(startDate).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                        })}`}
+                    </Button>
+                    <Typography variant="body1">
+                        To:
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        color="primaryText"
+                        onClick={handleEndDialogOpen}
+                    >
+                        {`${new Date(endDate).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                        })}`}
+                    </Button>
+                </Box>
+                <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                    <Button
+                        variant="outlined"
+                        color="primaryText"
+                        onClick={exportToCSV}
+                    >
+                        Export as CSV
+                    </Button>
+                </Box>
+
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Id</TableCell>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Address</TableCell>
+                                <TableCell>Order Date</TableCell>
+                                <TableCell>Pick-Up Time</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Total Price</TableCell>
+                                <TableCell>Action</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody sx={{
+                            backgroundColor: 'transparent',
+                        }}>
+                            {orders.length > 0 ? (
+                                orders.map((order, i) => (
+                                    <React.Fragment key={order.id || i}>
+                                        <TableRow sx={{
+                                            width: '100%',
+                                            border: '1px solid black',
+                                            borderRadius: '8px',
+                                            marginTop: 2,
+                                            marginBottom: 2, // Space between rows
+                                            overflow: 'hidden', // Ensure border radius applies
+                                        }}>
+                                            <TableCell sx={{ flex: 1 }}>{order.orderId}</TableCell>
+                                            <TableCell sx={{ flex: 1 }}>{order.fullName}</TableCell>
+                                            <TableCell sx={{ flex: 1 }}>{order.address}</TableCell>
+                                            <TableCell sx={{ flex: 1 }}>{order.orderDate}</TableCell>
+                                            <TableCell sx={{ flex: 1 }}>{order.timeSlot}</TableCell>
+                                            <TableCell sx={{ flex: 1 }}>{order.status}</TableCell>
+                                            <TableCell sx={{ flex: 1 }}>{order.totalPrice}</TableCell>
+                                            <TableCell sx={{ flex: 1 }}>
+                                                <Button
+                                                    variant="outlined"
+                                                    size="small"
+                                                    color="Primary"
+                                                    onClick={() => toggleRow(order.orderId)}
+                                                >
+                                                    {expandedRow === order.orderId ? "Collapse" : "Expand"}
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
-                                    )}
-                                </React.Fragment>
-                            ))
-                        ) : (
-                            <Typography variant="body1">
+                                        {expandedRow === order.orderId && (
+                                            <TableRow
+                                                sx={{
+                                                    border: '1px solid black',
+                                                    borderRadius: '8px',
+                                                    marginBottom: 2,
+                                                    overflow: 'hidden',
+                                                    backgroundColor: '#f9f9f9', // Light background for expanded content
+                                                }}>
+                                                <TableCell colSpan={7}>
+                                                    {order.items.map((item, index) => (
+                                                        <Box key={index} sx={{ ml: 2, my: 1 }}>
+                                                            <Typography variant="body1">
+                                                                x{item.quantity} {item.productName}
+                                                            </Typography>
+                                                        </Box>
+                                                    ))}
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </React.Fragment>
+                                ))
+                            ) : (
+                                <Typography variant="body1">
 
-                            </Typography>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                                </Typography>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
-            {/* Dialog for start Date */}
-            <Dialog open={StartDateDialog} onClose={handleStartDialogOpen} maxWidth="lg">
-                <DialogTitle>Select Start Date</DialogTitle>
-                <DialogContent>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "flex-start",
-                            gap: 4,
-                            width: "100%",
-                        }}
-                    >
-                        {/* Left Half: Date Selector & Time Selector */}
-                        <Box sx={{ flex: 1, p: 4 }}>
-                            {/* Date Selector */}
-                            <AdminDateSelector selectedDate={startDate} onDateChange={handleStartDateSelect} allowPastDates={true} />
+                {/* Dialog for start Date */}
+                <Dialog open={StartDateDialog} onClose={handleStartDialogOpen} maxWidth="lg">
+                    <DialogTitle>Select Start Date</DialogTitle>
+                    <DialogContent>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                                gap: 4,
+                                width: "100%",
+                            }}
+                        >
+                            {/* Left Half: Date Selector & Time Selector */}
+                            <Box sx={{ flex: 1, p: 4 }}>
+                                {/* Date Selector */}
+                                <AdminDateSelector selectedDate={startDate} onDateChange={handleStartDateSelect} allowPastDates={true} />
+                            </Box>
                         </Box>
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleStartDialogClose} color="Accent">Cancel</Button>
-                    <Button onClick={() => handleStartDialogConfirm(startDate)} color="Accent">Confirm</Button>
-                </DialogActions>
-            </Dialog>
-            {/* Dialog for end Date */}
-            <Dialog open={EndDateDialog} onClose={handleEndDialogClose} maxWidth="lg">
-                <DialogTitle>Select Start Date</DialogTitle>
-                <DialogContent>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "flex-start",
-                            gap: 4,
-                            width: "100%",
-                        }}
-                    >
-                        {/* Left Half: Date Selector & Time Selector */}
-                        <Box sx={{ flex: 1, p: 4 }}>
-                            {/* Date Selector */}
-                            <AdminDateSelector selectedDate={endDate} onDateChange={handleEndDateSelect} allowPastDates={true} />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleStartDialogClose} color="Accent">Cancel</Button>
+                        <Button onClick={() => handleStartDialogConfirm(startDate)} color="Accent">Confirm</Button>
+                    </DialogActions>
+                </Dialog>
+                {/* Dialog for end Date */}
+                <Dialog open={EndDateDialog} onClose={handleEndDialogClose} maxWidth="lg">
+                    <DialogTitle>Select Start Date</DialogTitle>
+                    <DialogContent>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                                gap: 4,
+                                width: "100%",
+                            }}
+                        >
+                            {/* Left Half: Date Selector & Time Selector */}
+                            <Box sx={{ flex: 1, p: 4 }}>
+                                {/* Date Selector */}
+                                <AdminDateSelector selectedDate={endDate} onDateChange={handleEndDateSelect} allowPastDates={true} />
+                            </Box>
                         </Box>
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleEndDialogClose} color="Accent">Cancel</Button>
-                    <Button onClick={() => handleEndDialogConfirm(endDate)} color="Accent">Confirm</Button>
-                </DialogActions>
-            </Dialog>
-
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleEndDialogClose} color="Accent">Cancel</Button>
+                        <Button onClick={() => handleEndDialogConfirm(endDate)} color="Accent">Confirm</Button>
+                    </DialogActions>
+                </Dialog>
+            </Box>
             {/* ToastContainer for showing toasts */}
             <ToastContainer
                 position="top-right"  // Position set to top-right
@@ -505,8 +506,9 @@ const AdminOrders = () => {
                 hideProgressBar={false}
                 closeOnClick
                 rtl={false}
+                style={{ position: 'fixed', top: '70px', right: '20px' }}
             />
-        </Box>
+        </>
     )
 };
 
