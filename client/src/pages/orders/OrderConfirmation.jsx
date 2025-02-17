@@ -83,8 +83,7 @@ const OrderConfirmation = () => {
                     console.error('Missing productId for item:', item); // Log if productId is missing
                 }
             });
-            UpdateOrderAsNew(order.orderId);
-            
+            UpdateOrderAsNew(order.orderId);       
             sendEmail();
             updateUserPoints();
         }
