@@ -61,6 +61,7 @@ const allergyOptions = [
     "Wheat",
     "Eggs",
     "Peanuts",
+    "None",
 ];
 
 const EditProduct = () => {

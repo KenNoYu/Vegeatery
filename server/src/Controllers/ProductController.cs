@@ -217,30 +217,6 @@ namespace vegeatery.Controllers
         }
 
 
-
-        [HttpGet("GetProducts")]
-        public IActionResult GetFilteredProducts([FromQuery] ProductFilter filter, [FromQuery] int userId)
-        {
-            var products = _context.Product.AsQueryable();
-
-            // Get the user's allergic information
-            var user = _context.Users.Find(userId);
-            if (user == null)
-            {
-                return NotFound("User not found");
-            }
-
-            var userAllergies = user.AllergyInfo?.Split(',').Select(a => a.Trim()).ToList() ?? new List<string>();
-
-            // Apply filtering based on allergy ingredients
-            var filteredProducts = products.Where(p => !userAllergies.Any(allergy => p.AllergyIngredients.Contains(allergy)));
-
-            // Apply additional filters
-            filteredProducts = filter.ApplyFiltering(filteredProducts);
-
-            return Ok(filteredProducts.ToList());
-        }
-
         [HttpPut("UpdateTotalBought")]
         public IActionResult UpdateBoughtQuantity(UpdateProductBoughtRequest Request)
         {

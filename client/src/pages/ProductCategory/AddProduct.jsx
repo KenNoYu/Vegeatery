@@ -41,6 +41,7 @@ const allergyOptions = [
     "Wheat",
     "Eggs",
     "Peanuts",
+    "None"
 ];
 
 function AddProduct() {
@@ -94,6 +95,7 @@ function AddProduct() {
             protein: yup.number().min(1, 'Protein minumum 1 or more').required('Protein is required'),
             productPrice: yup.number().min(1, 'Price minumum 1 or more').required('Price is required'),
             discountPercentage: yup.number().min(0, 'Cannot be negative').nullable(),
+            allergyIngredients: yup.string().nullable(),
             stocks: yup.number().min(1, 'Stocks minumum 1 or more').required('Stocks are required'),
             categoryId: yup.string().required('Category is required') // Validation for category
         }),
