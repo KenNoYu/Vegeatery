@@ -77,7 +77,7 @@ const Rewards = () => {
           JOIN THE VEGEATERY FAMILY
         </Typography>
         <Typography variant="body1" sx={{ mt: 2 }} fontSize={20}>
-          Sign up today and start earning points with every order! As a member, you'll progress through three tiers—Bronze, Silver, and Gold—unlocking exclusive vouchers along the way. Use your vouchers and enjoy a 1-week cooldown before they’re available again. Plus, earn bonus points when you order 7 times within a week!</Typography>
+        Join our membership program and unlock exclusive rewards! Sign up today and start earning points with every order. As you earn, you'll progress through three tiers: Bronze, Silver, and Gold. Each tier offers its own set of vouchers, with points resetting every 6 months. Earn bonus points when you order 7 times in a week, and enjoy vouchers after a short cooldown period. Start earning and enjoying the benefits today!</Typography>
       </Container>
 
       {/* Rewards Benefits */}
@@ -116,55 +116,45 @@ const Rewards = () => {
       </Container>
 
       {/* Membership Tiers */}
-      <Container disableGutters sx={{ py: 6, maxWidth: "1200px", margin: "auto", mt: 10 }}>
-        <Typography variant="h4" fontWeight="bold" color="#C2185B">
-          REWARD TIERS
-        </Typography>
-        <Grid container spacing={3} sx={{ mt: 3 }}>
-          {[
-            { level: "Bronze Member", points: "0 - 277", color: "#A5D6A7", gradient: "#FAFBFC", benefits: "Discounts", icons: [<LocalOffer />] },
-            { level: "Silver Member", points: "278 - 777", color: "white", gradient: "#EDEDED", benefits: "Discounts, Free Gifts", icons: [<LocalOffer />, <CardGiftcard />] },
-            { level: "Gold Member", points: "777+", color: "#212121", gradient: "#888888", textColor: "#FFD700", benefits: "Discounts, Free Gifts, VIP Priorities", icons: [<LocalOffer />, <CardGiftcard />, <Star />] }
-          ].map((tier, index) => (
-            <Grid item xs={12} sm={4} key={index}>
-              <Box
-                sx={{
-                  background: `linear-gradient(145deg, ${tier.color} 30%, ${tier.gradient} 90%)`,
-                  color: tier.textColor || "black",
-                  borderRadius: 3,
-                  p: 3,
-                  textAlign: "center",
-                  height: "100%",
-                  boxShadow: 3, // Adds shadow for depth
-                  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
-                }}
-              >
-                <Typography variant="h6" fontWeight="bold" fontSize="1.2rem" sx={{ letterSpacing: 0.5 }}>
-                  {tier.level}
-                </Typography>
-                <Typography variant="body1" marginBottom={5} fontSize={20}>
-                  {tier.points} points
-                </Typography>
-                <Typography variant="body1" sx={{ mt: 1 }}>
-                  {tier.benefits.split(', ').map((benefit, i) => (
-                    <Box key={i} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 0.5 }}>
-                      {tier.icons[i]}
-                      <Typography variant="body1" sx={{ ml: 1 }}>
-                        {benefit}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Typography>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-        <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button variant="outlined" color="Accent" sx={{ px: 4, py: 1.5, borderRadius: 3 }} onClick={() => navigate("/register")}>
-            Join Now
-          </Button>
+<Container disableGutters sx={{ py: 6, maxWidth: "1200px", margin: "auto", mt: 10 }}>
+  <Typography variant="h4" fontWeight="bold" color="#C2185B">
+    REWARD TIERS
+  </Typography>
+  <Grid container spacing={3} sx={{ mt: 3 }}>
+    {[
+      { level: "Bronze Member", points: "0 - 277", color: "#A5D6A7", gradient: "#FAFBFC" },
+      { level: "Silver Member", points: "278 - 777", color: "white", gradient: "#EDEDED" },
+      { level: "Gold Member", points: "777+", color: "#212121", gradient: "#888888", textColor: "#FFD700" }
+    ].map((tier, index) => (
+      <Grid item xs={12} sm={4} key={index}>
+        <Box
+          sx={{
+            background: `linear-gradient(145deg, ${tier.color} 30%, ${tier.gradient} 90%)`,
+            color: tier.textColor || "black",
+            borderRadius: 3,
+            p: 3,
+            textAlign: "center",
+            height: "100%",
+            boxShadow: 3, // Adds shadow for depth
+            transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+          }}
+        >
+          <Typography variant="h6" fontWeight="bold" fontSize="1.2rem" sx={{ letterSpacing: 0.5 }}>
+            {tier.level}
+          </Typography>
+          <Typography variant="body1" marginBottom={5} fontSize={20}>
+            {tier.points} points
+          </Typography>
         </Box>
-      </Container>
+      </Grid>
+    ))}
+  </Grid>
+  <Box sx={{ textAlign: "center", mt: 4 }}>
+    <Button variant="outlined" color="Accent" sx={{ px: 4, py: 1.5, borderRadius: 3 }} onClick={() => navigate("/register")}>
+      Join Now
+    </Button>
+  </Box>
+</Container>
     </Box>
   );
 };
