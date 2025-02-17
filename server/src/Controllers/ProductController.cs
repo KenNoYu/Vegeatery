@@ -244,6 +244,7 @@ namespace vegeatery.Controllers
 				{
 					p.ProductId,
 					p.ProductName,
+                    p.ImageFile,
 					p.quantityBought,
 					p.ProductPrice
 				})
