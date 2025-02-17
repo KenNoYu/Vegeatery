@@ -27,7 +27,7 @@ const AdminSidebar = () => {
       anchor="left"
       PaperProps={{
         sx: {
-          backgroundColor: '#000000',
+          backgroundColor: '#1a1a1a',
           width: 240,
           height: '250vh',
           padding: '2em 0.5em',

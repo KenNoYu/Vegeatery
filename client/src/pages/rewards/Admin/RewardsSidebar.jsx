@@ -29,7 +29,7 @@ const RewardsSidebar = () => {
         anchor="left"
         PaperProps={{
           sx: {
-            backgroundColor: '#000000',
+            backgroundColor: '#1a1a1a',
             width: 240,
             height: '120vh',
             borderRight: '0.5px solid #000000',
