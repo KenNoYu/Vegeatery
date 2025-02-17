@@ -112,8 +112,26 @@ const PointsRange = () => {
                             variant="outlined"
                             size="small"
                             value={updatedTier?.minPoints || ""}
+                            sx={{
+                              mb: 2, width: "100%",
+                              "& .MuiOutlinedInput-root": {
+                                "&.Mui-focused": {
+                                  fieldset: {
+                                    borderColor: "#C6487E !important",
+                                  },
+                                },
+                              },
+                              "& .MuiInputLabel-root": {
+                                // Target the label specifically
+                                color: "black", // Default label color
+                                "&.Mui-focused": {
+                                  // Label styles when focused
+                                  color: "black !important", // Black on focus
+                                },
+                              },
+                            }}
                             onChange={(e) => handleInputChange("minPoints", e.target.value)}
-                            sx={{ mb: 2, width: "100%" }}
+                             
                           />
                           <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
                             <Button onClick={() => setOpenModal(true)} variant="contained" sx={{
