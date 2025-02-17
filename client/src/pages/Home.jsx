@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, Grid, IconButton } from "@mui/material";
 import { useTheme } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import { ArrowForward, ArrowBack } from "@mui/icons-material";
 
 
