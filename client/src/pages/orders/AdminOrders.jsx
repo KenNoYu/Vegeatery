@@ -149,7 +149,7 @@ const AdminOrders = () => {
 
             // Construct CSV headers
             const headers = [
-                "Id,Name,Address,Pick-Up Time,Status,Products",
+                "Id,Name,Address,Pick-Up Time,Status,Total Price,Products",
             ];
 
             // Generate CSV rows
@@ -172,9 +172,9 @@ const AdminOrders = () => {
                 const address = order.address || "Unknown Address";
                 const pickUpTime = order.timeSlot || "Unknown Time";
                 const status = order.status || "Unknown Status";
-                const totalPrice = order.totalPrice || "Unknown Price";
+                const formattedTotalPrice = order.totalPrice != null ? `$${order.totalPrice.toFixed(2)}` : "$0.00";
 
-                return `"${id}","${name}","${address}","${pickUpTime}","${status}","${totalPrice}","${products}"`;
+                return `"${id}","${name}","${address}","${pickUpTime}","${status}","${formattedTotalPrice}","${products}"`;
             });
 
             // Combine headers and rows into the final CSV content
@@ -405,7 +405,7 @@ const AdminOrders = () => {
                                             <TableCell sx={{ flex: 1 }}>{order.orderDate}</TableCell>
                                             <TableCell sx={{ flex: 1 }}>{order.timeSlot}</TableCell>
                                             <TableCell sx={{ flex: 1 }}>{order.status}</TableCell>
-                                            <TableCell sx={{ flex: 1 }}>{order.totalPrice}</TableCell>
+                                            <TableCell sx={{ flex: 1 }}>${order.totalPrice.toFixed(2)}</TableCell>
                                             <TableCell sx={{ flex: 1 }}>
                                                 <Button
                                                     variant="outlined"
