@@ -79,6 +79,7 @@ const OrderConfirmation = () => {
                 if (item.productId) {
                     console.log(`Updating stock for Product ID: ${item.productId} with Quantity: ${item.quantity}`);
                     updateStock(item.productId, item.quantity); // Update stock for each product in the order
+                    updateTotalBought(item.productId, item.quantity); // update the total bought items
                 } else {
                     console.error('Missing productId for item:', item); // Log if productId is missing
                 }
@@ -109,6 +110,22 @@ const OrderConfirmation = () => {
             .catch((error) => {
                 console.error("Error fetching orders:", error);
             })
+    }
+
+    // update totalBought
+    const updateTotalBought = (productId, quantity) => {
+        const updateData = {
+            productId: productId,
+            quantity: quantity,
+        }
+
+        http.put("/product/updateTotalBought", updateData)
+        .then((res) => {
+            return res;
+        })
+        .catch((error) => {
+            console.error("Error fetching orders:", error);
+        })
     }
 
     // Delete items in cart
