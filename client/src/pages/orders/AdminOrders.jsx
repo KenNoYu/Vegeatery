@@ -9,8 +9,10 @@ import DateSelector from "../Reservation/Components/DateSelector";
 import AdminDateSelector from './AdminDateSelector';
 import { ToastContainer, toast } from 'react-toastify';
 import ProductsSidebar from '../ProductCategory/ProductsSidebar';
+import RoleGuard from '../../utils/RoleGuard';
 
 const AdminOrders = () => {
+    RoleGuard("Admin");
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [startDate, setStartDate] = useState(dayjs().format('YYYY-MM-DD'));

@@ -10,7 +10,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const Cart = () => {
-    RoleGuard('User');
+    RoleGuard(["User", "Admin", "Staff"]);
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
