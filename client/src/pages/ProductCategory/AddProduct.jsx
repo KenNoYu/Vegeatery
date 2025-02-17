@@ -1,12 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Container, Grid, Card, CardMedia } from '@mui/material';
+import { Box, Typography, TextField, Button, MenuItem, Container, Grid, Card, CardMedia, FormControl } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../../http';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import RoleGuard from '../../utils/RoleGuard';
+import { useTheme } from '@mui/material/styles';
+import { styled } from "@mui/system";
+
+const DetailsTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiInputLabel-root.Mui-focused": {
+    color: "#C6487E", // Label color when focused and at the top
+  },
+  "& .MuiOutlinedInput-root": {
+    "&:hover fieldset": {
+      borderColor: "black", // Outline on hover
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#C6487E", // Outline when focused
+    },
+  },
+  "& .MuiInputLabel-root": {
+    color: "black", // Label color
+  },
+  "& .Mui-focused": {
+    color: "black", // Label when focused
+  },
+}));
+
 
 function AddProduct() {
     RoleGuard('Admin');
@@ -34,9 +57,11 @@ function AddProduct() {
             fats: 0,
             carbs: 0,
             protein: 0,
+            productPoints: 0,
             productPrice: 0,
             discountPercentage: 0,
-            categoryId: "" // This will hold the selected category ID
+            stocks: 0,
+            categoryId: 0 // This will hold the selected category ID
         },
         validationSchema: yup.object({
             productName: yup.string().trim().min(3, 'Product Name must be at least 3 characters')
@@ -49,12 +74,13 @@ function AddProduct() {
                 .min(3, 'Ingredients must be at least 3 characters')
                 .max(500, 'Ingredients must be at most 500 characters'),
             productPoints: yup.number().min(1, "ProductPoints must be at least 1.").max(5, "ProductPoints must be at most 5.").required("ProductPoints is required."),
-            calories: yup.number().min(0, 'Cannot be negative').required('Calories are required'),
-            fats: yup.number().min(0, 'Cannot be negative').required('Fats are required'),
-            carbs: yup.number().min(0, 'Cannot be negative').required('Carbs are required'),
-            protein: yup.number().min(0, 'Cannot be negative').required('Protein is required'),
-            productPrice: yup.number().min(0, 'Cannot be negative').required('Price is required'),
-            discountPercentage: yup.number().min(0, 'Cannot be negative'),
+            calories: yup.number().min(1, 'Calories minumum 1 or more').required('Calories are required'),
+            fats: yup.number().min(1, 'Fats minumum 1 or more').required('Fats are required'),
+            carbs: yup.number().min(1, 'Carbs minumum 1 or more').required('Carbs are required'),
+            protein: yup.number().min(1, 'Protein minumum 1 or more').required('Protein is required'),
+            productPrice: yup.number().min(1, 'Price minumum 1 or more').required('Price is required'),
+            discountPercentage: yup.number().min(0, 'Cannot be negative').nullable(),
+            stocks: yup.number().min(1, 'Stocks minumum 1 or more').required('Stocks are required'),
             categoryId: yup.string().required('Category is required') // Validation for category
         }),
         onSubmit: (data) => {
@@ -94,87 +120,106 @@ function AddProduct() {
     };
 
     return (
-        <>
-            <Box>
+        <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '64px' }}>
 
-                <Button
-                    variant="outlined"
-                    color="Accent"
-                    onClick={() => navigate('/admin/store')}
-                    sx={{ cursor: 'pointer', marginTop: '10px', paddingLeft: '10px', paddingRight: '10px' }}
-                >
-                    Cancel
-                </Button>
-            </Box>
-            <Container sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+            <Box
+                sx={{
+                    position: 'relative', // Needed for absolute positioning of buttons
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    padding: '20px',
+                    backgroundColor: 'white',
+                    width: '100%',
+                    maxWidth: '1400px',
+                    boxShadow: 2,
+                }}
+            >
+                {/* Buttons at the top */}
                 <Box
                     sx={{
-                        border: '1px solid #ccc',
-                        borderRadius: '8px',
-                        padding: '20px',
-                        backgroundColor: 'white',
                         width: '100%',
-                        maxWidth: '1200px',
-                        boxShadow: 2,
                         display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'flex-start',
+                        justifyContent: 'space-between',
+                        position: 'absolute',
+                        top: '20px',
+                        left: 0,
                     }}
                 >
+                    <Button sx={{ marginLeft: '20px' }} style={{ background: '#C6487E', color: '#FFFFFF' }} onClick={() => navigate('/admin/store')}>
+                        Go Back
+                    </Button>
+                    <Button sx={{ marginRight: '40px' }} style={{ background: '#C6487E', color: '#FFFFFF' }} type="submit" onClick={formik.handleSubmit}>
+                        Add Product
+                    </Button>
+                </Box>
+
+                {/* Form Fields Container */}
+                <Box
+                    component="form"
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row', // Ensures left and right fields are side by side
+                        gap: '20px', // Adds spacing between left and right sections
+                        marginTop: '60px', // Pushes the form down to avoid overlap with buttons
+                    }}
+                >
+
                     {/* Left Side - Form Fields */}
-                    <Box sx={{ width: '60%', paddingRight: '20px' }}>
+                    <Box sx={{ flex: 6 }}>
                         {/* Form Wrapper */}
                         <Box component="form" onSubmit={formik.handleSubmit}>
                             {/* First Border - Product Name, Description, Ingredients */}
-                            <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px' }}>
-                                <Typography variant="h5" gutterBottom sx={{ margin: '10px' }}>
-                                    Add Product
-                                </Typography>
+                            <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px', height: 'auto' }}>
+                        
 
                                 {/* Product Name */}
-                                <Grid item xs={12} sx={{ marginBottom: '20px', marginLeft: '10px', marginRight: '10px' }}>
-                                    <TextField
-                                        fullWidth
-                                        label="Product Name"
-                                        name="productName"
-                                        value={formik.values.productName}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        error={formik.touched.productName && Boolean(formik.errors.productName)}
-                                        helperText={formik.touched.productName && formik.errors.productName}
-                                    />
+                                <Grid item xs={12} sx={{ marginBottom: '10px' }}>
+                                    <FormControl fullWidth>
+                                        <DetailsTextField
+                                            label="Product Name"
+                                            name="productName"
+                                            value={formik.values.productName}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.productName && Boolean(formik.errors.productName)}
+                                            helperText={formik.touched.productName && formik.errors.productName}
+                                        />
+                                        
+                                    </FormControl>
                                 </Grid>
 
                                 {/* Description */}
-                                <Grid item xs={12} sx={{ marginBottom: '20px', marginLeft: '10px', marginRight: '10px', height: '90px' }}>
-                                    <TextField
-                                        fullWidth
-                                        label="Description"
-                                        multiline
-                                        rows={2}
-                                        name="productDescription"
-                                        value={formik.values.productDescription}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        error={formik.touched.productDescription && Boolean(formik.errors.productDescription)}
-                                        helperText={formik.touched.productDescription && formik.errors.productDescription}
-                                    />
+                                <Grid item xs={12} sx={{ marginBottom: '10px' }}>
+                                    <FormControl fullWidth>
+                                        <DetailsTextField
+                                            label="Description"
+                                            multiline
+                                            rows={3}
+                                            name="productDescription"
+                                            value={formik.values.productDescription}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.productDescription && Boolean(formik.errors.productDescription)}
+                                            helperText={formik.touched.productDescription && formik.errors.productDescription}
+                                        />
+                                    </FormControl>
                                 </Grid>
 
                                 {/* Ingredients */}
-                                <Grid item xs={12} sx={{ marginBottom: '20px', marginLeft: '10px', marginRight: '10px', height: '90px' }}>
-                                    <TextField
-                                        fullWidth
-                                        label="Ingredients"
-                                        multiline
-                                        rows={2}
-                                        name="ingredients"
-                                        value={formik.values.ingredients}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        error={formik.touched.ingredients && Boolean(formik.errors.ingredients)}
-                                        helperText={formik.touched.ingredients && formik.errors.ingredients}
-                                    />
+                                <Grid item xs={12} sx={{ marginBottom: '10px' }}>
+                                    <FormControl fullWidth>
+                                        <DetailsTextField
+                                            label="Ingredients"
+                                            multiline
+                                            rows={3}
+                                            name="ingredients"
+                                            value={formik.values.ingredients}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.ingredients && Boolean(formik.errors.ingredients)}
+                                            helperText={formik.touched.ingredients && formik.errors.ingredients}
+                                        />
+                                    </FormControl>
                                 </Grid>
                             </Box>
 
@@ -183,7 +228,7 @@ function AddProduct() {
                                 <Grid container spacing={2}>
                                     {/* Product Points */}
                                     <Grid item xs={6}>
-                                        <TextField
+                                        <DetailsTextField
                                             fullWidth
                                             type="number"
                                             label="Product Points"
@@ -198,7 +243,7 @@ function AddProduct() {
 
                                     {/* Price */}
                                     <Grid item xs={6}>
-                                        <TextField
+                                        <DetailsTextField
                                             fullWidth
                                             type="number"
                                             label="Price"
@@ -213,7 +258,7 @@ function AddProduct() {
 
                                     {/* Discount Percentage */}
                                     <Grid item xs={6}>
-                                        <TextField
+                                        <DetailsTextField
                                             fullWidth
                                             type="number"
                                             label="Discount (%)"
@@ -226,31 +271,40 @@ function AddProduct() {
                                         />
                                     </Grid>
 
-                                    {/* Category */}
-                                    <Grid item xs={12}>
-                                        <FormControl fullWidth>
-                                            <InputLabel>Category</InputLabel>
-                                            <Select
-                                                name="categoryId"
-                                                value={formik.values.categoryId}
-                                                onChange={formik.handleChange}
-                                                onBlur={formik.handleBlur}
-                                                error={formik.touched.categoryId && Boolean(formik.errors.categoryId)}
-                                            >
-                                                {categories.map((cat) => (
-                                                    <MenuItem key={cat.categoryId} value={cat.categoryId}>
-                                                        {cat.categoryName}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
+                                    {/* Stocks */}
+                                    <Grid item xs={6}>
+                                        <DetailsTextField
+                                            fullWidth
+                                            type="number"
+                                            label="Stocks"
+                                            name="stocks"
+                                            value={formik.values.stocks}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.stocks && Boolean(formik.errors.stocks)}
+                                            helperText={formik.touched.stocks && formik.errors.stocks}
+                                        />
                                     </Grid>
 
-                                    {/* Submit Button */}
+                                    {/* Category */}
                                     <Grid item xs={12}>
-                                        <Button variant="contained" type="submit" sx={{ mt: 2 }}>
-                                            Add Product
-                                        </Button>
+                                        <DetailsTextField
+                                            fullWidth
+                                            select
+                                            label="Category"
+                                            name="categoryId"
+                                            value={formik.values.categoryId}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.categoryId && Boolean(formik.errors.categoryId)}
+                                            helperText={formik.touched.categoryId && formik.errors.categoryId}
+                                        >
+                                            {categories.map((cat) => (
+                                                <MenuItem key={cat.categoryId} value={cat.categoryId}>
+                                                    {cat.categoryName}
+                                                </MenuItem>
+                                            ))}
+                                        </DetailsTextField>
                                     </Grid>
                                 </Grid>
                             </Box>
@@ -258,19 +312,14 @@ function AddProduct() {
                     </Box>
 
                     {/* Right Side - Image Preview & Upload */}
-                    <Box sx={{
-                        width: '40%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center'
-                    }}>
+                    <Box sx={{ flex: 4 }}>
                         {/* Image Preview Box */}
                         <Box sx={{
                             border: '1px solid #ccc',
                             borderRadius: '8px',
                             padding: '10px',
                             marginBottom: '20px',
-                            width: '90%',
+                            width: '95%',
                             height: '400px',
                             display: 'flex',
                             flexDirection: 'column',
@@ -302,7 +351,7 @@ function AddProduct() {
                                 alignItems: 'center',
                                 marginTop: '10px'
                             }}>
-                                <Button variant="contained" component="label">
+                                <Button variant="contained" component="label" style={{ background: '#C6487E', color: '#FFFFFF' }}>
                                     Upload Image
                                     <input type="file" hidden onChange={handleFileUpload} />
                                 </Button>
@@ -314,7 +363,7 @@ function AddProduct() {
                             <Grid container spacing={2}>
                                 {/* Calories */}
                                 <Grid item xs={6}>
-                                    <TextField
+                                    <DetailsTextField
                                         fullWidth
                                         type="number"
                                         label="Calories"
@@ -329,7 +378,7 @@ function AddProduct() {
 
                                 {/* Fats */}
                                 <Grid item xs={6}>
-                                    <TextField
+                                    <DetailsTextField
                                         fullWidth
                                         type="number"
                                         label="Fats (g)"
@@ -344,7 +393,7 @@ function AddProduct() {
 
                                 {/* Carbs */}
                                 <Grid item xs={6}>
-                                    <TextField
+                                    <DetailsTextField
                                         fullWidth
                                         type="number"
                                         label="Carbs (g)"
@@ -359,7 +408,7 @@ function AddProduct() {
 
                                 {/* Protein */}
                                 <Grid item xs={6}>
-                                    <TextField
+                                    <DetailsTextField
                                         fullWidth
                                         type="number"
                                         label="Protein (g)"
@@ -372,14 +421,14 @@ function AddProduct() {
                                     />
                                 </Grid>
                             </Grid>
+
                         </Box>
+
                     </Box>
                 </Box>
+            </Box>
 
-            </Container>
-
-
-        </>
+        </Container>
 
     );
 }

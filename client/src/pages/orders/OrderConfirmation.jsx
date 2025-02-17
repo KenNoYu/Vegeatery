@@ -37,10 +37,53 @@ const OrderConfirmation = () => {
             });
     }, []);
 
+    const updateStock = async (productId, quantity) => {
+        console.log(`Making request to update stock for Product ID: ${productId} with Quantity: ${quantity}`);
+
+        try {
+            // Await the response of the PUT request
+            const response = await http.put(`/Order/updateStock/${productId}`, quantity, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            // Log the response for debugging
+            console.log('API Response:', response);
+
+            // Check if the response is successful (status 200)
+            if (response.status === 200) {
+                console.log('Stock updated:', response.data);
+            } else {
+                console.log('Error updating stock:', response.data);
+            }
+        } catch (error) {
+            // Log detailed error info
+            if (error.response) {
+                // Server responded with an error (e.g., 400 or 500)
+                console.error('API Error Response:', error.response);
+            } else if (error.request) {
+                // Request was made but no response received
+                console.error('No response received:', error.request);
+            } else {
+                // Some other error occurred during setup
+                console.error('Error Message:', error.message);
+            }
+        }
+    };
+
     useEffect(() => {
         if (order) {
             hasUpdated.current = true;
-            UpdateOrderAsNew(order.orderId);
+            order.orderItems.forEach(item => {
+                if (item.productId) {
+                    console.log(`Updating stock for Product ID: ${item.productId} with Quantity: ${item.quantity}`);
+                    updateStock(item.productId, item.quantity); // Update stock for each product in the order
+                } else {
+                    console.error('Missing productId for item:', item); // Log if productId is missing
+                }
+            });
+            UpdateOrderAsNew(order.orderId);       
             sendEmail();
             updateUserPoints();
         }
