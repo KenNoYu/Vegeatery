@@ -16,6 +16,7 @@ export default function Chatbot() {
     "Others",
   ];
   const rewardOptions = [
+    "Rewards & Points Guide",
     "How to earn points?",
     "What are the type of rewards I can get?",
     "Where can I see the rewards I have?",
@@ -36,7 +37,7 @@ export default function Chatbot() {
     "Others",
   ];
   const aboutOptions = ["Others"];
-  
+
   // const themes = [
   //   {id: "minimal_midnight", version: "0.1.0"},
   //   {id: "simple_blue", version: "0.1.0"}
@@ -77,6 +78,9 @@ export default function Chatbot() {
           // Rewards
           case "Rewards & Points":
             path = "rewardsPoints";
+            break;
+          case "Rewards & Points Guide":
+            link = "/rewards";
             break;
           case "How to view my points & my current membership tier?":
             link = "/user/rewards";
@@ -258,7 +262,7 @@ export default function Chatbot() {
         alignItems: "center",
       }}
     >
-      <ChatBot flow={flow}/>
+      <ChatBot flow={flow} />
     </div>
   );
 }
