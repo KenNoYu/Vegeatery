@@ -8,14 +8,17 @@ import {
   Button,
   Divider,
   Card,
-  CardContent
+  CardContent,
+  Stack
 } from "@mui/material";
+import { ToastContainer, toast } from 'react-toastify';
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./UserSidebar.jsx";
 import { styled } from "@mui/system";
 import RoleGuard from "../../../utils/RoleGuard.js";
+import { useTheme } from "@emotion/react";
 
 function UserOverview() {
   RoleGuard(["User", "Admin", "Staff"]);
@@ -23,7 +26,9 @@ function UserOverview() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [pendingReservations, setPendingReservations] = useState([]);
   const navigate = useNavigate();
+  const myTheme = useTheme();
 
   const handleClick = () => {
     navigate("/user/profile");
@@ -40,7 +45,8 @@ function UserOverview() {
       .then((res) => {
         console.log(res);
         setUser(res);
-        getCustOrders(res.data.id)
+        getCustOrders(res.data.id);
+        fetchPendingReservations(res.data.id);
         setLoading(false);
       })
       .catch((err) => {
@@ -62,6 +68,18 @@ function UserOverview() {
         console.error("Error fetching orders:", error);
       })
   }
+
+  const fetchPendingReservations = async (userId) => {
+    try {
+      const response = await http.get(`/Reservation/UserPending/${userId}`);
+      setPendingReservations(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch pending reservations.');
+      setLoading(false);
+      toast.error('Error fetching reservations');
+    }
+  };
 
   const StyledTierName = styled(Typography)(({ theme, tierColor }) => ({
     textTransform: 'uppercase',
@@ -241,44 +259,64 @@ function UserOverview() {
             <Typography variant="h5" gutterBottom fontWeight="bold" mb="0.5em">
               Upcoming Reservations
             </Typography>
-            <Card sx={{ mb: 2 }}>
-              <CardContent
-                sx={{ display: "flex", justifyContent: "space-between" }}
+            {pendingReservations.length > 0 ? (
+              <Stack spacing={2} sx={{ width: "100%", marginBottom: "50px" }}>
+                {pendingReservations.map((reservation) => (
+                  <Card
+                    key={reservation.id}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: " 5px 20px",
+                      backgroundColor: myTheme.palette.secondary.main
+                    }}
+                  >
+                    <CardContent sx={{ flex: "1" }}>
+                      <Typography variant="h6">
+                        {
+                          new Intl.DateTimeFormat('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                          }).format(new Date(reservation.reservationDate))
+                        }, {reservation.customerName}
+                      </Typography>
+                      <Typography variant="body2">
+                        {reservation.timeSlot}
+                      </Typography>
+                      <Typography variant="body2" sx={{ marginTop: "10px" }}>
+                        Table(s) {reservation.tables.map(table => table.tableNumber).join(", ")}
+                      </Typography>
+                    </CardContent>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#C6487E",
+                        color: "white",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => navigate(`/user/reservations/${reservation.id}`)}
+                    >
+                      EDIT
+                    </Button>
+
+
+                  </Card>
+                ))}
+              </Stack>
+            ) : (
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "gray",
+                  textAlign: "center",
+                  marginTop: "20px",
+                }}
               >
-                <Box>
-                  <Typography variant="body1">4 Dec 2024, 7:00pm</Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    15 Pax
-                  </Typography>
-                </Box>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<EditIcon />}
-                >
-                  Edit Details
-                </Button>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent
-                sx={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <Box>
-                  <Typography variant="body1">8 Dec 2024, 1:00pm</Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    1 Baby Chair
-                  </Typography>
-                </Box>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<EditIcon />}
-                >
-                  Edit Details
-                </Button>
-              </CardContent>
-            </Card>
+                No upcoming reservations!
+              </Typography>
+            )}
           </Box>
 
           <Divider sx={{ my: 3 }} />
