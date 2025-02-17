@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, Grid, IconButton } from "@mui/material";
 import { useTheme } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
+import { LocalOffer, CardGiftcard, Star } from '@mui/icons-material';
 import { ArrowForward, ArrowBack } from "@mui/icons-material";
 
 
@@ -163,7 +164,7 @@ const Home = () => {
       </Box>
 
       {/* Welcome Section */}
-      <Box sx={{ px: { xs: 4, md: 16 }, pt: 16, position: "relative", maxWidth: "1200px", margin: "auto" }}>
+      <Box sx={{ px: { xs: 4, md: 16 }, pt: 16, pb: 8, position: "relative", maxWidth: "1000px", margin: "auto" }}>
         {/* Text Content */}
         <Box sx={{ maxWidth: "450px" }}>
           <Typography variant="h3" fontWeight="bold" color="Accent">
@@ -193,7 +194,7 @@ const Home = () => {
       </Box>
 
       {/* Menu Preview */}
-      <Box sx={{ px: { xs: 2, md: 8 } }}>
+      <Box sx={{ px: { xs: 2, md: 8 }, maxWidth: "1200px", margin: "auto" }}>
 
         <Grid container spacing={0} alignItems="center" sx={{ mt: 3 }}>
           {/* Taco Image */}
@@ -216,7 +217,7 @@ const Home = () => {
           <Grid item xs={12} md={6} sx={{ mt: -20, pl: { md: 12 } }}>
 
             <Typography variant="h3" color="Accent">
-              DISCOVER <br /> OUR MENU
+              DISCOVER <br/> OUR MENU
             </Typography>
             <Box sx={{ mt: 7 }}>
               <Typography variant="h6" fontWeight="bold">
@@ -248,8 +249,8 @@ const Home = () => {
           </Grid>
 
           {/* Juice Description */}
-          <Grid item xs={12} md={6} sx={{ textAlign: "right", pr: { md: 6 }, mt: 10 }}>
-            <Box sx={{ display: "inline-block", textAlign: "left" }}>
+          <Grid item xs={12} md={6} mt={10} display={'flex'} justifyContent={'center'}>
+            <Box sx={{ display: "inline-block", textAlign: "left", margin: 'auto' }}>
               <Typography variant="h6" fontWeight="bold">
                 SIGNATURE JUICE
               </Typography>
@@ -261,7 +262,7 @@ const Home = () => {
           </Grid>
 
           {/* Juice Image */}
-          <Grid item xs={12} md={6} mt={10}>
+          <Grid item xs={12} md={6} mt={10} display={'flex'} justifyContent={'center'}>
             <Box
               component="img"
               src="/assets/homepage/hpJuice.png"
@@ -305,16 +306,41 @@ const Home = () => {
           <span style={{ color: "#D48806" }}>”</span>
         </Typography>
 
-        {/* Directly Display the SVG */}
         <Box
-          component="img"
-          src="/assets/homepage/GrassMask.svg"
-          alt="Masked Quote Section"
           sx={{
+            position: "relative",
             width: "80%",
             maxWidth: "900px",
+            overflow: "hidden",
           }}
-        />
+        >
+          <Box
+            component="img"
+            src="/assets/homepage/HoverMask.png"
+            alt="Masked Quote Section Hover"
+            sx={{
+              width: "100%",
+              zIndex: 0, // Hover image goes below the grass image
+            }}
+          />
+          <Box
+            component="img"
+            src="/assets/homepage/GrassMask.png"
+            alt="Masked Quote Section"
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              display: "block",
+              transition: "opacity 0.3s ease",
+              zIndex: 1, // Grass image is above the hover image
+              "&:hover": {
+                opacity: 0, // On hover, make the grass image invisible
+              },
+            }}
+          />
+        </Box>
         <Button variant="contained"
           sx={{
             mt: 7,
@@ -334,33 +360,66 @@ const Home = () => {
       </Box>
 
       {/* Membership Section */}
-      <Box sx={{ px: 4, py: 6, maxWidth: "1200px", margin: "auto" }}>
-        <Typography variant="h4" fontWeight="bold" color="#C2185B">GAIN MEMBERSHIP POINTS</Typography>
+      <Box sx={{ px: 10, paddingTop: 6, maxWidth: "1100px", margin: "auto" }}>
+        <Typography variant="h4" color="#C2185B">EARN POINTS, UNLOCK BENEFITS</Typography>
         <Grid container spacing={3} sx={{ mt: 3 }}>
           {[
-            { level: "Bronze Member", points: "0 - 277", color: "#E0E0E0" },
-            { level: "Silver Member", points: "278 - 777", color: "#A5D6A7" },
-            { level: "Gold Member", points: "777+", color: "#212121", textColor: "white" }
+            { level: "Bronze Member", points: "0 - 277", color: "#A5D6A7", gradient: "#FAFBFC", benefits: "Discounts", icons: [<LocalOffer />] },
+            { level: "Silver Member", points: "278 - 777", color: "white", gradient: "#EDEDED", benefits: "Discounts, Free Gifts", icons: [<LocalOffer />, <CardGiftcard />] },
+            { level: "Gold Member", points: "777+", color: "#212121", gradient: "#888888", textColor: "#FFD700", benefits: "Discounts, Free Gifts, VIP Priorities", icons: [<LocalOffer />, <CardGiftcard />, <Star />] }
           ].map((tier, index) => (
             <Grid item xs={12} sm={4} key={index}>
               <Box
                 sx={{
-                  backgroundColor: tier.color,
+                  background: `linear-gradient(145deg, ${tier.color} 30%, ${tier.gradient} 90%)`,
                   color: tier.textColor || "black",
                   borderRadius: 3,
                   p: 3,
                   textAlign: "center",
-                  height: "100%"
+                  height: "100%",
+                  boxShadow: 3, // Adds shadow for depth
+                  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
                 }}
               >
-                <Typography variant="h6" fontWeight="bold">{tier.level}</Typography>
-                <Typography variant="body1">{tier.points}</Typography>
+                <Typography variant="h6" fontWeight="bold" fontSize="1.2rem" sx={{ letterSpacing: 0.5 }}>
+                  {tier.level}
+                </Typography>
+                <Typography variant="body1" marginBottom={5} fontSize={20}>
+                  {tier.points} points
+                </Typography>
+                <Typography variant="body1" sx={{ mt: 1 }}>
+                  {tier.benefits.split(', ').map((benefit, i) => (
+                    <Box key={i} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 0.5 }}>
+                      {tier.icons[i]}
+                      <Typography variant="body1" sx={{ ml: 1 }}>
+                        {benefit}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Typography>
               </Box>
             </Grid>
           ))}
         </Grid>
+
         <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Button variant="outlined" color="Accent" sx={{ px: 4, py: 1.5, borderRadius: 3 }}>
+          <Button
+            variant="outlined"
+            sx={{
+              mt: 5,
+              borderWidth: 1,
+              width: "20%",
+              textTransform: "none",
+              color: theme.palette.Accent.main,
+              borderColor: theme.palette.Accent.main,
+              backgroundColor: "transparent",
+              height: 40,
+              "&:hover": {
+                backgroundColor: "#E7ABC5",
+              },
+            }}
+            onClick={() => navigate("/register")}
+          >
             Become a Vegeaterian
           </Button>
         </Box>

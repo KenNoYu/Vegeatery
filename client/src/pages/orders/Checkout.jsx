@@ -9,7 +9,7 @@ import RoleGuard from '../../utils/RoleGuard';
 const stripePromise = loadStripe('pk_test_51QZWKZG2Vyjd8Bevj32U8i0SRUVWPuchLByOvA0G4locEVUpq6qNrF4jJnHmspyAtKQBC0VFjxtsRS8XppJxDFTc00B0A9uox3'); 
 
 const Checkout = () => {
-    RoleGuard('User');
+    RoleGuard(["User", "Admin", "Staff"]);
     const navigate = useNavigate();
     const location = useLocation();
     const orderId = location.state?.orderId;

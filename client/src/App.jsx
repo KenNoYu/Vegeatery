@@ -69,7 +69,6 @@ import OrderDashboard from "./pages/orders/AdminOverview";
 import Register from "./pages/Accounts/User/Register";
 import Login from "./pages/Accounts/User/Login";
 import Home from "./pages/Home";
-import MyForm from "./pages/MyForm";
 
 // Accounts
 import UserOverview from "./pages/Accounts/User/UserOverview";
@@ -350,7 +349,6 @@ function App() {
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/form" element={<MyForm />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />

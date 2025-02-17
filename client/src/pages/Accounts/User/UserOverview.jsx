@@ -390,16 +390,24 @@ const UserOverview = () => {
                 ))}
               </Stack>
             ) : (
-              <Typography
-                variant="h6"
-                sx={{
-                  color: "gray",
-                  textAlign: "center",
-                  marginTop: "20px",
-                }}
-              >
-                No upcoming reservations!
-              </Typography>
+              <>
+                <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                  <img
+                    src="/assets/reservationicons/NoReservations.png"
+                    alt="No Reservations"
+                    style={{ width: '70px', height: '70px', opacity: 0.6 }}
+                  />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: "gray",
+                      textAlign: "center",
+                    }}
+                  >
+                    No upcoming reservations!
+                  </Typography>
+                </div>
+              </>
             )}
           </Box>
 
