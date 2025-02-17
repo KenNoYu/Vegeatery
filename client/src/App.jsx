@@ -337,6 +337,7 @@ function App() {
               <Route path="/admin/accounts" element={<Accounts />} />
               <Route path="/user/profile" element={<Profile />} />
               <Route path="/overview" element={<UserOverview />} />
+              <Route path="/user/orders" element={<MyOrdersPage />} />
               <Route path="/user/reservations" element={<MyReservationsPage />} />
               <Route path="/user/reservations/:id" element={<EditMyReservationsPage />} />
             </Routes>
@@ -348,7 +349,6 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/form" element={<MyForm />} />
-              <Route path="/user/orders" element={<MyOrdersPage />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />
