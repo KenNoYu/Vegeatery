@@ -18,7 +18,8 @@ namespace vegeatery.Dtos
 		public bool Promotions { get; set; }
 		public bool Agreement { get; set; }
 		public int TotalPoints { get; set; }
-		public string JwtToken { get; set; }
+        public DateTime? PointsExpiryDate { get; set; }
+        public string JwtToken { get; set; }
 		public DateTime CreatedAt { get; set; }
 		public int RoleId { get; set; }
         public int TierId { get; set; }

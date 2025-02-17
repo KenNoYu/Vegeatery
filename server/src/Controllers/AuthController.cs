@@ -83,12 +83,14 @@ public class AuthController : ControllerBase
 			Promotions = registerDto.promotions,
 			Agreement = registerDto.agreement,
 			TotalPoints = 0,
+            PointsExpiryDate = DateTime.UtcNow.AddMonths(6), 
+            PointsPeriodStartDate = DateTime.UtcNow,
             RoleId = role.Id,
 			TierId = tier.TierId,
 			Role = role,
 			Tier = tier,
 			CartId = cart.CartId
-		};
+        };
 
 		user.JwtToken = CreateToken(user);
 
@@ -299,7 +301,8 @@ public class AuthController : ControllerBase
 				Address = u.Address,
 				Promotions = u.Promotions,
 				Agreement = u.Agreement,
-				TotalPoints = u.TotalPoints,
+                PointsExpiryDate = u.PointsExpiryDate,
+                TotalPoints = u.TotalPoints,
 				JwtToken = u.JwtToken,
 				CreatedAt = u.CreatedAt,
 				RoleId = u.RoleId,
