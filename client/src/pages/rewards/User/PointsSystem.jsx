@@ -65,10 +65,24 @@ const PointsSystem = () => {
     }
   };
 
+
   if (!userId) return <Typography>Loading...</Typography>;
 
   // Calculate progress capped at 100% when points are 777 or more
   const progress = userId.totalPoints >= 777 ? 100 : (userId.totalPoints / 777) * 100;
+
+  const groupedVouchers = {
+    Gold: vouchers.filter(v => v.tier?.tierName === 'Gold'),
+    Silver: vouchers.filter(v => v.tier?.tierName === 'Silver'),
+    Bronze: vouchers.filter(v => v.tier?.tierName === 'Bronze')
+  };
+
+  // Define tier styles for vouchers
+  const tierStyles = {
+    Gold: { backgroundColor: '#E5D040', color: '#000' },
+    Silver: { backgroundColor: '#C0C0C0', color: '#000' },
+    Bronze: { backgroundColor: '#CD7F32', color: '#FFF' }
+  };
 
   return (
 
@@ -90,7 +104,7 @@ const PointsSystem = () => {
         }}
       >
 
-        <Box sx={{ maxWidth: 1200, minHeight: 500, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', padding: '2rem', boxShadow: 3, borderRadius: 2, overflow: "hidden", overflowY: "auto", overflowX: "hidden", paddingBottom: '2rem', marginTop: '2rem' }}>
+        <Box sx={{ maxWidth: 1200, minHeight: 500, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', padding: '2rem', overflow: "hidden", overflowY: "auto", overflowX: "hidden", paddingBottom: '2rem', marginTop: '2rem' }}>
           <Typography variant="h4" fontWeight="bold" gutterBottom textAlign="center">
             Sustainable Points
           </Typography>
@@ -119,7 +133,7 @@ const PointsSystem = () => {
             {vouchers.length > 0 ? (
               vouchers.map((voucher) => (
                 <Grid item xs={12} sm={6} md={4} key={voucher.voucherId} display="flex" justifyContent="center">
-                  <Card sx={{ backgroundColor: '#E3F2FD', boxShadow: 3, width: '100%', maxWidth: 300 }}>
+                  <Card sx={tierStyles[userId.tierName] || { backgroundColor: '#E3F2FD', boxShadow: 3, width: '100%', maxWidth: 300 }}>
                     <CardContent>
                       <Typography variant="h6" fontWeight="bold" textAlign="center" gutterBottom>
                         {voucher.voucherName}
@@ -136,8 +150,8 @@ const PointsSystem = () => {
               ))
             ) : (
               <Grid item xs={12} display="flex" justifyContent="center">
-      <Typography variant="body1">No vouchers are available.</Typography>
-    </Grid>
+                <Typography variant="body1">No vouchers are available.</Typography>
+              </Grid>
             )}
           </Grid>
         </Box>
