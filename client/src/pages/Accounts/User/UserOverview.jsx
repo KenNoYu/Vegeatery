@@ -514,7 +514,6 @@ const UserOverview = () => {
                   justifyContent: "center",
                   textAlign: "center",
                   p: 3,
-                  backgroundColor: "#f5f5f5",
                   borderRadius: "8px",
                   m: "5%"
                 }}

@@ -10,8 +10,10 @@ import { ToastContainer, toast } from "react-toastify";
 import Sidebar from "./UserSidebar";
 import NoOrders from "../../../assets/NoOrders.png"
 import { useNavigate } from 'react-router-dom';
+import RoleGuard from '../../../utils/RoleGuard';
 
 const MyOrdersPage = () => {
+    RoleGuard(["User", "Admin", "Staff"]);
     const [user, setUser] = useState(null);
     const [orders, setOrders] = useState([]);
     const [cartItems, setCartItems] = useState([]);
@@ -144,7 +146,7 @@ const MyOrdersPage = () => {
                 overflow: "auto"
             }}>
                 {/* Order History */}
-                <Typography variant="h3" sx={{ my: 2, fontWeight: 'bold' }}>
+                <Typography variant="h4" sx={{ my: 2, fontWeight: 'bold' }}>
                     Order History
                 </Typography>
                 <Grid container spacing={4} justifyContent="center">

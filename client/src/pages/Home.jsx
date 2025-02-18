@@ -1,12 +1,45 @@
-import React from "react";
-import { Box, Typography, Button, Grid } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Button, Grid, IconButton } from "@mui/material";
 import { useTheme } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import { LocalOffer, CardGiftcard, Star } from '@mui/icons-material';
+import { ArrowForward, ArrowBack } from "@mui/icons-material";
+
 
 const Home = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+
+  // for carousel
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleNext();
+    }, 5000); // 5000 ms = 5 seconds
+  
+    return () => clearInterval(interval); 
+  }, [handleNext]);
+
+  const images = [
+    { src: '/assets/homepage/carousel/burger.png', title: "EAT GOOD, <br /> FEEL GREAT", description: "Crispy BBQ Tofu Burger" },
+    { src: '/assets/homepage/carousel/lentil.png', title: "Fresh. Healthy. <br/> Yummy.", description: "Lentil Bolognese Pasta" },
+    { src: '/assets/homepage/carousel/ramen.png', title: "EAT GREEN <br /> LIVE CLEAN.", description: "Vegan Ramen with Miso Shiitake Broth" },
+    { src: '/assets/homepage/carousel/burrito.png', title: "FRESH FLAVOURS, <br /> WHOLESOME <br /> CHOICES", description: "Bombay Burritos" }
+  ];
+
   return (
     <Box sx={{
       pb: 5,
@@ -18,32 +51,116 @@ const Home = () => {
       <Box
         sx={{
           position: "relative",
-          minHeight: "75vh",
+          minHeight: "80vh",
           width: "100%",
-          backgroundImage: "url('/assets/homepage/hpHero.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
+          overflow: "hidden",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          textAlign: "center",
-          color: "white",
-          px: 0,
-          overflow: "hidden",
-          "& .MuiContainer-root": {
-            paddingLeft: "0px !important",
-            paddingRight: "0px !important",
-            marginLeft: "0 !important",
-            marginRight: "0 !important",
-          },
-          zIndex: '100',
+          mt: 7,
+          backgroundImage: 'url(assets/homepage/herobg.png)',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
-        <Box>
-          <Typography variant="h2" fontWeight="bold" textAlign={"left"}>FRESH FLAVOURS, <br />WHOLESOME <br /> CHOICES</Typography>
-          <Typography variant="h6" sx={{ mt: 2, background: "rgba(255, 255, 255, .8)" }} color="Accent" textAlign={"left"}>Lentil Bolognese Pasta</Typography>
-        </Box>
+        {images.map((image, index) => {
+          // Determine the positioning
+          let position = 'nextSlide';
+          if (index === currentIndex) {
+            position = 'activeSlide';
+          } else if (index === currentIndex - 1 || (currentIndex === 0 && index === images.length - 1)) {
+            position = 'prevSlide';
+          }
+
+          return (
+            <Box
+              key={index}
+              className={position}
+              sx={{
+                position: "absolute",
+                height: "30vw",
+                width: "50vw",
+                maxWidth: "80vh",
+                maxHeight: "55vh",
+                backgroundImage: `url(${image.src})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                transition: "transform 0.5s ease, opacity 0.5s ease",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "left",
+                color: "white",
+                opacity: position === 'activeSlide' ? 1 : 0.5,
+                transform:
+                  position === 'activeSlide' ? "translateX(0)" :
+                    position === 'prevSlide' ? "translateX(-130%) scale(0.8)" :
+                      "translateX(130%) scale(0.8)",
+                zIndex: position === 'activeSlide' ? 2 : 1,
+              }}
+            >
+              {position === 'activeSlide' && (
+                <Box
+                  ml={-70}
+                  sx={{
+                    animation: "fadeIn 0.5s ease-in-out",
+                    transition: "opacity 0.5s ease-in-out"
+                  }}
+                >
+                  <Typography
+                    variant="h3"
+                    fontWeight="bold"
+                    dangerouslySetInnerHTML={{ __html: image.title }}
+                  />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      mt: 2,
+                      background: "rgba(255, 255, 255, .8)",
+                      padding: "7px",
+                      borderRadius: "10px",
+                      width: '20vw'
+                    }}
+                    color="Accent"
+                  >
+                    {image.description}
+                  </Typography>
+                </Box>
+              )}
+
+
+            </Box>
+          );
+        })}
+
+        {/* Navigation Buttons */}
+        <IconButton
+          onClick={handlePrev}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "10px",
+            transform: "translateY(-50%)",
+            color: "white",
+            zIndex: 3
+          }}
+        >
+          <ArrowBack fontSize="large" />
+        </IconButton>
+        <IconButton
+          onClick={handleNext}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            right: "10px",
+            transform: "translateY(-50%)",
+            color: "white",
+            zIndex: 3
+          }}
+        >
+          <ArrowForward fontSize="large" />
+        </IconButton>
       </Box>
 
       {/* Welcome Section */}

@@ -210,9 +210,9 @@ function App() {
                         <Link to="/rewards">
                           <Typography>Rewards</Typography>
                         </Link>
-                        <Link to="/feedback">
+                        {/* <Link to="/feedback">
                           <Typography>Feedback</Typography>
-                        </Link>
+                        </Link> */}
                       </>
                     )}
                   </Box>

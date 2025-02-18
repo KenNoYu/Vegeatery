@@ -16,7 +16,7 @@ import { parse, isBefore, isDate } from 'date-fns';
 
 
 const EditMyReservationsPage = () => {
-  RoleGuard('User');
+  RoleGuard(["User", "Admin", "Staff"]);
   const navigate = useNavigate();
   const theme = useTheme();
   const { id } = useParams();
