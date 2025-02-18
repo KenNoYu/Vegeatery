@@ -214,5 +214,48 @@ namespace vegeatery.Controllers
                 }
             }
         }
+
+        // Remove all products from cart
+        [HttpDelete("ClearCart")]
+        public IActionResult ClearCart(int CartId)
+        {
+            // Validate input parameters
+            if (CartId == 0)
+            {
+                return BadRequest(new { Message = "Invalid CartId." });
+            }
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    // Check if the cart exists
+                    var cart = _context.Cart.FirstOrDefault(c => c.CartId == CartId);
+                    if (cart == null)
+                    {
+                        return NotFound(new { Message = "Cart does not exist." });
+                    }
+
+                    // Find all cart items associated with the cart
+                    var cartItems = _context.CartItems.Where(c => c.CartId == CartId);
+
+                    if (cartItems != null && cartItems.Any()) // Check if any items exist before removal
+                    {
+                        _context.CartItems.RemoveRange(cartItems); // Remove all items in one go
+                    }
+
+                    _context.SaveChanges();
+                    transaction.Commit();
+
+                    return Ok(new { Message = "Cart cleared successfully." });
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    return StatusCode(500, new { Message = "An error occurred while clearing the cart.", Details = errorMessage });
+                }
+            }
+        }
     }
 }
