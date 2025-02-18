@@ -159,7 +159,7 @@ const EditProduct = () => {
             http.put(`/Product/${productId}`, data)
                 .then(() => {
                     toast.success('Product updated successfully');
-                    navigate(`/product/${productId}`);
+                    navigate(`/admin/product/${productId}`);
                 })
                 .catch((err) => {
                     console.log('Error Response:', err.response); // Log the full error response for debugging
@@ -202,7 +202,7 @@ const EditProduct = () => {
     };
 
     return (
-        <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '128px' }}>
+        <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '94px' }}>
 
             <Box
                 sx={{

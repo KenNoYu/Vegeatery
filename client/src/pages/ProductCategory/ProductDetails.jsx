@@ -31,7 +31,7 @@ function ProductDetails() {
 
 
   return (
-    <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '64px' }}>
+    <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '30px' }}>
       <Box
         sx={{
           position: 'relative', // Needed for absolute positioning of buttons
@@ -82,7 +82,7 @@ function ProductDetails() {
                     </Box>
                   </Grid>
                   <Grid item xs={12} sx={{ marginBottom: '10px' }}>
-                    <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '20px', height: '115px' }}>
+                    <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '20px', height: '115px', overflow: "auto" }}>
                       <Typography variant="body1" color="textSecondary">
                         <strong>Description:</strong> {product.productDescription}
                       </Typography>

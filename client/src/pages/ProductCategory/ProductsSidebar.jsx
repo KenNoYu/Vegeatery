@@ -13,12 +13,16 @@ const ProductsSidebar = () => {
 
   // List items data
   const menuItems = [
-    { id: 'Products', text: 'Products', icon: <CardGiftcard />, path: '/admin/store' },
+    { id: 'Products', text: 'Products', icon: <CardGiftcard />, path: '/admin/viewcategories/1' },
     { id: 'Orders', text: "Orders", icon: <Star />, path: '/admin/orders' },
   ];
 
   // Function to check if a route is active
   const isRouteActive = (path) => {
+    // If the path is "reservations", check if the current path starts with "/user/reservations"
+    if (path === '/admin/viewcategories/1') {
+      return location.pathname.startsWith('/admin/viewcategories');
+    }
     // If no route is selected, default to the first item's path ("/overview")
     return location.pathname === path || (location.pathname === '/' && path === '/admin/store');
   };

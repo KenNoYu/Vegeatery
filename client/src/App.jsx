@@ -329,9 +329,9 @@ function App() {
             <Routes>
               <Route path={"/staff/viewstocks"} element={<StaffStockPage />} />
               <Route path={"/staff/productlogs"} element={<StaffProductLogs />} />
-              <Route path={"/viewcategories/:id"} element={<CategoryList />} />
+              <Route path={"/admin/viewcategories/:id"} element={<CategoryList />} />
               <Route path={"/admin/store"} element={<CategoryList />} />
-              <Route path="/editproduct/:productId" element={<EditProduct />} />
+              <Route path="/admin/editproduct/:productId" element={<EditProduct />} />
               <Route path="/user/store" element={<UserMenu />} />
               <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
               <Route path="/user/profile/:userId" element={<UserProfileView />}/>
@@ -355,10 +355,10 @@ function App() {
               <Route path="/passwordreset" element={<ResetPassword />} />
 
               {/* PRODUCTS */}
-              <Route path={"/addcategory"} element={<AddCategory />} />
-              <Route path={"/addproduct"} element={<AddProduct />} />
-              <Route path="/product/:productId" element={<ProductDetails />} />
-              <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
+              <Route path={"/admin/addcategory"} element={<AddCategory />} />
+              <Route path={"/admin/addproduct"} element={<AddProduct />} />
+              <Route path="/admin/product/:productId" element={<ProductDetails />} />
+              <Route path={"/admin/editcategory/:categoryId"} element={<EditCategory />} />
               <Route path={"/userproduct/:productId"} element= {<UserProductDetails />} />
 
               {/* RESERVATION */}
