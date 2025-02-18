@@ -116,7 +116,7 @@ const StaffStockPage = () => {
         {/* Sidebar */}
         <StaffSideBar />
 
-        <Box sx={{ padding: "20px", maxWidth: "1200px", margin: "auto", border: '1px solid #ccc', borderRadius: '8px', background: '#FFFFFF', marginBottom: '20px', marginTop: '128px' }}>
+        <Box sx={{ padding: "20px", maxWidth: "1200px", width: { md: 1100 }, margin: "auto", border: '1px solid #ccc', borderRadius: '8px', background: '#FFFFFF', marginBottom: '20px', marginTop: '94px' }}>
           <Typography variant="h4" gutterBottom sx={{ padding: "20px", maxWidth: "1200px", margin: "auto", fontWeight: 'bold' }}>
             Staff Stock Management
           </Typography>
