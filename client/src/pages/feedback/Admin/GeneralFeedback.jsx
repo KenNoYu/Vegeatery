@@ -202,8 +202,44 @@ const AdminGeneralFeedback = () => {
         <Dialog open={openModal} onClose={() => setOpenModal(false)}>
           <DialogTitle sx={{ backgroundColor: '#E6F2FF' }}>Reply to User</DialogTitle>
           <DialogContent sx={{ backgroundColor: '#E6F2FF' }}>
-            <TextField label="Reply Title" fullWidth margin="dense" value={replyTitle} onChange={(e) => setReplyTitle(e.target.value)} />
-            <TextField label="Reply Message" fullWidth multiline rows={4} margin="dense" value={replyText} onChange={(e) => setReplyText(e.target.value)} />
+            <TextField label="Reply Title" fullWidth margin="dense" value={replyTitle}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused": {
+                  fieldset: {
+                    borderColor: "#C6487E !important",
+                  },
+                },
+              },
+              "& .MuiInputLabel-root": {
+                // Target the label specifically
+                color: "black", // Default label color
+                "&.Mui-focused": {
+                  // Label styles when focused
+                  color: "black !important", // Black on focus
+                },
+              },
+            }}
+            onChange={(e) => setReplyTitle(e.target.value)} />
+            <TextField label="Reply Message" fullWidth multiline rows={4} margin="dense" value={replyText} 
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused": {
+                  fieldset: {
+                    borderColor: "#C6487E !important",
+                  },
+                },
+              },
+              "& .MuiInputLabel-root": {
+                // Target the label specifically
+                color: "black", // Default label color
+                "&.Mui-focused": {
+                  // Label styles when focused
+                  color: "black !important", // Black on focus
+                },
+              },
+            }}
+            onChange={(e) => setReplyText(e.target.value)} />
           </DialogContent>
           <DialogActions sx={{ backgroundColor: '#E6F2FF' }}>
             <Button onClick={() => setOpenModal(false)} sx={{
