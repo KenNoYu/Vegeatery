@@ -77,11 +77,10 @@ const GeneralFeedback = () => {
 
     return (
         <Box sx={{
-            marginTop: '5em',
+            marginTop: '3em',
             marginLeft: 'auto',
             marginRight: 'auto',
-            maxWidth: 1200,
-            minHeight: 500,
+            marginBottom: '3em',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -95,7 +94,7 @@ const GeneralFeedback = () => {
             overflowX: "hidden",
             paddingBottom: '2rem'
         }}>
-            <Typography variant="h4" fontWeight="bold" >General Feedback</Typography>
+            <Typography variant="h4" fontWeight="bold" mt={5} >General Feedback</Typography>
 
             <Box mt={4} width="100%">
 
@@ -118,7 +117,7 @@ const GeneralFeedback = () => {
                 </Box>
 
                 {feedbacks.length === 0 ? (
-                    <Typography>No general feedback has been provided yet.</Typography>
+                    <Typography mt={2}>No general feedback has been provided yet.</Typography>
                 ) : (
                     feedbacks.map((feedback, index) => (
                         <Card key={feedback.feedbackId || `feedback-${index}`}

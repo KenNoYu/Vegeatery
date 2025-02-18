@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Card, CardContent, Grid, Input, IconButton, MenuItem, Select, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent, Grid, Input, IconButton, MenuItem, Select, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Container } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -52,13 +52,13 @@ const AdminVouchersSystem = () => {
   };
 
   return (
-    <Box
+    <Container disableGutters
       sx={{
         marginBottom: 2
       }}
     >
 
-      <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden" }}>
+      <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden", overflowX: "hidden" }}>
         {/* Sidebar */}
         <RewardsSidebar />
         {/* Main Content */}
@@ -66,7 +66,6 @@ const AdminVouchersSystem = () => {
           sx={{
             marginLeft: "240px",
             flexGrow: 1,
-            width: "80%",
             padding: 5,
             backgroundColor: "#FFFFFF",
             marginTop: "5px",
@@ -174,7 +173,7 @@ const AdminVouchersSystem = () => {
         </DialogActions>
       </Dialog>
 
-    </Box>
+    </Container>
   );
 };
 

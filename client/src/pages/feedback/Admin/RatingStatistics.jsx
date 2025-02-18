@@ -117,6 +117,23 @@ const RatingStatistics = () => {
                             <DatePicker
                                 label="Start Date"
                                 value={startDate}
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                      "&.Mui-focused": {
+                                        fieldset: {
+                                          borderColor: "#C6487E !important",
+                                        },
+                                      },
+                                    },
+                                    "& .MuiInputLabel-root": {
+                                      // Target the label specifically
+                                      color: "black", // Default label color
+                                      "&.Mui-focused": {
+                                        // Label styles when focused
+                                        color: "black !important", // Black on focus
+                                      },
+                                    },
+                                  }}
                                 onChange={(newValue) => setStartDate(newValue)}
                                 renderInput={(params) => <TextField {...params} />}
                                 maxDate={dayjs()}
@@ -124,13 +141,35 @@ const RatingStatistics = () => {
                             <DatePicker
                                 label="End Date"
                                 value={endDate}
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                      "&.Mui-focused": {
+                                        fieldset: {
+                                          borderColor: "#C6487E !important",
+                                        },
+                                      },
+                                    },
+                                    "& .MuiInputLabel-root": {
+                                      // Target the label specifically
+                                      color: "black", // Default label color
+                                      "&.Mui-focused": {
+                                        // Label styles when focused
+                                        color: "black !important", // Black on focus
+                                      },
+                                    },
+                                  }}
                                 onChange={(newValue) => setEndDate(newValue)}
                                 renderInput={(params) => <TextField {...params} />}
                                 maxDate={dayjs()}
                             />
                         </LocalizationProvider>
-                        <Button variant="contained" onClick={handleGenerate}>
-                            Generate
+                        <Button variant="contained" onClick={handleGenerate} sx={{
+                              textTransform: 'none',
+                              color: '#FFFFFF',
+                              backgroundColor: '#C6487E',
+                              '&:hover': { backgroundColor: '#E7ABC5' }
+                            }}>
+                            GENERATE
                         </Button>
                     </Box>
                     <Box width="50%" margin="auto" marginTop={10}>

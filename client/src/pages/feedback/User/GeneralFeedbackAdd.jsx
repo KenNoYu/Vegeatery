@@ -74,6 +74,7 @@ const GeneralFeedbackAdd = () => {
             marginTop: '5em',
             marginLeft: 'auto',
             marginRight: 'auto',
+            marginBottom: '3em',
             maxWidth: 1200,
             minHeight: 500,
             display: 'flex',
@@ -87,7 +88,7 @@ const GeneralFeedbackAdd = () => {
             overflow: "hidden",
             overflowY: "auto",
             overflowX: "hidden",
-            paddingBottom: '2rem'
+            paddingBottom: '5rem'
         }}>
             <Typography variant="h4" fontWeight="bold" mb={2}>General Feedback</Typography>
             {errorMessage && (
@@ -103,6 +104,23 @@ const GeneralFeedbackAdd = () => {
                             <TextField
                                 label="Feedback Title"
                                 value={form.feedbackTitle}
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                        "&.Mui-focused": {
+                                            fieldset: {
+                                                borderColor: "#C6487E !important",
+                                            },
+                                        },
+                                    },
+                                    "& .MuiInputLabel-root": {
+                                        // Target the label specifically
+                                        color: "black", // Default label color
+                                        "&.Mui-focused": {
+                                            // Label styles when focused
+                                            color: "black !important", // Black on focus
+                                        },
+                                    },
+                                }}
                                 onChange={(e) => setForm({ ...form, feedbackTitle: e.target.value })}
                                 fullWidth
                                 margin="normal"
@@ -110,7 +128,7 @@ const GeneralFeedbackAdd = () => {
                         </Grid>
 
                         <Grid item xs={12}>
-                            <Typography variant="h6">Rating</Typography>
+                            <Typography variant="h6" fontWeight="bold">Rating</Typography>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                                 {[1, 2, 3, 4, 5].map((star) => (
                                     <IconButton
@@ -128,6 +146,23 @@ const GeneralFeedbackAdd = () => {
                             <TextField
                                 label="Review"
                                 value={form.review}
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                        "&.Mui-focused": {
+                                            fieldset: {
+                                                borderColor: "#C6487E !important",
+                                            },
+                                        },
+                                    },
+                                    "& .MuiInputLabel-root": {
+                                        // Target the label specifically
+                                        color: "black", // Default label color
+                                        "&.Mui-focused": {
+                                            // Label styles when focused
+                                            color: "black !important", // Black on focus
+                                        },
+                                    },
+                                }}
                                 onChange={(e) => setForm({ ...form, review: e.target.value })}
                                 fullWidth
                                 multiline
@@ -135,7 +170,10 @@ const GeneralFeedbackAdd = () => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} display="flex" flexDirection="column" alignItems="flex-start">
+                        <Grid item xs={12} display="flex" flexDirection="column" alignItems="flex-start" mt={2}>
+                            <Typography variant="body2" color="textSecondary">
+                                *Only one image can be uploaded
+                            </Typography>
                             <Button
                                 variant="contained"
                                 component="label"
@@ -145,7 +183,8 @@ const GeneralFeedbackAdd = () => {
                                     height: "40px",
                                     display: "flex",
                                     justifyContent: "center",
-                                    alignItems: "center"
+                                    alignItems: "center",
+                                    marginBottom:2
                                 }}
                             >
                                 Upload Image
@@ -158,7 +197,6 @@ const GeneralFeedbackAdd = () => {
                                     }
                                 />
                             </Button>
-
                             {form.imagePath && (
                                 <Box mt={2} display="flex" flexDirection="column">
                                     <img

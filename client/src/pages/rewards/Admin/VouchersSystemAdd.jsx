@@ -128,6 +128,23 @@ const VouchersSystemAdd = () => {
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextField fullWidth label="Voucher Name"
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                        "&.Mui-focused": {
+                                            fieldset: {
+                                                borderColor: "#C6487E !important",
+                                            },
+                                        },
+                                    },
+                                    "& .MuiInputLabel-root": {
+                                        // Target the label specifically
+                                        color: "black", // Default label color
+                                        "&.Mui-focused": {
+                                            // Label styles when focused
+                                            color: "black !important", // Black on focus
+                                        },
+                                    },
+                                }}
                                 value={voucher.voucherName}
                                 onChange={(e) => setNewVoucher({ ...voucher, voucherName: e.target.value })} />
                         </Grid>
@@ -136,6 +153,23 @@ const VouchersSystemAdd = () => {
                             <TextField fullWidth label="Discount (%)"
                                 type="number"
                                 value={voucher.discountPercentage}
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                        "&.Mui-focused": {
+                                            fieldset: {
+                                                borderColor: "#C6487E !important",
+                                            },
+                                        },
+                                    },
+                                    "& .MuiInputLabel-root": {
+                                        // Target the label specifically
+                                        color: "black", // Default label color
+                                        "&.Mui-focused": {
+                                            // Label styles when focused
+                                            color: "black !important", // Black on focus
+                                        },
+                                    },
+                                }}
                                 onChange={(e) => setNewVoucher({
                                     ...voucher,
                                     discountPercentage: parseFloat(e.target.value) || 0
@@ -144,15 +178,36 @@ const VouchersSystemAdd = () => {
                         </Grid>
 
                         <Grid item xs={12}>
-                            <Select fullWidth
+                            <TextField
+                                select
+                                fullWidth
+                                autoComplete="off"
+                                label="Select Tier"
+                                name="tier"
                                 value={voucher.tierId}
                                 onChange={(e) => setNewVoucher({ ...voucher, tierId: e.target.value })}
-                                displayEmpty>
-                                <MenuItem value="" disabled>Select Tier</MenuItem>
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                        "&.Mui-focused": {
+                                            fieldset: {
+                                                borderColor: "#C6487E !important",
+                                            },
+                                        },
+                                    },
+                                    "& .MuiInputLabel-root": {
+                                        // Target the label specifically
+                                        color: "black", // Default label color
+                                        "&.Mui-focused": {
+                                            // Label styles when focused
+                                            color: "black !important", // Black on focus
+                                        },
+                                    },
+                                }}
+                            >
                                 {tiers.map((tier) => (
                                     <MenuItem key={tier.tierId} value={tier.tierId}>{tier.tierName}</MenuItem>
                                 ))}
-                            </Select>
+                            </TextField>
                         </Grid>
 
                         <Grid item xs={12} display="flex" justifyContent="space-between">
@@ -207,7 +262,7 @@ const VouchersSystemAdd = () => {
                 </DialogActions>
             </Dialog>
 
-        </Box>
+        </Box >
     );
 };
 

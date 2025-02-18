@@ -42,6 +42,7 @@ import AdminVouchersSystem from "./pages/rewards/Admin/VouchersSystem";
 import AdminVouchersSystemEdit from "./pages/rewards/Admin/VouchersSystemEdit";
 import VouchersSystemAdd from "./pages/rewards/Admin/VouchersSystemAdd";
 import PointsRange from "./pages/rewards/Admin/PointsRange";
+import Rewards from "./pages/Rewards";
 
 // FEEDBACKS
 import GeneralFeedback from "./pages/feedback/User/GeneralFeedback";
@@ -379,6 +380,8 @@ function App() {
               <Route path="/user/generalfeedbackadd" element={<GeneralFeedbackAdd />}/>
               <Route path="/admin/feedback" element={<AdminGeneralFeedback />}/>
               <Route path="/admin/ratingstatistics" element={<RatingStatistics />}/>
+              <Route path="/rewards" element={<Rewards />}/>
+
 
               {/* ORDERS */}
               <Route path={"/orders"} element={<Orders />} />
