@@ -309,8 +309,8 @@ export default function Accounts() {
                 value={sortBy || "createdAt"}
                 onChange={(e) => setSortBy(e.target.value)}
               >
-                <MenuItem value="createdAt">Newest to Oldest</MenuItem>
-                <MenuItem value="createdAtReverse">Oldest to Newest</MenuItem>
+                <MenuItem value="createdAt">Oldest to Newest</MenuItem>
+                <MenuItem value="createdAtReverse">Newest to Oldest</MenuItem>
               </Select>
             </FormControl>
 

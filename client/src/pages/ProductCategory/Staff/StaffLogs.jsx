@@ -74,7 +74,7 @@ const StaffProductLogs = () => {
             <Box sx={{ display: 'flex' }}>
                 {/* Sidebar */}
                 <StaffSidebar />
-                <Box sx={{ padding: "20px", width: '100%', maxWidth: "1200px", width: { md: 1100 }, height: '600px', margin: "auto", border: '1px solid #ccc', borderRadius: '8px', background: '#FFFFFF', marginTop: '94px' }}>
+                <Box sx={{ padding: "20px", width: '100%', maxWidth: "1200px", width: { md: 900 }, height: '600px', margin: "auto", border: '1px solid #ccc', borderRadius: '8px', background: '#FFFFFF', marginTop: '94px' }}>
                     <ProductLogs productLogs={productLogs} />
                 </Box>
             </Box>

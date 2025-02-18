@@ -83,7 +83,7 @@ const OrderConfirmation = () => {
                 }
             });
             UpdateOrderAsNew(order.orderId);       
-            //sendEmail();
+            sendEmail();
             updateUserPoints();
         }
     }, [order]);
@@ -179,7 +179,7 @@ const OrderConfirmation = () => {
             "service_plo7m72",
             "template_nhrcr3o",
             emailParams,
-            "NpgWlwY1IL3fFaX_P"
+            "NpgWlwY1lL3fFaX_P"
         ).then(() => {
             console.log("Email sent successfully!");
             setLoading(false);

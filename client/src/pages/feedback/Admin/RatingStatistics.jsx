@@ -87,12 +87,6 @@ const RatingStatistics = () => {
     };
 
     return (
-        <Box
-        sx={{
-            marginBottom: 2
-        }}
-        >
-
             <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden" }}>
                 {/* Sidebar */}
                 <FeedbackSidebar />
@@ -182,7 +176,6 @@ const RatingStatistics = () => {
                     )}
                 </Box>
             </Box>
-        </Box>
     );
 };
 

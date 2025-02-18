@@ -85,7 +85,7 @@ const CategoryList = () => {
           boxShadow: 2,
           height: '1075px',
           maxWidth: '2000px',
-          width: { md: 1100 },
+          width: { md: 900 },
           padding: '16px', // Ensure no extra padding
           marginTop: '90px', // Remove extra margin if necessary
         }}
