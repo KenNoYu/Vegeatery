@@ -258,9 +258,6 @@ const MyOrdersPage = () => {
 
                                         {/* Action Buttons */}
                                         <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                                            <Button variant="contained" color="Accent" size="large">
-                                                Review
-                                            </Button>
                                             <Button variant="contained" color="Accent" size="large" onClick={() => buyAgain(order)}>
                                                 Buy Again
                                             </Button>

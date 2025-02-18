@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { TextField, Button, Typography, Box, Grid2 as Grid, FormControl } from '@mui/material';
+import { TextField, Button, Typography, Box, Grid2 as Grid, FormControl, InputLabel, Select, MenuItem, FormHelperText, Checkbox, ListItemText } from '@mui/material';
 import { Container, Card, CardMedia } from '@mui/material';
 import http from '../../http';
 import { useFormik } from 'formik';
@@ -10,26 +10,59 @@ import 'react-toastify/dist/ReactToastify.css';
 import RoleGuard from '../../utils/RoleGuard';
 import { useTheme } from '@mui/material/styles';
 import { styled } from "@mui/system";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const DetailsTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiInputLabel-root.Mui-focused": {
-    color: "#C6487E", // Label color when focused and at the top
-  },
-  "& .MuiOutlinedInput-root": {
-    "&:hover fieldset": {
-      borderColor: "black", // Outline on hover
+    "& .MuiInputLabel-root.Mui-focused": {
+        color: "#C6487E", // Label color when focused and at the top
     },
-    "&.Mui-focused fieldset": {
-      borderColor: "#C6487E", // Outline when focused
+    "& .MuiOutlinedInput-root": {
+        "&:hover fieldset": {
+            borderColor: "black", // Outline on hover
+        },
+        "&.Mui-focused fieldset": {
+            borderColor: "#C6487E", // Outline when focused
+        },
     },
-  },
-  "& .MuiInputLabel-root": {
-    color: "black", // Label color
-  },
-  "& .Mui-focused": {
-    color: "black", // Label when focused
-  },
+    "& .MuiInputLabel-root": {
+        color: "black", // Label color
+    },
+    "& .Mui-focused": {
+        color: "black", // Label when focused
+    },
 }));
+
+const StyledInputLabel = styled(InputLabel)(({ theme }) => ({
+    color: "black", // Default color
+    "&.Mui-focused": {
+        color: "#C6487E", // Keep visible when focused or shrinked
+    }
+}));
+
+const StyledSelect = styled(Select)(({ theme }) => ({
+    "&.MuiOutlinedInput-root": {
+
+        "&:hover fieldset": {
+            borderColor: "black", // Border on hover
+        },
+        "&.Mui-focused fieldset": {
+            borderColor: "#C6487E", // Border when focused
+        },
+    },
+}));
+
+
+const allergyOptions = [
+    "Milk",
+    "Tree Nuts",
+    "Soybean",
+    "Garlic",
+    "Onion",
+    "Wheat",
+    "Eggs",
+    "Peanuts",
+    "None",
+];
 
 const EditProduct = () => {
     RoleGuard('Admin');
@@ -50,15 +83,28 @@ const EditProduct = () => {
         productPrice: 0,
         discountPercentage: 0,
         stocks: 0,
+        allergyIngredients: "",
     });
- 
+
     useEffect(() => {
         // Fetch the product details for editing
         http
             .get(`/Product/${productId}`)
             .then((res) => {
-                setProduct(res.data); // Initialize state with product data
-                setImageFile(res.data.imageFile);
+                const fetchedProduct = res.data;
+                console.log('Fetched Product:', fetchedProduct)
+                const allergyIngredients = fetchedProduct.allergyIngredients
+                    ? fetchedProduct.allergyIngredients.split(',').map((ingredient) => ingredient.trim())
+                    : [];
+
+                // Log the allergyIngredients for auditing purposes
+                console.log('Audit Log - Allergy Ingredients:', allergyIngredients);
+
+                setProduct({
+                    ...fetchedProduct,
+                    allergyIngredients: allergyIngredients,
+                });
+                setImageFile(fetchedProduct.imageFile);
             })
             .catch((err) => {
                 const message = err.response?.data?.message || 'Error fetching product details';
@@ -67,7 +113,8 @@ const EditProduct = () => {
             .finally(() => {
                 setLoading(false);
             });
-    }, []);
+    }, [productId]);
+
 
     const formik = useFormik({
         initialValues: product,
@@ -93,11 +140,21 @@ const EditProduct = () => {
             productPrice: yup.number().required('Product price is required'),
             discountPercentage: yup.number().required('Discount percentage is required'),
             stocks: yup.number().required('Stocks is required'),
+            allergyIngredients: yup
+                .array()
+                .of(yup.string().trim()) // Ensure each item in the array is a string
+                .transform((value) => value || []) // If value is undefined or null, default it to an empty array
         }),
         onSubmit: (data) => {
             if (imageFile) {
                 data.imageFile = imageFile;
             }
+
+            if (Array.isArray(data.allergyIngredients)) {
+                data.allergyIngredients = data.allergyIngredients.join(', ');
+            }
+            // Ensure allergyIngredients is properly sent
+            console.log('Submitting Data:', data);  // Check the data structure
 
             http.put(`/Product/${productId}`, data)
                 .then(() => {
@@ -105,6 +162,7 @@ const EditProduct = () => {
                     navigate(`/product/${productId}`);
                 })
                 .catch((err) => {
+                    console.log('Error Response:', err.response); // Log the full error response for debugging
                     const message = err.response?.data?.message || 'Error updating product';
                     toast.error(message);
                 });
@@ -169,7 +227,7 @@ const EditProduct = () => {
                     }}
                 >
                     {/* Cancel Button on the left */}
-                    <Button sx={{ marginLeft: '20px' }} style={{ background: '#C6487E', color: '#FFFFFF' }} onClick={() => navigate('/admin/store')}>
+                    <Button sx={{ marginLeft: '20px' }} style={{ background: '#C6487E', color: '#FFFFFF' }} onClick={() => navigate('/admin/store')} startIcon={<ArrowBackIcon />}>
                         Go Back
                     </Button>
 
@@ -249,9 +307,9 @@ const EditProduct = () => {
                             </Box>
 
                             {/* Second Border - Price, Stock, etc. */}
-                            <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                            <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '31px 10px' }}>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={6} sx = {{ width:'304px'}}>
+                                    <Grid item xs={6} sx={{ width: '304px' }}>
                                         <DetailsTextField
                                             fullWidth
                                             type="number"
@@ -264,7 +322,7 @@ const EditProduct = () => {
                                             helperText={formik.touched.productPoints && formik.errors.productPoints}
                                         />
                                     </Grid>
-                                    <Grid item xs={6} sx = {{ width:'304px'}}>
+                                    <Grid item xs={6} sx={{ width: '304px' }}>
                                         <DetailsTextField
                                             fullWidth
                                             type="number"
@@ -277,7 +335,7 @@ const EditProduct = () => {
                                             helperText={formik.touched.productPrice && formik.errors.productPrice}
                                         />
                                     </Grid>
-                                    <Grid item xs={6} sx = {{ width:'304px'}}>
+                                    <Grid item xs={6} sx={{ width: '304px' }}>
                                         <DetailsTextField
                                             fullWidth
                                             type="number"
@@ -290,7 +348,7 @@ const EditProduct = () => {
                                             helperText={formik.touched.discountPercentage && formik.errors.discountPercentage}
                                         />
                                     </Grid>
-                                    <Grid item xs={6} sx = {{ width:'304px'}}>
+                                    <Grid item xs={6} sx={{ width: '304px' }}>
                                         <DetailsTextField
                                             fullWidth
                                             type="number"
@@ -303,6 +361,41 @@ const EditProduct = () => {
                                             helperText={formik.touched.stocks && formik.errors.stocks}
                                         />
                                     </Grid>
+                                    <Grid item xs={12} sx={{ width: '100%' }}>
+                                        <FormControl fullWidth error={formik.touched.allergyIngredients && Boolean(formik.errors.allergyIngredients)}>
+                                            <StyledInputLabel id="allergy-ingredients-label">Allergy Ingredients</StyledInputLabel >
+                                            <StyledSelect
+                                                labelId="allergy-ingredients-label"
+                                                id="allergyIngredients"
+                                                name="allergyIngredients"
+                                                multiple
+                                                value={formik.values.allergyIngredients || []}  // Ensure it's an array
+                                                onChange={(e) => formik.setFieldValue('allergyIngredients', e.target.value)}  // Handle multi-selection
+                                                onBlur={formik.handleBlur}
+                                                label="Allergy Ingredients"
+                                                renderValue={(selected) => Array.isArray(selected) ? selected.join(', ') : ''}
+                                            >
+
+                                                {allergyOptions.map((option, index) => (
+                                                    <MenuItem
+                                                        key={index}
+                                                        value={option}
+                                                        style={{
+                                                            backgroundColor: formik.values.allergyIngredients.includes(option) ? "#e0f2f1" : "inherit" // Highlight selected items
+                                                        }}
+                                                    >
+                                                        <Checkbox checked={formik.values.allergyIngredients.indexOf(option) > -1} />
+                                                        <ListItemText primary={option} />
+                                                    </MenuItem>
+                                                ))}
+
+                                            </StyledSelect>
+                                            {formik.touched.allergyIngredients && formik.errors.allergyIngredients && (
+                                                <FormHelperText>{formik.errors.allergyIngredients}</FormHelperText>
+                                            )}
+                                        </FormControl>
+                                    </Grid>
+
 
                                 </Grid>
                             </Box>

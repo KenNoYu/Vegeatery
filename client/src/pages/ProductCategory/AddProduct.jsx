@@ -9,33 +9,47 @@ import 'react-toastify/dist/ReactToastify.css';
 import RoleGuard from '../../utils/RoleGuard';
 import { useTheme } from '@mui/material/styles';
 import { styled } from "@mui/system";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const DetailsTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiInputLabel-root.Mui-focused": {
-    color: "#C6487E", // Label color when focused and at the top
-  },
-  "& .MuiOutlinedInput-root": {
-    "&:hover fieldset": {
-      borderColor: "black", // Outline on hover
+    "& .MuiInputLabel-root.Mui-focused": {
+        color: "#C6487E", // Label color when focused and at the top
     },
-    "&.Mui-focused fieldset": {
-      borderColor: "#C6487E", // Outline when focused
+    "& .MuiOutlinedInput-root": {
+        "&:hover fieldset": {
+            borderColor: "black", // Outline on hover
+        },
+        "&.Mui-focused fieldset": {
+            borderColor: "#C6487E", // Outline when focused
+        },
     },
-  },
-  "& .MuiInputLabel-root": {
-    color: "black", // Label color
-  },
-  "& .Mui-focused": {
-    color: "black", // Label when focused
-  },
+    "& .MuiInputLabel-root": {
+        color: "black", // Label color
+    },
+    "& .Mui-focused": {
+        color: "black", // Label when focused
+    },
 }));
 
+
+const allergyOptions = [
+    "Milk",
+    "Tree Nuts",
+    "Soybean",
+    "Garlic",
+    "Onion",
+    "Wheat",
+    "Eggs",
+    "Peanuts",
+    "None"
+];
 
 function AddProduct() {
     RoleGuard('Admin');
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
     const [categories, setCategories] = useState([]);
+    const [selectedAllergens, setSelectedAllergens] = useState([]);
 
     useEffect(() => {
         // Fetch categories from the API
@@ -61,7 +75,8 @@ function AddProduct() {
             productPrice: 0,
             discountPercentage: 0,
             stocks: 0,
-            categoryId: 0 // This will hold the selected category ID
+            categoryId: 0,
+            allergyIngredients: ""
         },
         validationSchema: yup.object({
             productName: yup.string().trim().min(3, 'Product Name must be at least 3 characters')
@@ -80,6 +95,7 @@ function AddProduct() {
             protein: yup.number().min(1, 'Protein minumum 1 or more').required('Protein is required'),
             productPrice: yup.number().min(1, 'Price minumum 1 or more').required('Price is required'),
             discountPercentage: yup.number().min(0, 'Cannot be negative').nullable(),
+            allergyIngredients: yup.string().nullable(),
             stocks: yup.number().min(1, 'Stocks minumum 1 or more').required('Stocks are required'),
             categoryId: yup.string().required('Category is required') // Validation for category
         }),
@@ -87,6 +103,9 @@ function AddProduct() {
             if (imageFile) {
                 data.imageFile = imageFile;
             }
+
+            // Convert allergens array to a comma-separated string
+            data.allergyIngredients = selectedAllergens.join(",");
 
             http.post('/Product/add-product', data) // Send the product data including categoryId to the backend
                 .then(() => {
@@ -145,7 +164,7 @@ function AddProduct() {
                         left: 0,
                     }}
                 >
-                    <Button sx={{ marginLeft: '20px' }} style={{ background: '#C6487E', color: '#FFFFFF' }} onClick={() => navigate('/admin/store')}>
+                    <Button sx={{ marginLeft: '20px' }} style={{ background: '#C6487E', color: '#FFFFFF' }} onClick={() => navigate('/admin/store')}  startIcon={<ArrowBackIcon />} >
                         Go Back
                     </Button>
                     <Button sx={{ marginRight: '40px' }} style={{ background: '#C6487E', color: '#FFFFFF' }} type="submit" onClick={formik.handleSubmit}>
@@ -170,7 +189,7 @@ function AddProduct() {
                         <Box component="form" onSubmit={formik.handleSubmit}>
                             {/* First Border - Product Name, Description, Ingredients */}
                             <Box sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px', marginBottom: '16px', height: 'auto' }}>
-                        
+
 
                                 {/* Product Name */}
                                 <Grid item xs={12} sx={{ marginBottom: '10px' }}>
@@ -184,7 +203,7 @@ function AddProduct() {
                                             error={formik.touched.productName && Boolean(formik.errors.productName)}
                                             helperText={formik.touched.productName && formik.errors.productName}
                                         />
-                                        
+
                                     </FormControl>
                                 </Grid>
 
@@ -287,7 +306,7 @@ function AddProduct() {
                                     </Grid>
 
                                     {/* Category */}
-                                    <Grid item xs={12}>
+                                    <Grid item xs={6}>
                                         <DetailsTextField
                                             fullWidth
                                             select
@@ -306,6 +325,32 @@ function AddProduct() {
                                             ))}
                                         </DetailsTextField>
                                     </Grid>
+
+                                    <Grid item xs={6}>
+                                        <DetailsTextField
+                                            select
+                                            label="Allergy Ingredients"
+                                            value={selectedAllergens}
+                                            onChange={(e) => setSelectedAllergens(e.target.value)}
+                                            SelectProps={{
+                                                multiple: true,
+                                                renderValue: (selected) => selected.join(", "), // Display selected allergens as a string
+                                            }}
+                                            fullWidth         
+                                        >
+                                            {allergyOptions.map((option) => (
+                                                <MenuItem 
+                                                    key={option} 
+                                                    value={option} 
+                                                    style={{
+                                                        backgroundColor: selectedAllergens.includes(option) ? "#e0f2f1" : "inherit" // Highlight selected items
+                                                    }}
+                                                >
+                                                    {option}
+                                                </MenuItem>
+                                            ))}
+                                        </DetailsTextField>
+                                    </Grid>
                                 </Grid>
                             </Box>
                         </Box>
@@ -320,7 +365,7 @@ function AddProduct() {
                             padding: '10px',
                             marginBottom: '20px',
                             width: '95%',
-                            height: '400px',
+                            height: '381px',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'center',

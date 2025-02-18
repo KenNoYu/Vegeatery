@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import http from '../../http';
 import { Box, Typography, CircularProgress, Tabs, Tab, Button, Grid2 as Grid } from '@mui/material';
 import dayjs from 'dayjs';
-
+import RoleGuard from '../../utils/RoleGuard';
 
 const StaffOrders = () => {
+    RoleGuard("Staff");
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
