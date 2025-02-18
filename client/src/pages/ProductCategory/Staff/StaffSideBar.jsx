@@ -1,6 +1,7 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { Star, CardGiftcard,  } from '@mui/icons-material';
+import Inventory2Icon from '@mui/icons-material/Inventory2';
 import { Box } from '@mui/system';
 import { Link, useLocation } from 'react-router-dom'; // React Router imports
 import vegeateryWhiteHorizontal from '../../../assets/logo/vegeateryWhiteHorizontal.png';
@@ -12,7 +13,7 @@ const StaffSidebar = () => {
 
   // List items data
   const menuItems = [
-    { id: 'Stocks', text: 'Stocks', icon: <CardGiftcard />, path: '/staff/viewstocks' },
+    { id: 'Stocks', text: 'Stocks', icon: <Inventory2Icon />, path: '/staff/viewstocks' },
     { id: 'Logs', text: "Logs", icon: <Star />, path: '/staff/productlogs' },
   ];
 
