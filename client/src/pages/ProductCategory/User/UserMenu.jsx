@@ -89,7 +89,9 @@ const UserMenu = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [loadingProducts, setLoadingProducts] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({
+    allergyInfo: "",
+  });
   const navigate = useNavigate();
   const [currentCategoryId, setCurrentCategoryId] = useState(null);
   const [filterValue, setFilterValue] = useState('');  // State for search filter value
@@ -97,6 +99,7 @@ const UserMenu = () => {
   const [caloriesFilter, setCaloriesFilter] = useState(''); // State for calories filter
   const [pointsFilter, setPointsFilter] = useState(''); // State for points filter
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [allergyFilter, setAllergyFilter] = useState(false);  // Allergy filter state
 
   useEffect(() => {
     // Fetch categories from the API
@@ -145,15 +148,17 @@ const UserMenu = () => {
     navigate(`/userviewcategories/${categoryId}`);
   };
 
-  // get user info if available
   useEffect(() => {
     http
       .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
       .then((res) => {
-        console.log(res);
-        setUser(res);
-        console.log(res.data.cartId)
-        setLoading(false);
+        console.log(res); // Log the full response
+        // Log just the data part of the response
+        console.log(res.data);
+        // Set the user state with only the allergyInfo data
+        setUser(res.data);
+        console.log(res.data.cartId);
+        setLoading(false); // Once data is fetched, loading is false
       })
       .catch((err) => {
         console.error("Failed to fetch user data", err);
@@ -161,7 +166,6 @@ const UserMenu = () => {
         setLoading(false);
       });
   }, []);
-
   // handle add to cart button
   const addToCart = (cartId, productId, productName, quantity) => {
     const cartData = {
@@ -171,7 +175,6 @@ const UserMenu = () => {
       productName: productName,
       quantity: quantity,
     };
-
     http.post("/ordercart", cartData)
       .then((res) => {
         console.log("Added to cart:", res.data);
@@ -183,26 +186,37 @@ const UserMenu = () => {
       });
   };
 
-  // get user info if available
-  useEffect(() => {
-    http
-      .get("/auth/current-user", { withCredentials: true }) // withCredentials ensures cookies are sent
-      .then((res) => {
-        console.log(res);
-        setUser(res);
-        console.log(res.data.cartId)
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch user data", err);
-        setError("Failed to fetch user data");
-        setLoading(false);
-      });
-  }, []);
 
+  const getUserAllergies = () => {
+    return user?.allergyInfo || [];  // Make sure the key name matches your API response
+  };
 
   useEffect(() => {
+    if (!user || !user.allergyInfo) return;  // Ensure user is loaded
+
     let filtered = [...products];
+
+    const userAllergies = getUserAllergies();
+    console.log("User Allergies:", userAllergies);
+
+    // Ensure that `userAllergies` is always an array
+    const allergies = Array.isArray(userAllergies) ? userAllergies : [userAllergies];
+
+    if (allergies.length > 0 && allergyFilter) {
+      filtered = filtered.filter((product) => {
+        console.log("Product:", product);
+
+        // Check if any of the allergies are present in the product's allergy ingredients
+        const allergyMatch = allergies.some((allergy) =>
+          product.allergyIngredients
+            .toLowerCase()
+            .includes(allergy.toLowerCase())
+        );
+        console.log("Allergy match found:", allergyMatch);  // Log whether there's a match
+
+        return !allergyMatch;  // Exclude product if allergy is found
+      });
+    }
 
     // Apply the first filter (search by product name)
     if (filterValue) {
@@ -210,21 +224,18 @@ const UserMenu = () => {
         product.productName.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
-
     // Apply the second filter (price order sorting)
     if (priceFilter.includes("lowest")) {
       filtered = [...filtered].sort((a, b) => a.productPrice - b.productPrice); // Lowest to highest
     } else if (priceFilter.includes("highest")) {
       filtered = [...filtered].sort((a, b) => b.productPrice - a.productPrice); // Highest to lowest
     }
-
     // Apply the third filter (calories order sorting)
     if (caloriesFilter.includes("lowest")) {
       filtered = [...filtered].sort((a, b) => a.calories - b.calories);
     } else if (caloriesFilter.includes("highest")) {
       filtered = [...filtered].sort((a, b) => b.calories - a.calories);
     }
-
     // Apply the fourth filter (points order sorting)
     if (pointsFilter.includes("lowest")) {
       filtered = [...filtered].sort((a, b) => a.productPoints - b.productPoints);
@@ -233,7 +244,7 @@ const UserMenu = () => {
     }
 
     setFilteredProducts(filtered);
-  }, [filterValue, priceFilter, caloriesFilter, pointsFilter, products]);
+  }, [filterValue, priceFilter, caloriesFilter, pointsFilter, products, allergyFilter, user]);
 
 
   const handleCheckboxChange = (event) => {
@@ -254,6 +265,11 @@ const UserMenu = () => {
         checked ? [value] : prev.filter((item) => item !== value)
       );
     }
+    // Handle allergy filter
+    else if (filterType === "allergy") {
+      setAllergyFilter(checked);  // Set allergy filter based on checkbox state
+      console.log("Allergy Filter:", checked);  // Log the current allergy filter value
+    }
   };
 
 
@@ -264,7 +280,7 @@ const UserMenu = () => {
   return (
     <Grid container spacing={0} sx={{ margin: '64px', padding: 0 }}>
       {/* Left Column - Search and Filters */}
-      <Grid item xs={12} sm={4} md={3} sx={{ marginTop: '60px', paddingLeft: '150px' }}>
+      <Grid item xs={12} sm={4} md={3} sx={{ marginTop: '60px', paddingLeft: '20px' }}>
         <Box
           sx={{
             display: 'flex',
@@ -386,6 +402,20 @@ const UserMenu = () => {
                       />
                     }
                     label="High to Low"
+                  />
+                </FormGroup>
+              </FormControl>
+              <FormControl component="fieldset">
+                <FormGroup row>
+                  <FormControlLabel
+                    control={
+                      <CustomCheckbox
+                        checked={allergyFilter}
+                        onChange={(e) => setAllergyFilter(e.target.checked)}  // Toggle the state
+                        name="allergy-filter" // "allergy" will be extracted as the filter type
+                      />
+                    }
+                    label="Filter by Allergy"
                   />
                 </FormGroup>
               </FormControl>
@@ -518,13 +548,13 @@ const UserMenu = () => {
                         {/* Show "Out of Stock" label if product is inactive */}
                         {!product.isActive && (
                           <Typography variant="body2" color="error" sx={{ fontWeight: 'bold', mt: 1 }}>
-                            Out of Stock
+                            Not Available
                           </Typography>
                         )}
                         <Button
                           variant="contained"
                           color={user ? 'Accent' : 'secondary'}
-                          onClick={() => addToCart(user.data.cartId, product.productId, product.productName, 1)}
+                          onClick={() => addToCart(user.cartId, product.productId, product.productName, 1)}
                           sx={{ cursor: user && product.isActive ? 'pointer' : 'not-allowed', marginTop: '10px' }}
                           disabled={!user || !product.isActive} // Disable if user is not logged in or product is inactive
                         >
