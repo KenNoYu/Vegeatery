@@ -25,14 +25,14 @@ export default function Chatbot() {
   ];
   const reserveOptions = [
     "Make a Reservation Now",
-    "How to view my reservations?",
+    "How to view my reservation?",
     "How to edit my upcoming reservations?",
     "Others",
   ];
   const orderOptions = [
     "Where to view my orders?",
     "What are the accepted payment methods?",
-    "What are the types of services",
+    "What are the types of services?",
     "How long will my order be ready?",
     "Others",
   ];
@@ -72,8 +72,8 @@ export default function Chatbot() {
           case "Most Popular Dish":
             path = "popularDish";
             break;
-          case "Most Popular Category":
-            link = "popularCategory";
+          case "Most Popular Dish Category":
+            path = "popularCategory";
             break;
           // Rewards
           case "Rewards & Points":
@@ -123,7 +123,7 @@ export default function Chatbot() {
           case "What are the types of services?":
             path = "serviceTypes";
             break;
-          case "How long will my order by ready?":
+          case "How long will my order be ready?":
             path = "orderReady";
             break;
           // About Us
@@ -208,7 +208,7 @@ export default function Chatbot() {
     // Orders
     order: {
       message:
-        "What to know more about the ordering processes of Vegeatery? 🌟",
+        "Want to know more about the ordering processes of Vegeatery? 🌟",
       options: orderOptions,
       path: "process_options",
     },

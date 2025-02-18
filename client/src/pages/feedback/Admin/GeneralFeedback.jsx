@@ -95,13 +95,13 @@ const AdminGeneralFeedback = () => {
 
   return (
     <Box sx={{
+      marginTop: "2em",
       display: "flex",
       height: "100vh",
       overflow: "hidden",
-      marginBottom: 2
+      overflowX: "hidden",
     }}
     >
-      <Box sx={{ display: "flex", height: "100vh", marginTop: "2em" }}>
         {/* Sidebar */}
         <FeedbackSidebar />
 
@@ -122,7 +122,7 @@ const AdminGeneralFeedback = () => {
             <Typography variant="h4" fontWeight="bold" mt={5} ml={3} mb={2}>Customer Feedback</Typography>
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             <List sx={{ display: "start", flexDirection: "column", gap: 2, width: 850 }}>
-              {feedbackList.map((feedback) => (
+              {feedbackList.slice().reverse().map((feedback) => (
                 <Paper
                   key={feedback.id}
                   elevation={3}
@@ -134,7 +134,7 @@ const AdminGeneralFeedback = () => {
                     display: "flex",
                     flexDirection: "column",
                     gap: 2,
-                    marginLeft: 0,
+                    marginBottom: "2em",
                     marginRight: 3
 
                   }}
@@ -294,7 +294,6 @@ const AdminGeneralFeedback = () => {
         </Dialog>
 
       </Box>
-    </Box>
   );
 };
 

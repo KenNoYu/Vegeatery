@@ -303,10 +303,10 @@ const AdminOrders = () => {
     }
 
     return (
-        <>
-            <Box sx={{ p: 2 }}>
-                {/* Sidebar */}
-                <ProductsSidebar />
+        <Box>
+          {/* Sidebar */}
+          <ProductsSidebar />
+            <Box sx={{ p: 2, width: { md:1000 }, marginLeft: "300px", marginTop: "5em" }}>
                 <Typography variant="h5" gutterBottom>
                     Orders
                 </Typography>
@@ -510,7 +510,7 @@ const AdminOrders = () => {
                 rtl={false}
                 style={{ position: 'fixed', top: '70px', right: '20px' }}
             />
-        </>
+        </Box>
     )
 };
 

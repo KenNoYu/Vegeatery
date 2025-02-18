@@ -33,8 +33,8 @@ const RewardsSidebar = () => {
             height: '120vh',
             // borderRight: '0.5px solid #FFFFFF',
             padding: '2em 0.5em',
-            position: 'sticky',
-            marginTop: '5px',
+            position: 'fixed',
+            marginTop: '64px',
             zIndex: "500", // Dynamically adjust based on navbar height
           },
         }}

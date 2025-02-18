@@ -83,7 +83,7 @@ const OrderConfirmation = () => {
                 }
             });
             UpdateOrderAsNew(order.orderId);       
-            //sendEmail();
+            sendEmail();
             updateUserPoints();
         }
     }, [order]);
@@ -176,10 +176,10 @@ const OrderConfirmation = () => {
         };
 
         emailjs.send(
-            "service_jg9u4so",
-            "template_h6i5ctn",
+            "service_plo7m72",
+            "template_nhrcr3o",
             emailParams,
-            "PGBYOmyKOLLfZCGuL"
+            "NpgWlwY1lL3fFaX_P"
         ).then(() => {
             console.log("Email sent successfully!");
             setLoading(false);

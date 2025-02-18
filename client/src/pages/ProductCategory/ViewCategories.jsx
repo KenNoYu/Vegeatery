@@ -29,7 +29,7 @@ const CategoryList = () => {
         if (res.data.length > 0) {
           const firstCategoryId = res.data[0].categoryId;
           setCurrentCategoryId(firstCategoryId);
-          navigate(`/viewcategories/${firstCategoryId}`);
+          navigate(`/admin/viewcategories/${firstCategoryId}`);
         }
       })
       .catch((err) => {
@@ -51,13 +51,13 @@ const CategoryList = () => {
   const handleCategoryClick = (event, categoryId) => {
     event.preventDefault();
     setCurrentCategoryId(categoryId);
-    navigate(`/viewcategories/${categoryId}`);
+    navigate(`/admin/viewcategories/${categoryId}`);
   };
 
   const handleEditCategory = (event, categoryId) => {
     event.stopPropagation();
     console.log("Navigating to:", `/editcategory/${categoryId}`);
-    navigate(`/editcategory/${categoryId}`);
+    navigate(`/admin/editcategory/${categoryId}`);
   };
 
   const handleDeleteCategory = (categoryId) => {
@@ -85,7 +85,7 @@ const CategoryList = () => {
           boxShadow: 2,
           height: '1075px',
           maxWidth: '2000px',
-
+          width: { md: 900 },
           padding: '16px', // Ensure no extra padding
           marginTop: '90px', // Remove extra margin if necessary
         }}
@@ -94,8 +94,8 @@ const CategoryList = () => {
           <Typography variant="h5" gutterBottom style={{ marginLeft: '10px' }}>Categories</Typography>
 
           <Box>
-            <Button variant="contained" color="primary" onClick={() => navigate(`/addproduct`)} style={{ marginBottom: '16px', background: '#C6487E', color: '#FFFFFF' }}>Add Product</Button>
-            <Button variant="contained" color="primary" onClick={() => navigate(`/addcategory`)} style={{ marginBottom: '16px', marginLeft: '20px', marginRight: '10px', background: '#C6487E', color: '#FFFFFF' }}>Add Category</Button>
+            <Button variant="contained" color="primary" onClick={() => navigate(`/admin/addproduct`)} style={{ marginBottom: '16px', background: '#C6487E', color: '#FFFFFF' }}>Add Product</Button>
+            <Button variant="contained" color="primary" onClick={() => navigate(`/admin/addcategory`)} style={{ marginBottom: '16px', marginLeft: '20px', marginRight: '10px', background: '#C6487E', color: '#FFFFFF' }}>Add Category</Button>
           </Box>
         </Box>
 
@@ -104,7 +104,7 @@ const CategoryList = () => {
             <Tabs
               aria-label="Category Tabs"
               indicatorColor="secondary" // Use primary or secondary
-              value={`/viewcategories/${currentCategoryId}`}
+              value={`/admin/viewcategories/${currentCategoryId}`}
               sx={{
                 display: 'flex', // Use Flexbox to layout tabs horizontally
 
@@ -162,32 +162,55 @@ const CategoryList = () => {
                 <Grid item xs={12} sm={6} md={3} key={product.productId} sx={{ padding: '0' }}>
                   <Card sx={{ border: '1px solid #ccc', borderRadius: '16px', boxShadow: 2, overflow: 'hidden', height: '100%', width: '100%', margin: '0' }}>
                     <Box sx={{ padding: '8px', overflow: 'hidden' }}>
-                      <CardMedia component="img" image={`${import.meta.env.VITE_FILE_BASE_URL}${product.imageFile}`} alt={product.productPrice} onClick={() => navigate(`/product/${product.productId}`)} sx={{ objectFit: 'cover', height: '200px', width: '100%', borderRadius: '16px' }} />
+                      <CardMedia component="img" image={`${import.meta.env.VITE_FILE_BASE_URL}${product.imageFile}`} alt={product.productPrice} onClick={() => navigate(`/admin/product/${product.productId}`)} sx={{ objectFit: 'cover', height: '200px', width: '100%', borderRadius: '16px' }} />
                     </Box>
                     <CardContent>
                       <Typography variant="h7" sx={{ fontWeight: 'bold' }}>{product.productName}</Typography>
                       <Box display="flex" alignItems="center" justifyContent="space-between">
                         <Box>
-                          <Typography variant="body2">Price: ${product.productPrice}</Typography>
+                          {product.discountPercentage > 0 ? (
+                            // Show Discounted Price & Percentage if a discount exists
+                            <>
+                              <Grid container alignItems="center">
+                                <Grid item>
+                                  <Typography variant="body3">
+                                    ${product.discountedPrice}
+                                  </Typography>
+                                </Grid>
+                                <Grid item>
+                                  <Typography variant="body3" style={{ marginLeft: '8px', fontWeight: 'bold' }}>
+                                    {product.discountPercentage}% off
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </>
+                          ) : (
+                            // Show Actual Price if there's no discount
+                            <Grid item>
+                              <Typography variant="body3">
+                                ${product.productPrice}
+                              </Typography>
+                            </Grid>
+                          )}
                           <Typography variant="body2">{product.productPoints} Points</Typography>
-                          
+
                         </Box>
                         <Button
                           variant="outlined"  // This makes the button more visible
-                          onClick={() => navigate(`/editproduct/${product.productId}`)}
+                          onClick={() => navigate(`/admin/editproduct/${product.productId}`)}
                           sx={{ cursor: 'pointer', marginTop: '10px' }}
                           color="accent"
                         >
                           Edit
                         </Button>
-                       
+
                       </Box>
-                       {/* Show "Out of Stock" label if product is inactive */}
-                       {!product.isActive && (
-                            <Typography variant="body2" color="error" sx={{ fontWeight: 'bold', mt: 1 }}>
-                              Out of Stock
-                            </Typography>
-                        )}
+                      {/* Show "Out of Stock" label if product is inactive */}
+                      {!product.isActive && (
+                        <Typography variant="body2" color="error" sx={{ fontWeight: 'bold', mt: 1 }}>
+                          Out of Stock
+                        </Typography>
+                      )}
                     </CardContent>
                   </Card>
                 </Grid>

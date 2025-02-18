@@ -329,9 +329,9 @@ function App() {
             <Routes>
               <Route path={"/staff/viewstocks"} element={<StaffStockPage />} />
               <Route path={"/staff/productlogs"} element={<StaffProductLogs />} />
-              <Route path={"/viewcategories/:id"} element={<CategoryList />} />
+              <Route path={"/admin/viewcategories/:id"} element={<CategoryList />} />
               <Route path={"/admin/store"} element={<CategoryList />} />
-              <Route path="/editproduct/:productId" element={<EditProduct />} />
+              <Route path="/admin/editproduct/:productId" element={<EditProduct />} />
               <Route path="/user/store" element={<UserMenu />} />
               <Route path={"/userviewcategories/:id"} element={<UserMenu />} />
               <Route path="/user/profile/:userId" element={<UserProfileView />}/>
@@ -342,6 +342,13 @@ function App() {
               <Route path="/user/orders" element={<MyOrdersPage />} />
               <Route path="/user/reservations" element={<MyReservationsPage />} />
               <Route path="/user/reservations/:id" element={<EditMyReservationsPage />} />
+              <Route path="/user/pointshistory" element={<PointsHistory />} />
+              <Route path="/user/rewards" element={<PointsSystem />} />
+              <Route path="/admin/pointsrange" element={<PointsRange />} />
+              <Route path="/admin/rewards" element={<AdminVouchersSystem />} />
+              <Route path="/admin/feedback" element={<AdminGeneralFeedback />}/>
+              <Route path="/admin/ratingstatistics" element={<RatingStatistics />}/>
+              <Route path={"/admin/orders"} element={<AdminOrders />} />
             </Routes>
           </Container>
 
@@ -355,10 +362,10 @@ function App() {
               <Route path="/passwordreset" element={<ResetPassword />} />
 
               {/* PRODUCTS */}
-              <Route path={"/addcategory"} element={<AddCategory />} />
-              <Route path={"/addproduct"} element={<AddProduct />} />
-              <Route path="/product/:productId" element={<ProductDetails />} />
-              <Route path={"/editcategory/:categoryId"} element={<EditCategory />} />
+              <Route path={"/admin/addcategory"} element={<AddCategory />} />
+              <Route path={"/admin/addproduct"} element={<AddProduct />} />
+              <Route path="/admin/product/:productId" element={<ProductDetails />} />
+              <Route path={"/admin/editcategory/:categoryId"} element={<EditCategory />} />
               <Route path={"/userproduct/:productId"} element= {<UserProductDetails />} />
 
               {/* RESERVATION */}
@@ -370,25 +377,17 @@ function App() {
               <Route path="/staff/addreservation" element={<StaffAddReservation />}/>
 
               {/* REWARDS */}
-              <Route path="/user/rewards" element={<PointsSystem />} />
-              <Route path="/user/pointshistory" element={<PointsHistory />} />
-              <Route path="/admin/rewards" element={<AdminVouchersSystem />} />
               <Route path="/rewards/admin/voucherssystem/edit/:id" element={<AdminVouchersSystemEdit />}/>
               <Route path="/admin/voucherssystemadd" element={<VouchersSystemAdd />}/>
-              <Route path="/admin/pointsrange" element={<PointsRange />} />
               <Route path="/user/feedback" element={<GeneralFeedback />} />
               <Route path="/user/generalfeedbackadd" element={<GeneralFeedbackAdd />}/>
-              <Route path="/admin/feedback" element={<AdminGeneralFeedback />}/>
-              <Route path="/admin/ratingstatistics" element={<RatingStatistics />}/>
               <Route path="/rewards" element={<Rewards />}/>
-
 
               {/* ORDERS */}
               <Route path={"/orders"} element={<Orders />} />
               <Route path={"/checkout"} element={<Checkout />} />
               <Route path={"/orderconfirmation"} element={<OrderConfirmation />}/>
               <Route path={"/staff/vieworders"} element={<StaffOrders />} />
-              <Route path={"/admin/orders"} element={<AdminOrders />} />
               <Route path={"/admin/overview"} element={<OrderDashboard />} />
             </Routes>
           </Container>

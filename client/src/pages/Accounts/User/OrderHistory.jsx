@@ -105,26 +105,27 @@ const MyOrdersPage = () => {
     }, [user]);
 
     const buyAgain = async (order) => {
-        try { // Add a try-catch block for better error handling
-            await GetCartItems();
-            if (Array.isArray(cartItems) && cartItems.length > 0) {
-                for (const item of cartItems) {
-                    await Promise.all(
-                        cartItems.map((item) => deleteCartItems(user.data.cartId, item.productId))
-                    );
-                }
-            }
-
-            await Promise.all(
-                order.orderItems.map((product) =>
-                    addToCart(user.data.cartId, product.productId, product.productName, product.quantity)
-                )
-            );
-
-            checkoutNav();
-        } catch (error) {
-            console.error("Error during buy again process:", error);
+      try { // Add a try-catch block for better error handling
+        await clearCart(user.data.cartId);
+  
+        // Step 3: Add items from the order back into the cart one by one (sequentially)
+        for (const product of order.orderItems) {
+          await addToCart(user.data.cartId, product.productId, product.productName, product.quantity); // Wait for each item to be added before moving to the next one
         }
+        checkoutNav();
+      } catch (error) {
+        console.error("Error during buy again process:", error);
+      }
+    };
+  
+    const clearCart = async (cartId) => {
+      try {
+        const response = await http.delete(`/ordercart/ClearCart?cartId=${cartId}`); // Or just /ordercart?cartId=${cartId} if you don't use "all" in your route.
+        return response;
+      } catch (error) {
+        console.error("Error clearing cart:", error);
+        throw error; // Re-throw to be handled by the calling function
+      }
     };
 
     return (

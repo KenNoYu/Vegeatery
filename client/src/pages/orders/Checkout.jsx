@@ -48,7 +48,7 @@ const Checkout = () => {
         <Box>
             <Box sx={{ padding: 4 }}>
                 <Typography>
-                    Redirecting to Payment <CircularProgress />
+                    Redirecting to Payment <CircularProgress color='Primary'/>
                 </Typography>
             </Box>
         </Box>

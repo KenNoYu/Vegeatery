@@ -139,7 +139,7 @@ function AddProduct() {
     };
 
     return (
-        <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '64px' }}>
+        <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '30px' }}>
 
             <Box
                 sx={{

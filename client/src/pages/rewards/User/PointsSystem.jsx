@@ -85,16 +85,14 @@ const PointsSystem = () => {
   };
 
   return (
-
     <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden", overflowX: "hidden" }}>
       {/* Sidebar */}
-      <Box sx={{ width: "20%" }}>
-        <RewardsSidebar />
-      </Box>
+      <RewardsSidebar />
 
       {/* Main Content */}
       <Box
         sx={{
+          marginLeft: "240px",  
           width: "80%",
           padding: 5,
           backgroundColor: "#FFFFFF",

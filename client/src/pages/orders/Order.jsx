@@ -485,7 +485,7 @@ const Orders = () => {
                                             Voucher Applied:
                                         </Typography>
                                         <Typography variant="body1" sx={{ color: '#292827' }}>
-                                            {selectedVoucher.voucherName} {selectedVoucher.discountPercentage}% off
+                                            {selectedVoucher.voucherName}
                                         </Typography>
                                     </>
                                 ) : (
