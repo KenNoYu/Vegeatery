@@ -131,24 +131,32 @@ const MyReservationsPage = () => {
             ))}
           </Stack>
         ) : (
-          <Typography
-            variant="h6"
-            sx={{
-              color: "gray",
-              textAlign: "center",
-              marginTop: "20px",
-            }}
-          >
-            No upcoming reservations!
-          </Typography>
+          <>
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <img
+                src="/assets/reservationicons/NoReservations.png"
+                alt="No Reservations"
+                style={{ width: '70px', height: '70px', opacity: 0.6 }}
+              />
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "gray",
+                  textAlign: "center",
+                }}
+              >
+                No upcoming reservations!
+              </Typography>
+            </div>
+          </>
         )}
 
-        
+
         {pastReservations.length > 0 && (
           <Stack spacing={2} sx={{ width: "100%", marginBottom: "50px" }}>
-          <Typography variant="h5" sx={{ my: 2 }}>
-          Past Reservations
-          </Typography>
+            <Typography variant="h5" sx={{ my: 2 }}>
+              Past Reservations
+            </Typography>
             {pastReservations.map((reservation) => (
               <Card
                 key={reservation.id}

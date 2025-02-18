@@ -21,6 +21,9 @@ namespace vegeatery.Models
         public string Ingredients { get; set; }
 
         [Required]
+        public string AllergyIngredients { get; set; }
+
+        [Required]
         public int ProductPoints { get; set; }
 
         public int Calories { get; set; }
@@ -60,5 +63,8 @@ namespace vegeatery.Models
         [Column(TypeName = "datetime")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; }
+
+		[Column(TypeName = "decimal(18,2)")]
+		public decimal quantityBought { get; set; }
     }
 }

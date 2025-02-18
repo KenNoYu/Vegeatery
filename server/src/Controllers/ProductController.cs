@@ -50,6 +50,7 @@ namespace vegeatery.Controllers
                     x.DiscountPercentage,
                     x.DiscountedPrice,
                     IsActive = x.Stocks > 0,
+                    x.AllergyIngredients,
                     x.CategoryId,
                     x.Category.CategoryName,          
                     x.CreatedAt,
@@ -95,6 +96,7 @@ namespace vegeatery.Controllers
                 Stocks = product.Stocks,
                 CategoryId = product.CategoryId,
                 IsActive = product.IsActive,
+                AllergyIngredients = product.AllergyIngredients,
             };
 
             // Add the new product to the database
@@ -134,6 +136,7 @@ namespace vegeatery.Controllers
                     p.CategoryId,
                     p.Category.CategoryName,
                     p.ProductPoints,
+                    p.AllergyIngredients,
                     p.IsActive,
                     p.CreatedAt,
                     p.UpdatedAt
@@ -177,6 +180,7 @@ namespace vegeatery.Controllers
             existingProduct.DiscountPercentage = product.DiscountPercentage;
             existingProduct.UpdatedAt = DateTime.Now;
             existingProduct.IsActive = product.IsActive;
+            existingProduct.AllergyIngredients = product.AllergyIngredients;
 
             _context.SaveChanges();
 
@@ -213,17 +217,45 @@ namespace vegeatery.Controllers
         }
 
 
-
-        [HttpGet("GetProducts")]
-        public IActionResult GetFilteredProducts([FromQuery] ProductFilter filter)
+        [HttpPut("UpdateTotalBought")]
+        public IActionResult UpdateBoughtQuantity(UpdateProductBoughtRequest Request)
         {
-            var products = _context.Product.AsQueryable();
+			// check if product exists
+			var product = _context.Product.FirstOrDefault(p => p.ProductId == Request.ProductId);
+			if (product == null)
+			{
+				return NotFound(new { Message = "Product does not exist." });
+			}
 
-            // Apply filters
-            var filteredProducts = filter.ApplyFiltering(products);
+            product.quantityBought += Request.quantity;
+			_context.SaveChanges();
 
-            return Ok(filteredProducts.ToList());
-        }
+            return Ok(new { message = "Product bought updated successfully" });
+		}
 
-    }
+        [HttpGet("TopOrders")]
+		public IActionResult GetTopOrders([FromQuery] int count = 5)
+        {
+			var topOrders = _context.Product
+				.Where(p => p.quantityBought > 1) // Filter for quantityBought > 1
+		        .OrderByDescending(p => p.quantityBought)
+				.Take(count)
+				.Select(p => new
+				{
+					p.ProductId,
+					p.ProductName,
+                    p.ImageFile,
+					p.quantityBought,
+					p.ProductPrice
+				})
+				.ToList();
+
+			if (!topOrders.Any())
+			{
+				return NotFound("No orders found.");
+			}
+
+			return Ok(topOrders);
+		}
+	}
 }

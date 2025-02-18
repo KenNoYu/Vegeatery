@@ -6,7 +6,7 @@ import RoleGuard from '../../utils/RoleGuard';
 import emailjs from "@emailjs/browser";
 
 const OrderConfirmation = () => {
-    RoleGuard('User');
+    RoleGuard(["User", "Admin", "Staff"]);
     const [order, setOrder] = useState(null);
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -14,7 +14,6 @@ const OrderConfirmation = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const orderId = searchParams.get('orderId');
-    const hasUpdated = useRef(false);
 
     useEffect(() => {
         if (orderId) {
@@ -54,6 +53,7 @@ const OrderConfirmation = () => {
             // Check if the response is successful (status 200)
             if (response.status === 200) {
                 console.log('Stock updated:', response.data);
+                updateTotalBought(productId, quantity)
             } else {
                 console.log('Error updating stock:', response.data);
             }
@@ -74,7 +74,6 @@ const OrderConfirmation = () => {
 
     useEffect(() => {
         if (order) {
-            hasUpdated.current = true;
             order.orderItems.forEach(item => {
                 if (item.productId) {
                     console.log(`Updating stock for Product ID: ${item.productId} with Quantity: ${item.quantity}`);
@@ -109,6 +108,22 @@ const OrderConfirmation = () => {
             .catch((error) => {
                 console.error("Error fetching orders:", error);
             })
+    }
+
+    // update totalBought
+    const updateTotalBought = (productId, quantity) => {
+        const updateData = {
+            productId: productId,
+            quantity: quantity,
+        }
+
+        http.put("/product/updateTotalBought", updateData)
+        .then((res) => {
+            console.log(res);
+        })
+        .catch((error) => {
+            console.error("Error fetching orders:", error);
+        })
     }
 
     // Delete items in cart

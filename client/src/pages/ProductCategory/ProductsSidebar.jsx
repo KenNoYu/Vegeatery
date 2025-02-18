@@ -36,7 +36,7 @@ const ProductsSidebar = () => {
             padding: '2em 0.5em',
             position: 'fixed',
             marginTop: '64px', // Dynamically adjust based on navbar height
-   
+            zIndex: "500",
           },
         }}
       >

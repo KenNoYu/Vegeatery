@@ -159,10 +159,10 @@ const CategoryList = () => {
           <Box mt={4}>
             <Grid container spacing={3} justifyContent="flex-start" sx={{ padding: '16px' }} >
               {products.length > 0 ? products.map((product) => (
-                <Grid item xs={12} sm={6} md={2.4} key={product.productId} sx={{ padding: '0' }}>
-                  <Card sx={{ border: '1px solid #ccc', borderRadius: '16px', boxShadow: 2, overflow: 'hidden', height: '95%', width: '100%', margin: '0' }}>
+                <Grid item xs={12} sm={6} md={3} key={product.productId} sx={{ padding: '0' }}>
+                  <Card sx={{ border: '1px solid #ccc', borderRadius: '16px', boxShadow: 2, overflow: 'hidden', height: '100%', width: '100%', margin: '0' }}>
                     <Box sx={{ padding: '8px', overflow: 'hidden' }}>
-                      <CardMedia component="img" image={`${import.meta.env.VITE_FILE_BASE_URL}${product.imageFile}`} alt={product.productPrice} onClick={() => navigate(`/product/${product.productId}`)} sx={{ objectFit: 'cover', height: '150px', width: '100%', borderRadius: '16px' }} />
+                      <CardMedia component="img" image={`${import.meta.env.VITE_FILE_BASE_URL}${product.imageFile}`} alt={product.productPrice} onClick={() => navigate(`/product/${product.productId}`)} sx={{ objectFit: 'cover', height: '200px', width: '100%', borderRadius: '16px' }} />
                     </Box>
                     <CardContent>
                       <Typography variant="h7" sx={{ fontWeight: 'bold' }}>{product.productName}</Typography>
@@ -170,12 +170,7 @@ const CategoryList = () => {
                         <Box>
                           <Typography variant="body2">Price: ${product.productPrice}</Typography>
                           <Typography variant="body2">{product.productPoints} Points</Typography>
-                          {/* Show "Out of Stock" label if product is inactive */}
-                          {!product.isActive && (
-                            <Typography variant="body2" color="error" sx={{ fontWeight: 'bold', mt: 1 }}>
-                              Out of Stock
-                            </Typography>
-                          )}
+                          
                         </Box>
                         <Button
                           variant="outlined"  // This makes the button more visible
@@ -185,7 +180,14 @@ const CategoryList = () => {
                         >
                           Edit
                         </Button>
+                       
                       </Box>
+                       {/* Show "Out of Stock" label if product is inactive */}
+                       {!product.isActive && (
+                            <Typography variant="body2" color="error" sx={{ fontWeight: 'bold', mt: 1 }}>
+                              Out of Stock
+                            </Typography>
+                        )}
                     </CardContent>
                   </Card>
                 </Grid>

@@ -21,6 +21,7 @@ import UserContext from "./contexts/UserContext";
 import logoLight from "./assets/logo/vegeateryMain.png";
 import logoDark from "./assets/logo/vegeateryWhite.png";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import Chatbot from "./pages/ChatBot";
 
 // PRODUCTS
 import CategoryList from "./pages/ProductCategory/ViewCategories";
@@ -64,11 +65,11 @@ import Checkout from "./pages/orders/Checkout";
 import OrderConfirmation from "./pages/orders/OrderConfirmation";
 import StaffOrders from "./pages/orders/StaffOrders";
 import AdminOrders from "./pages/orders/AdminOrders";
+import OrderDashboard from "./pages/orders/AdminOverview";
 
 import Register from "./pages/Accounts/User/Register";
 import Login from "./pages/Accounts/User/Login";
 import Home from "./pages/Home";
-import MyForm from "./pages/MyForm";
 
 // Accounts
 import UserOverview from "./pages/Accounts/User/UserOverview";
@@ -142,7 +143,7 @@ function App() {
       <Router>
         <ThemeProvider theme={MyTheme}>
           <ThemeProvider theme={currentThemeIsDark ? DarkTheme : MyTheme}>
-            <AppBar position="fixed" className="AppBar" sx={{zIndex: 10000}}>
+            <AppBar position="fixed" className="AppBar">
               <Container>
                 <Toolbar
                   disableGutters={true}
@@ -349,7 +350,6 @@ function App() {
               {/* ACCOUNTS */}
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/form" element={<MyForm />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/requestreset" element={<RequestPasswordReset />} />
               <Route path="/passwordreset" element={<ResetPassword />} />
@@ -389,10 +389,12 @@ function App() {
               <Route path={"/orderconfirmation"} element={<OrderConfirmation />}/>
               <Route path={"/staff/vieworders"} element={<StaffOrders />} />
               <Route path={"/admin/orders"} element={<AdminOrders />} />
+              <Route path={"/admin/overview"} element={<OrderDashboard />} />
             </Routes>
           </Container>
         </ThemeProvider>
       </Router>
+      <Chatbot />
     </UserContext.Provider>
   );
 }

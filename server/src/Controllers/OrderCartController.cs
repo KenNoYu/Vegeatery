@@ -90,7 +90,7 @@ namespace vegeatery.Controllers
         public IActionResult GetAll(int CartId)
         {
             // Validate the cartId
-            if (CartId <= 0)
+            if (CartId == 0)
             {
                 return BadRequest(new { Message = "Invalid cart ID." });
             }
