@@ -231,7 +231,10 @@ export default function Accounts() {
   };
 
   return (
-    <Box sx={{ display: "flex", height: "100%", marginTop: "2em" }}>
+    <Box sx={{ 
+      display: "flex", 
+      height: "100%", 
+      marginTop: "2em" }}>
       <AdminSidebar />
       <Box
         sx={{

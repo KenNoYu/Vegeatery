@@ -23,65 +23,65 @@ const RewardsSidebar = () => {
   };
 
   return (
-      <Drawer
-        variant="permanent"
-        anchor="left"
-        PaperProps={{
-          sx: {
-            backgroundColor: '#FFFFFF',
-            width: 240,
-            height: '120vh',
-            // borderRight: '0.5px solid #FFFFFF',
-            padding: '2em 0.5em',
-            position: 'sticky',
-            marginTop: '5px',
-            zIndex: "500", // Dynamically adjust based on navbar height
-          },
+    <Drawer
+      variant="permanent"
+      anchor="left"
+      PaperProps={{
+        sx: {
+          backgroundColor: '#FFFFFF',
+          width: 240,
+          height: '100vh',
+          padding: '2em 0.5em',
+          position: 'fixed',
+          marginTop: '64px',
+          boxSizing: 'border-box',
+          zIndex: "500",  // Dynamically adjust based on navbar height
+        },
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 4,
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 4,
-          }}
-        >
-          {/* Logo */}
-          <img src={vegeateryHorontalLogo} alt="Logo" style={{ height: 40, marginRight: 8 }} />
-        </Box>
-  
-        <List>
-          {menuItems.map((item, index) => (
-            <ListItem
-              button
-              key={item.id}
-              component={Link} // Use Link from React Router
-              to={item.path} // Link to respective path
-              sx={{
-                backgroundColor: isRouteActive(item.path) ? '#C6487E' : 'transparent',
+        {/* Logo */}
+        <img src={vegeateryHorontalLogo} alt="Logo" style={{ height: 40, marginRight: 8 }} />
+      </Box>
+
+      <List>
+        {menuItems.map((item, index) => (
+          <ListItem
+            button
+            key={item.id}
+            component={Link} // Use Link from React Router
+            to={item.path} // Link to respective path
+            sx={{
+              backgroundColor: isRouteActive(item.path) ? '#C6487E' : 'transparent',
               color: isRouteActive(item.path) ? '#FFFFFF' : 'inherit',
               borderRadius: isRouteActive(item.path) ? '20px' : '0px',
               marginBottom: '8px',
               '&:hover': {
                 backgroundColor: isRouteActive(item.path) ? '#A83866' : '#F1F1F1',
               },
-              }}
-            >
-              <ListItemIcon
+            }}
+          >
+            <ListItemIcon
               sx={{
                 color: isRouteActive(item.path) ? '#FFFFFF' : 'inherit',
               }}
-              >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-    );
-  };
-  
-  export default RewardsSidebar;
-  
+            >
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText primary={item.text} />
+          </ListItem>
+        ))}
+      </List>
+    </Drawer>
+  );
+};
+
+export default RewardsSidebar;
+

@@ -119,7 +119,7 @@ const GeneralFeedback = () => {
                 {feedbacks.length === 0 ? (
                     <Typography mt={2}>No general feedback has been provided yet.</Typography>
                 ) : (
-                    feedbacks.map((feedback, index) => (
+                    feedbacks.slice().reverse().map((feedback, index) => (
                         <Card key={feedback.feedbackId || `feedback-${index}`}
                             sx={{ marginBottom: 2, marginTop: 5, backgroundColor: "#E6F2FF" }}
                         >

@@ -85,7 +85,6 @@ const PointsSystem = () => {
   };
 
   return (
-
     <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden", overflowX: "hidden" }}>
       {/* Sidebar */}
       <Box sx={{ width: "20%" }}>

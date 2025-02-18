@@ -87,100 +87,93 @@ const RatingStatistics = () => {
     };
 
     return (
-        <Box
-        sx={{
-            marginBottom: 2
-        }}
-        >
-
-            <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden" }}>
-                {/* Sidebar */}
-                <FeedbackSidebar />
-                {/* Main Content */}
-                <Box
-                    sx={{
-                        marginLeft: "240px",
-                        flexGrow: 1,
-                        width: "80%",
-                        padding: 5,
-                        backgroundColor: "#FFFFFF",
-                        marginTop: "5px",
-                        paddingLeft: "3em",
-                        overflowX: "hidden",
-                    }}
-                >
-                    <Typography variant="h4" fontWeight="bold" mt={5} ml={3} mb={2}>
-                        Feedback Ratings Statistics
-                    </Typography>
-                    <Box display="flex" justifyContent="center" alignItems="center" gap={2} mb={2} mt={5}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                                label="Start Date"
-                                value={startDate}
-                                sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      "&.Mui-focused": {
+        <Box sx={{ display: "flex", height: "100vh", marginTop: "2em", overflow: "hidden" }}>
+            {/* Sidebar */}
+            <FeedbackSidebar />
+            {/* Main Content */}
+            <Box
+                sx={{
+                    marginLeft: "240px",
+                    flexGrow: 1,
+                    width: "80%",
+                    padding: 5,
+                    backgroundColor: "#FFFFFF",
+                    marginTop: "5px",
+                    paddingLeft: "3em",
+                    overflowX: "hidden",
+                }}
+            >
+                <Typography variant="h4" fontWeight="bold" mt={5} ml={3} mb={2}>
+                    Feedback Ratings Statistics
+                </Typography>
+                <Box display="flex" justifyContent="center" alignItems="center" gap={2} mb={2} mt={5}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                            label="Start Date"
+                            value={startDate}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    "&.Mui-focused": {
                                         fieldset: {
-                                          borderColor: "#C6487E !important",
+                                            borderColor: "#C6487E !important",
                                         },
-                                      },
                                     },
-                                    "& .MuiInputLabel-root": {
-                                      // Target the label specifically
-                                      color: "black", // Default label color
-                                      "&.Mui-focused": {
+                                },
+                                "& .MuiInputLabel-root": {
+                                    // Target the label specifically
+                                    color: "black", // Default label color
+                                    "&.Mui-focused": {
                                         // Label styles when focused
                                         color: "black !important", // Black on focus
-                                      },
                                     },
-                                  }}
-                                onChange={(newValue) => setStartDate(newValue)}
-                                renderInput={(params) => <TextField {...params} />}
-                                maxDate={dayjs()}
-                            />
-                            <DatePicker
-                                label="End Date"
-                                value={endDate}
-                                sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      "&.Mui-focused": {
+                                },
+                            }}
+                            onChange={(newValue) => setStartDate(newValue)}
+                            renderInput={(params) => <TextField {...params} />}
+                            maxDate={dayjs()}
+                        />
+                        <DatePicker
+                            label="End Date"
+                            value={endDate}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    "&.Mui-focused": {
                                         fieldset: {
-                                          borderColor: "#C6487E !important",
+                                            borderColor: "#C6487E !important",
                                         },
-                                      },
                                     },
-                                    "& .MuiInputLabel-root": {
-                                      // Target the label specifically
-                                      color: "black", // Default label color
-                                      "&.Mui-focused": {
+                                },
+                                "& .MuiInputLabel-root": {
+                                    // Target the label specifically
+                                    color: "black", // Default label color
+                                    "&.Mui-focused": {
                                         // Label styles when focused
                                         color: "black !important", // Black on focus
-                                      },
                                     },
-                                  }}
-                                onChange={(newValue) => setEndDate(newValue)}
-                                renderInput={(params) => <TextField {...params} />}
-                                maxDate={dayjs()}
-                            />
-                        </LocalizationProvider>
-                        <Button variant="contained" onClick={handleGenerate} sx={{
-                              textTransform: 'none',
-                              color: '#FFFFFF',
-                              backgroundColor: '#C6487E',
-                              '&:hover': { backgroundColor: '#E7ABC5' }
-                            }}>
-                            GENERATE
-                        </Button>
-                    </Box>
-                    <Box width="50%" margin="auto" marginTop={10}>
-                        <Bar data={data} options={{ responsive: true, plugins: { legend: { display: false } } }} />
-                    </Box>
-                    {responseMessage && (
-                        <Typography textAlign="center" color={responseType === 'success' ? 'green' : 'red'}>
-                            {responseMessage}
-                        </Typography>
-                    )}
+                                },
+                            }}
+                            onChange={(newValue) => setEndDate(newValue)}
+                            renderInput={(params) => <TextField {...params} />}
+                            maxDate={dayjs()}
+                        />
+                    </LocalizationProvider>
+                    <Button variant="contained" onClick={handleGenerate} sx={{
+                        textTransform: 'none',
+                        color: '#FFFFFF',
+                        backgroundColor: '#C6487E',
+                        '&:hover': { backgroundColor: '#E7ABC5' }
+                    }}>
+                        GENERATE
+                    </Button>
                 </Box>
+                <Box width="50%" margin="auto" marginTop={10}>
+                    <Bar data={data} options={{ responsive: true, plugins: { legend: { display: false } } }} />
+                </Box>
+                {responseMessage && (
+                    <Typography textAlign="center" color={responseType === 'success' ? 'green' : 'red'}>
+                        {responseMessage}
+                    </Typography>
+                )}
             </Box>
         </Box>
     );
