@@ -59,7 +59,8 @@ const OrderDashboard = () => {
         })
             .then((res) => {
                 setUsers(res.data)
-                const totalUsersCal = res.data.length; // Calculate total users directly
+                const totalUsersCal = res.data.length;
+                console.log(totalUsersCal); // Calculate total users directly
                 setTotalUsers(totalUsersCal); // Update totalUsers state
                 setLoading(false);
             })

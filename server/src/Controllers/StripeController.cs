@@ -12,12 +12,24 @@ namespace vegeatery.Controllers
 		public IActionResult GetSalesSummary()
 		{
 			var service = new PaymentIntentService();
-			var paymentIntents = service.List(new PaymentIntentListOptions
-			{
-				Limit = 100
-			});
+            var paymentIntents = new List<PaymentIntent>();
+            string startingAfter = null;
 
-			var salesByDate = paymentIntents.Data
+            do
+            {
+                var options = new PaymentIntentListOptions
+                {
+                    Limit = 100,
+                    StartingAfter = startingAfter
+                };
+
+                var page = service.List(options);
+                paymentIntents.AddRange(page.Data);
+                startingAfter = page.HasMore ? page.Data.Last().Id : null;
+            } while (startingAfter != null);
+
+
+            var salesByDate = paymentIntents
 				.GroupBy(pi => pi.Created.ToString("yyyy-MM-dd"))
 				.Select(g => new
 				{
@@ -27,8 +39,8 @@ namespace vegeatery.Controllers
 				.OrderBy(g => g.Date)
 				.ToList();
 
-			var totalSales = paymentIntents.Data.Sum(pi => pi.AmountReceived) / 100.0; // Convert from cents to dollars
-			var totalOrders = paymentIntents.Data.Count;
+			var totalSales = paymentIntents.Sum(pi => pi.AmountReceived) / 100.0; // Convert from cents to dollars
+			var totalOrders = paymentIntents.Count;
 
 			return Ok(new
 			{
