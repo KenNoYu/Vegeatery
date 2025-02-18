@@ -176,10 +176,10 @@ const OrderConfirmation = () => {
         };
 
         emailjs.send(
-            "service_jg9u4so",
-            "template_h6i5ctn",
+            "service_plo7m72",
+            "template_nhrcr3o",
             emailParams,
-            "PGBYOmyKOLLfZCGuL"
+            "NpgWlwY1IL3fFaX_P"
         ).then(() => {
             console.log("Email sent successfully!");
             setLoading(false);

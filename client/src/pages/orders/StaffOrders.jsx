@@ -187,7 +187,7 @@ const StaffOrders = () => {
                     orders.map((order, i) => {
                         console.log(order.orderId)
                         return (
-                            <Box key={order.orderId} sx={{ mb: 2, mt: 2, p: 2, border: '1px solid #ccc' }}>
+                            <Box key={order.orderId} sx={{ mb: 2, mt: 2, p: 2, border: '1px solid #ccc', backgroundColor: "#FFFFFF" }}>
                                 <Typography variant="h6">Order ID: {order.orderId}</Typography>
                                 {order.items.map((item, i) => {
                                     console.log(item.productId)
@@ -203,6 +203,7 @@ const StaffOrders = () => {
                                 <Typography>Status: {order.status}</Typography>
                                 <Button
                                     variant="contained"
+                                    color='Accent'
                                     onClick={() => UpdateOrderStatus(order.orderId, getNextStatus())}
                                 >
                                     {getButtonText()}
