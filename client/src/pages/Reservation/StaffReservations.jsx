@@ -21,7 +21,9 @@ const StaffReservations = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString("en-CA"))
+  const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString("en-CA"));
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchReservations = async (date) => {
     try {
@@ -48,6 +50,37 @@ const StaffReservations = () => {
     fetchReservations(selectedDate);
   }, [selectedDate]);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true); // Start loading when fetching starts
+
+      try {
+        let userData = null;
+
+        // Try fetching user data
+        try {
+          const userResponse = await http.get("/Auth/current-user", { withCredentials: true });
+          if (userResponse.data) {
+            setUser(userResponse.data);
+            userData = userResponse.data;
+          }
+        } catch (userError) {
+          console.warn("User not logged in or authentication failed.");
+          setUser(null); // Ensure user state is cleared if no user is found
+        }
+
+      } catch (error) {
+        console.error("Error fetching data", error);
+        toast.error("Failed to load data.");
+      } finally {
+        setLoading(false); // Stop loading state in all cases
+      }
+    };
+
+    fetchUser(); // Invoke the function
+
+  }, []);
+
   const seatReservation = async (reservationId, date, time, tables) => {
     try {
       const response = await http.put("/Reservation/SeatReservation", null, {
@@ -61,7 +94,7 @@ const StaffReservations = () => {
         "reservationDate": date,
         "timeSlot": time,
         "tables": tables.join(", "),
-        "doneBy": "staff"
+        "doneBy": user.username
       }
 
       const logResponse = await http.post("/Reservation/CreateReservationLog", logData);

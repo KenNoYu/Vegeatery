@@ -63,7 +63,11 @@ const StaffFocusedReservation = () => {
       setSelectedDate(response.data.reservationDate);
       setSelectedTime(response.data.timeSlot);
     } catch (error) {
-      console.error("Error fetching reservation:", error);
+      if (error.response && error.response.status === 404) {
+        navigate('/staff/viewreservations');
+      } else {
+        console.error("Error fetching reservation:", error);
+      }
     } finally {
       setLoading(false);
     }
@@ -74,16 +78,19 @@ const StaffFocusedReservation = () => {
     try {
       const response = await http.get(`/Reservation/GetTables?date=${date}&timeSlot=${timeSlot}&reservationId=${reservationId}`);
       console.log("Tables fetched:", response.data);
-      setTables(response.data);
-      reservation.tables.forEach((table) => {
-        handleTableClick(table.id, "selected");
-      });
 
-      response.data.forEach((table) => {
-        if (table.status === "unavailable") {
-          handleTableClick(table.id, "unavailable");
+      setTables(response.data.map((table) => {
+        if (reservation.tables.some((resTable) => resTable.id === table.id)) {
+          return { ...table, status: "selected" };
         }
-      });
+        if (table.status === "unavailable") {
+          return { ...table, status: "unavailable" };
+        }
+        return table;
+      }));
+      
+      // Update selectedTables state after processing
+      setSelectedTables(reservation.tables.map((table) => table.id));
 
     } catch (error) {
       console.error("Error fetching tables:", error);
@@ -392,7 +399,7 @@ const StaffFocusedReservation = () => {
                       }
                     >
                       Table {table.id}<br />
-                      {table.pax} Pax
+                      {table.capacity} Pax
                     </Button>
                   </Grid>
                 )

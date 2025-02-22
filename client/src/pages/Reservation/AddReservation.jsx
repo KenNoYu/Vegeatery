@@ -224,7 +224,7 @@ const ReservationPage = () => {
         "reservationDate": selectedDate,
         "timeSlot": selectedTime,
         "tables": selectedTables.join(", "),
-        "doneBy": "user"
+        "doneBy": user?.username || "user"
       }
 
       const logResponse = await http.post("/Reservation/CreateReservationLog", logData);
