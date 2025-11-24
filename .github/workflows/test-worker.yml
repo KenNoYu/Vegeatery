@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Setup your language (This is specific to each language)
       # - name: Set up language ${{ matrix.language_version }}
@@ -66,7 +66,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Setup your language (This is specific to each language)
       # - name: Set up language ${{ matrix.language_version }}
